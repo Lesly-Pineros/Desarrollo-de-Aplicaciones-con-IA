@@ -1,0 +1,13 @@
+# Python build and test output
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Local database and environment
+investiq.db
+investiq.db-*
+.env
+.venv/
+
+# Keep ml/artifacts/ tracked: these are versioned model outputs.

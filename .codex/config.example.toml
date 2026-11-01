@@ -1,0 +1,6 @@
+# Ejemplo orientativo: copia los valores deseados a ~/.codex/config.toml.
+# No contiene claves ni configura servidores MCP.
+
+# model = "<modelo disponible en tu instalación>"
+# approval_policy = "on-request"
+# sandbox_mode = "workspace-write"

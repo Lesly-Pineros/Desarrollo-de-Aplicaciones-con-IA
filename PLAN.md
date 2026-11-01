@@ -16,11 +16,11 @@
 | D4 | **SQLite (local) → Postgres gestionado (Neon free) en nube** vía SQLAlchemy/SQLModel | SQLite no persiste en hosting efímero; capa portable desde el día 1 | — |
 | D5 | **yfinance solo ingesta batch para ML** (offline), nunca como fuente "oficial" en vivo | yfinance es "research/educational", no respaldado por Yahoo | — |
 | D6 | **LLM: ChatNVIDIA (NVIDIA NIM / API Catalog)**, modelo **configurable**. **Única API key real que se configura** | Free tier amplio, tool-calling y structured output | Fallback / 2º proveedor en v0.2 |
-| D7 | **Despliegue nube GRATIS no-Vercel**: **Streamlit Community Cloud** (app) + **Neon** (Postgres). Vercel descartado para v0.1 | Streamlit no es target nativo de Vercel; este camino es gratis y de una sola pieza. Ver [ADR-002](docs/decisions/ADR-002-despliegue.md) | Contenedor único (Render/Railway) o Vercel+API en v0.2 |
+| D7 | **Despliegue nube GRATIS no-Vercel**: **Streamlit Community Cloud** (app) + **Neon** (Postgres). Vercel descartado para v0.1 | Streamlit no es target nativo de Vercel; este camino es gratis y de una sola pieza. Ver [ADR-002](decisions/ADR-002-despliegue.md) | Contenedor único (Render/Railway) o Vercel+API en v0.2 |
 | D8 | Límites de free tier = **requisitos no funcionales** (caché, cuotas, degradación). **Solo LLM key configurada**; Twelve Data/Marketaux = free key **opcional** y degradable | Twelve Data 8/min·800/día; Marketaux 100/día; SEC ≤10 req/s + User-Agent | — |
-| D9 | **v0.1: orquestación en Python plano** (router + tools como funciones puras + cliente ChatNVIDIA, **sin LangGraph/LangChain**). **LangGraph en v0.2** si el flujo lo justifica | Complejidad proporcional. Ver [ADR-001](docs/decisions/ADR-001-orquestacion.md) | LangGraph en v0.2 |
+| D9 | **v0.1: orquestación en Python plano** (router + tools como funciones puras + cliente ChatNVIDIA, **sin LangGraph/LangChain**). **LangGraph en v0.2** si el flujo lo justifica | Complejidad proporcional. Ver [ADR-001](decisions/ADR-001-orquestacion.md) | LangGraph en v0.2 |
 | D10 | **Columna vertebral sin key**: yfinance (histórico/ML) + SEC EDGAR (docs). Twelve Data/Marketaux **enriquecen** y degradan si no hay key/cuota | Garantiza app funcional con una sola key (LLM) | — |
-| D11 | **ML real (clustering multi-característica)** para "instrumentos similares a X"; **clasificación de volatilidad por umbrales deterministas** (sin ML). Ver [ADR-003](docs/decisions/ADR-003-ml.md) | "Parecido" es multidimensional (justifica ML); "baja/media/alta volatilidad" es estadística simple (no requiere ML) | Features ajustables |
+| D11 | **ML real (clustering multi-característica)** para "instrumentos similares a X"; **clasificación de volatilidad por umbrales deterministas** (sin ML). Ver [ADR-003](decisions/ADR-003-ml.md) | "Parecido" es multidimensional (justifica ML); "baja/media/alta volatilidad" es estadística simple (no requiere ML) | Features ajustables |
 
 **Fuentes verificadas** (oct 2026): [ChatNVIDIA/LangChain](https://python.langchain.com/docs/integrations/chat/nvidia_ai_endpoints) · [Twelve Data planes](https://twelvedata.com/docs/) · [Marketaux límites](https://www.marketaux.com/) · [SEC EDGAR fair access](https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data) · [yfinance README](https://github.com/ranaroussi/yfinance/blob/main/README.md) · [Codex customization](https://developers.openai.com/codex/concepts/customization) · [Streamlit Community Cloud](https://docs.streamlit.io/deploy/streamlit-community-cloud) · [Neon free tier](https://neon.tech/). *Contenido reformulado por cumplimiento de licencias.*
 
@@ -84,7 +84,7 @@ Según capacidades reales de Codex ([customization](https://developers.openai.co
 
 Se entrega `docs/agentic-matrix.md` comparando con criterios: **personalización (AGENTS/skills/subagentes), soporte MCP, tool-calling, control de contexto, costo, encaje con SDD, madurez**.
 
-Ejes: **Codex (elegido)** vs. alternativas de orquestación/flujo (agentes de IDE, frameworks de grafo). Dentro de la app: motor de workflow **evolutivo** — **Python plano en v0.1** y **LangGraph en v0.2** ([ADR-001](docs/decisions/ADR-001-orquestacion.md)). Justifica por qué Codex para *desarrollo* y por qué se difiere el framework de grafos en el *runtime*.
+Ejes: **Codex (elegido)** vs. alternativas de orquestación/flujo (agentes de IDE, frameworks de grafo). Dentro de la app: motor de workflow **evolutivo** — **Python plano en v0.1** y **LangGraph en v0.2** ([ADR-001](decisions/ADR-001-orquestacion.md)). Justifica por qué Codex para *desarrollo* y por qué se difiere el framework de grafos en el *runtime*.
 
 ---
 
@@ -237,7 +237,7 @@ Debugging guiado por eval, ampliar cobertura de tests, caso **MCP SEC EDGAR**, *
 - **ML** → entrenamiento **offline**; se despliegan solo **artefactos** + inferencia ligera.
 - **Secretos** → gestionados en los *secrets* de Streamlit Cloud (solo `NVIDIA_API_KEY` obligatoria).
 - **Hito nube:** app pública, gratis, con datos persistentes y clave segura.
-- **Alternativa documentada** ([ADR-002](docs/decisions/ADR-002-despliegue.md)): contenedor único en Render/Railway (free), o Vercel con API FastAPI separada si en v0.2 se extrae la API.
+- **Alternativa documentada** ([ADR-002](decisions/ADR-002-despliegue.md)): contenedor único en Render/Railway (free), o Vercel con API FastAPI separada si en v0.2 se extrae la API.
 
 ### Hitos posteriores (orientativos, menor detalle)
 Escalar de 20 → 150+50 instrumentos; multiusuario + roles (RBAC); plan de pago de noticias (quitar delay 24 h); más proveedores LLM con fallback; ampliación de la suite de eval.
@@ -246,7 +246,7 @@ Escalar de 20 → 150+50 instrumentos; multiusuario + roles (RBAC); plan de pago
 
 ## 11. Gestión de contexto (documentos vivos y breves)
 - `docs/progress.md` (≤1 pág): *estado actual* + *próximo paso* + *bloqueos*. Se actualiza cada sesión.
-- `docs/decisions/ADR-*.md`: una decisión por archivo, formato corto (ADR-001 orquestación, ADR-002 despliegue, ADR-003 ML).
+- `decisions/ADR-*.md`: una decisión por archivo, formato corto (ADR-001 orquestación, ADR-002 despliegue, ADR-003 ML).
 - `specs/<feature>/*`: fuente de verdad del alcance; cambios → changelog en la spec.
 - Regla: el **próximo trabajo** se detalla; los **hitos lejanos** se describen solo lo necesario para orientar.
 
@@ -283,4 +283,4 @@ Escalar de 20 → 150+50 instrumentos; multiusuario + roles (RBAC); plan de pago
 ---
 
 ### Estado
-**Plan listo. Aún NO se implementa** (según lo solicitado). Próximo paso sugerido: aprobar este `PLAN.md` + los ADR y arrancar **Fase 0** (bootstrap Codex + spec esqueleto).
+**Estado de ejecución (2026-11-01):** Fases 0–2 completas según verificaciones previas. Fase 3 implementada: Streamlit, auth Argon2, router Python, tools/proveedores, cachés/cuotas, trazas, disclaimer y guía local disponibles. Última suite válida sin usar la clave NVIDIA actual: 34 pruebas pasan; smoke Streamlit y validador SDD pasan; SEC EDGAR y yfinance se verificaron en vivo. La Fase 3 queda **pendiente de aceptación completa**: la clave NVIDIA debe rotarse tras quedar expuesta en un traceback y luego repetirse la integración ChatNVIDIA; el demo end-to-end con LLM también queda pendiente. Próximo paso: sustituir la clave en `.env` y ejecutar `tests/integration/test_phase3_live.py`.

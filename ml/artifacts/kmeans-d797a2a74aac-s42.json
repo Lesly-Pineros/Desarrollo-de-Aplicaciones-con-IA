@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "run_id": "kmeans-d797a2a74aac-s42",
+  "algorithm": "KMeans",
+  "universe_size": 20,
+  "observation_start": "2024-10-31",
+  "observation_end": "2026-10-30",
+  "seed": 42,
+  "n_clusters": 6,
+  "features": [
+    "volatility",
+    "mean_peer_correlation",
+    "beta",
+    "sector_Broad Market",
+    "sector_Communication Services",
+    "sector_Consumer Discretionary",
+    "sector_Consumer Staples",
+    "sector_Energy",
+    "sector_Financials",
+    "sector_Health Care",
+    "sector_Technology"
+  ],
+  "excluded": {},
+  "silhouette": 0.48378551234963785,
+  "stability_ari": 0.835554786221222,
+  "thresholds": {
+    "silhouette": 0.25,
+    "stability_ari": 0.6
+  },
+  "passed_thresholds": true,
+  "feature_fingerprint": "d797a2a74aac7186836fade87a6cfdb61e352cba6eb95eadaaaf6af18aa93f4f",
+  "artifact": "kmeans-d797a2a74aac-s42.joblib",
+  "volatility_buckets": {
+    "baja": 7,
+    "media": 7,
+    "alta": 6
+  }
+}

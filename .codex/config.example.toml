@@ -4,3 +4,8 @@
 # model = "<modelo disponible en tu instalación>"
 # approval_policy = "on-request"
 # sandbox_mode = "workspace-write"
+
+# Sustituye /ruta/al/Proyecto_clase por la ruta local del repositorio.
+[mcp_servers.investiq_sec]
+command = "uv"
+args = ["--directory", "/ruta/al/Proyecto_clase", "run", "python", "-m", "investiq.mcp_sec"]

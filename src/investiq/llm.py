@@ -43,15 +43,40 @@ class ChatNVIDIAClient:
 
     def _structured(self, system: str, user: str, schema: type[T]) -> T:
         last_error: Exception | None = None
+        schema_text = json.dumps(schema.model_json_schema(), ensure_ascii=False)
+        formatted_system = (
+            f"{system}\n\nDevuelve solamente un objeto JSON válido, sin Markdown ni texto adicional, "
+            f"que cumpla este JSON Schema:\n{schema_text}"
+        )
         for attempt in range(3):
             try:
-                # Current ChatNVIDIA structured output returns the validated Pydantic
-                # object directly; include_raw=True is not implemented by the client.
-                runnable = self.model.with_structured_output(schema)
-                result = runnable.invoke([SystemMessage(content=system), HumanMessage(content=user)])
+                retry_note = (
+                    "\nLa respuesta anterior no cumplió el formato requerido. Devuelve ahora solo JSON válido."
+                    if attempt else ""
+                )
+                result = self.model.invoke([
+                    SystemMessage(content=formatted_system),
+                    HumanMessage(content=f"{user}{retry_note}"),
+                ])
                 if result is None:
-                    raise ValueError("structured response is empty")
-                data = schema.model_validate(result)
+                    raise ValueError("empty model response")
+                content = getattr(result, "content", result)
+                if isinstance(content, list):
+                    content = "\n".join(
+                        str(block.get("text", "")) if isinstance(block, dict) else str(getattr(block, "text", ""))
+                        for block in content
+                    )
+                if not isinstance(content, str):
+                    raise ValueError("model response is not text")
+                candidate = content.strip()
+                if candidate.startswith("```"):
+                    candidate = re.sub(r"^```(?:json)?\s*|\s*```$", "", candidate, flags=re.IGNORECASE).strip()
+                if not candidate.startswith("{"):
+                    start, end = candidate.find("{"), candidate.rfind("}")
+                    if start < 0 or end <= start:
+                        raise ValueError("response contains no JSON object")
+                    candidate = candidate[start:end + 1]
+                data = schema.model_validate(json.loads(candidate))
                 usage = getattr(result, "usage_metadata", None) or {}
                 self.last_input_tokens = usage.get("input_tokens")
                 self.last_output_tokens = usage.get("output_tokens")

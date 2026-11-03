@@ -229,7 +229,7 @@ Capa SQLModel (SQLite), ingesta **yfinance** batch (20 instrumentos), features (
 **Streamlit** (UI) llamando **directo** a la orquestación en **Python plano** (router + tools como funciones puras) + ChatNVIDIA real + auth single-user + caché/cuotas + trazabilidad + disclaimers + mitigación de prompt-injection. Integraciones yfinance/SEC (sin key) con tests reales; Twelve Data/Marketaux opcionales. **Despliegue local:** `uv run streamlit run ...` (SQLite). **Hito v0.1:** demo local end-to-end con fuentes citadas, **un solo proceso, sin framework de grafos**.
 
 ### Fase 4 — Hardening → v0.2 (evolución)
-Debugging guiado por eval, ampliar cobertura de tests, caso **MCP SEC EDGAR**, **migrar la orquestación a LangGraph** si el flujo lo justifica, (opcional) **extraer FastAPI** como capa API, **commits trazables** por `TASK`. **Hito v0.2:** eval en verde + MCP operativo.
+Debugging guiado por eval, ampliar cobertura de tests, caso **MCP SEC EDGAR**, (opcional) **extraer FastAPI** como capa API, **commits trazables** por `TASK`. **Hito v0.2:** eval en verde + MCP operativo.
 
 ### Fase 5 — Despliegue en nube GRATIS (Resultado 9)
 - **App Streamlit** → **Streamlit Community Cloud** (gratis, target nativo de Streamlit).
@@ -284,3 +284,5 @@ Escalar de 20 → 150+50 instrumentos; multiusuario + roles (RBAC); plan de pago
 
 ### Estado
 **Estado de ejecución (2026-11-01):** Fases 0–2 completas según verificaciones previas. Fase 3 implementada: Streamlit, auth Argon2, router Python, tools/proveedores, cachés/cuotas, trazas, disclaimer y guía local disponibles. Última suite válida sin usar la clave NVIDIA actual: 34 pruebas pasan; smoke Streamlit y validador SDD pasan; SEC EDGAR y yfinance se verificaron en vivo. La Fase 3 queda **pendiente de aceptación completa**: la clave NVIDIA debe rotarse tras quedar expuesta en un traceback y luego repetirse la integración ChatNVIDIA; el demo end-to-end con LLM también queda pendiente. Próximo paso: sustituir la clave en `.env` y ejecutar `tests/integration/test_phase3_live.py`.
+
+**Actualización (2026-11-03):** Auditoría: Fases 0–2 conservan entregables y verificaciones previas; la suite unitaria actual (incluidos casos de hardening) pasa. Fase 3 está implementada, pero no puede considerarse aceptada por completo hasta rotar la clave previamente expuesta y pasar ChatNVIDIA live + demo end-to-end. SEC EDGAR y yfinance live pasaron en esta auditoría. Fase 4 ejecutada: evaluación offline ampliada, MCP SEC stdio integrado y registrado en el ejemplo de Codex. Evidencia: 41 tests offline pasan; herramienta MCP consulta SEC EDGAR real y devuelve filings verificables; validadores SDD de fases 0, 1, 2 y 4 pasan. No se extrajo FastAPI porque es opcional en el plan. Próximo paso: completar la aceptación pendiente de Fase 3 con una clave NVIDIA rotada.

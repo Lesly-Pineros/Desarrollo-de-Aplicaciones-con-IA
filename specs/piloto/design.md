@@ -7,7 +7,7 @@ La spec cubre REQ-001 a REQ-014. Streamlit sirve la interfaz educativa; el proce
 ## Componentes y flujo
 
 ```text
-Streamlit (sesión autenticada)
+Streamlit (acceso local directo)
   → router Python + estado Pydantic
   → {Explicador | Educador | Recomendador | Comparador}
   → tools deterministas + SQLite/SQLModel + cachés
@@ -55,11 +55,11 @@ Los resultados de tools son modelos Pydantic y contienen identificadores/enlaces
 | Comparación | score, reglas y desglose | narra el resultado |
 | Educación | glosario y referencias | adaptación pedagógica |
 | Router | reglas de fallback y validación | clasificación estructurada y preguntas |
-| Citas, cuotas, caché, auth y logs | enteramente determinista | no modifica controles |
+| Citas, cuotas, caché, identidad local y logs | enteramente determinista | no modifica controles |
 
 ## Seguridad, fuentes y degradación
 
-Autenticación local single-user con Argon2 y sesión servidor. Secretos desde entorno o secrets; `.env.example` solo con placeholders. Noticias/filings se encapsulan como datos no confiables, con instrucción de sistema de no seguir instrucciones recuperadas. La salida LLM debe cumplir un esquema Pydantic y asociar afirmaciones a referencias entregadas por las tools; si falla se reintenta de forma acotada y se devuelve un mensaje seguro. El disclaimer se añade en capa de respuesta independientemente del LLM. `QueryLog` excluye secretos; retención objetivo 90 días. Los enlaces visibles llevan a la fuente original, incluso si el resumen es español.
+La app local es de una sola persona y abre sin login; preferencias y `QueryLog` usan una identidad local fija, sin almacenar credenciales. Secretos desde entorno o secrets; `.env.example` solo con placeholders. Noticias/filings se encapsulan como datos no confiables, con instrucción de sistema de no seguir instrucciones recuperadas. La salida LLM debe cumplir un esquema Pydantic y asociar afirmaciones a referencias entregadas por las tools; si falla se reintenta de forma acotada y se devuelve un mensaje seguro. El disclaimer se añade en capa de respuesta independientemente del LLM. `QueryLog` excluye secretos; retención objetivo 90 días. Los enlaces visibles llevan a la fuente original, incluso si el resumen es español.
 
 ## Decisiones y alternativas
 

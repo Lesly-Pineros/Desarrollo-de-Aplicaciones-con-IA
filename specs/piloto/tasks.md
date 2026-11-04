@@ -13,7 +13,7 @@ El backlog está aprobado; las tareas se ejecutan después de esta fase y no imp
 | TASK-007 | Implementar estado Pydantic y router Python con fallback de reglas | REQ-009, REQ-014 | 15 casos golden offline en `test_phase3_orchestration.py` | Implementado; 15/15 intenciones |
 | TASK-008 | Añadir guardrails comunes de citas, disclaimer, contenido no confiable y validación LLM | REQ-001, REQ-004, REQ-005, REQ-007, REQ-010, REQ-014 | Disclaimer y rechazo de cita/cifra inventada probados; eval amplia de inyección pendiente | Implementado; validación parcial |
 | TASK-009 | Crear UI Streamlit que llama orquestación en el mismo proceso | REQ-001, REQ-002, REQ-005, REQ-006, REQ-007, REQ-008, REQ-010 | `AppTest` smoke sin excepción; flujo end-to-end NIM pendiente | Implementado; smoke verificado |
-| TASK-010 | Añadir auth Argon2, configuración de secretos/contacto SEC, cuotas, logging y retención | REQ-003, REQ-004, REQ-011, REQ-012, REQ-013, REQ-014 | Auth/sesión hash, log sin query y purga 90d probados; cobertura de cuota parcial | Implementado; validación parcial |
+| TASK-010 | Añadir acceso local directo, configuración de secretos/contacto SEC, cuotas, logging y retención | REQ-003, REQ-004, REQ-011, REQ-012, REQ-013, REQ-014 | Smoke de UI sin login, identidad local en preferencias/logs y revisión de secretos/retención | Implementada; verificación pendiente |
 | TASK-011 | Ejecutar suite golden ES y pruebas de integración con reporte mocked/live | REQ-001, REQ-003, REQ-004, REQ-009, REQ-010, REQ-013, REQ-014 | 15/15 intenciones offline; SEC live pasa; yfinance live pasa; NIM pendiente de rotar clave y verificar | Parcial; aceptación global pendiente |
 
 ## Trazabilidad
@@ -30,7 +30,7 @@ El backlog está aprobado; las tareas se ejecutan después de esta fase y no imp
 | REQ-008 | TASK-006, TASK-009 | Unit de score y preferencias faltantes |
 | REQ-009 | TASK-007, TASK-011 | Unit de router/clarificación/fallback |
 | REQ-010 | TASK-004, TASK-008, TASK-009, TASK-011 | Presencia de disclaimer, trazabilidad numérica y eval de inyección |
-| REQ-011 | TASK-010 | Unit de Argon2, sesión y ausencia de secretos en logs |
+| REQ-011 | TASK-010 | Smoke/revisión de acceso directo sin credenciales y ausencia de secretos en logs |
 | REQ-012 | TASK-010 | Unit de referencias de QueryLog/purga y revisión de retención |
 | REQ-013 | TASK-010, TASK-011 | Reporte de cuotas, suite de eval y distinción mocked/live |
 | REQ-014 | TASK-007, TASK-008, TASK-010, TASK-011 | Unit de timeout/reintentos, configuración y validación Pydantic |

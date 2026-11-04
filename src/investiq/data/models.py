@@ -54,19 +54,6 @@ class MLClusterMembership(SQLModel, table=True):
     cluster_label: int
 
 
-class AppUser(SQLModel, table=True):
-    email: str = Field(primary_key=True)
-    password_hash: str
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-
-
-class AuthSession(SQLModel, table=True):
-    session_hash: str = Field(primary_key=True)
-    email: str = Field(index=True)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    expires_at: datetime = Field(index=True)
-
-
 class UserPreference(SQLModel, table=True):
     email: str = Field(primary_key=True)
     volatility_target: str | None = None

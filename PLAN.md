@@ -11,7 +11,7 @@
 | # | Decisión | Justificación | Revisión |
 |---|----------|---------------|----------|
 | D1 | **Frontend Streamlit, SIN backend separado en v0.1** — Streamlit llama directo a la capa de orquestación (un solo proceso Python) | Piloto single-user; "un solo stack"; evita doble despliegue | FastAPI como capa API en v0.2 si surge cliente externo |
-| D2 | **Single-user**, auth simple local (email+password con hash `argon2`, sesión en servidor) | Alcance de piloto confirmado | Multiusuario + roles diferido |
+| D2 | **Single-user local sin login**; la app abre directamente y guarda preferencias/trazas bajo una identidad local fija | Acceso simple para el piloto educativo local | Auth y multiusuario diferidos |
 | D3 | **Noticias near-real-time con caché + aviso de retraso** | Marketaux free = 100 req/día y **delay 24 h** | Plan de pago = hito posterior |
 | D4 | **SQLite (local) → Postgres gestionado (Neon free) en nube** vía SQLAlchemy/SQLModel | SQLite no persiste en hosting efímero; capa portable desde el día 1 | — |
 | D5 | **yfinance solo ingesta batch para ML** (offline), nunca como fuente "oficial" en vivo | yfinance es "research/educational", no respaldado por Yahoo | — |
@@ -226,7 +226,7 @@ Nodos (idénticos en v0.1 y v0.2):
 Capa SQLModel (SQLite), ingesta **yfinance** batch (20 instrumentos), features (vol, corr, beta, sector), **clustering scikit-learn** + **umbrales de volatilidad**, eval ML (silhouette/ARI), artefactos versionados. **Hito:** `similar_instruments` y `volatility_bucket` reproducibles y evaluados.
 
 ### Fase 3 — App local full-stack v0.1 (Resultados 4, 7)
-**Streamlit** (UI) llamando **directo** a la orquestación en **Python plano** (router + tools como funciones puras) + ChatNVIDIA real + auth single-user + caché/cuotas + trazabilidad + disclaimers + mitigación de prompt-injection. Integraciones yfinance/SEC (sin key) con tests reales; Twelve Data/Marketaux opcionales. **Despliegue local:** `uv run streamlit run ...` (SQLite). **Hito v0.1:** demo local end-to-end con fuentes citadas, **un solo proceso, sin framework de grafos**.
+**Streamlit** (UI) llamando **directo** a la orquestación en **Python plano** (router + tools como funciones puras) + ChatNVIDIA real + acceso local sin login + caché/cuotas + trazabilidad + disclaimers + mitigación de prompt-injection. Integraciones yfinance/SEC (sin key) con tests reales; Twelve Data/Marketaux opcionales. **Despliegue local:** `uv run streamlit run ...` (SQLite). **Hito v0.1:** demo local end-to-end con fuentes citadas, **un solo proceso, sin framework de grafos**.
 
 ### Fase 4 — Hardening → v0.2 (evolución)
 Debugging guiado por eval, ampliar cobertura de tests, caso **MCP SEC EDGAR**, (opcional) **extraer FastAPI** como capa API, **commits trazables** por `TASK`. **Hito v0.2:** eval en verde + MCP operativo.
@@ -286,3 +286,5 @@ Escalar de 20 → 150+50 instrumentos; multiusuario + roles (RBAC); plan de pago
 **Estado de ejecución (2026-11-01):** Fases 0–2 completas según verificaciones previas. Fase 3 implementada: Streamlit, auth Argon2, router Python, tools/proveedores, cachés/cuotas, trazas, disclaimer y guía local disponibles. Última suite válida sin usar la clave NVIDIA actual: 34 pruebas pasan; smoke Streamlit y validador SDD pasan; SEC EDGAR y yfinance se verificaron en vivo. La Fase 3 queda **pendiente de aceptación completa**: la clave NVIDIA debe rotarse tras quedar expuesta en un traceback y luego repetirse la integración ChatNVIDIA; el demo end-to-end con LLM también queda pendiente. Próximo paso: sustituir la clave en `.env` y ejecutar `tests/integration/test_phase3_live.py`.
 
 **Actualización (2026-11-03):** Auditoría: Fases 0–2 conservan entregables y verificaciones previas; la suite unitaria actual (incluidos casos de hardening) pasa. Fase 3 está implementada, pero no puede considerarse aceptada por completo hasta rotar la clave previamente expuesta y pasar ChatNVIDIA live + demo end-to-end. SEC EDGAR y yfinance live pasaron en esta auditoría. Fase 4 ejecutada: evaluación offline ampliada, MCP SEC stdio integrado y registrado en el ejemplo de Codex. Evidencia: 41 tests offline pasan; herramienta MCP consulta SEC EDGAR real y devuelve filings verificables; validadores SDD de fases 0, 1, 2 y 4 pasan. No se extrajo FastAPI porque es opcional en el plan. Próximo paso: completar la aceptación pendiente de Fase 3 con una clave NVIDIA rotada.
+
+**Actualización (2026-11-04):** Por solicitud del usuario se retiró el login single-user. La app abre directamente y usa una identidad local fija para preferencias y trazas; las credenciales de acceso y Argon2 dejan de ser parte del piloto. Verificación posterior al cambio pendiente.

@@ -1,8 +1,8 @@
 # Requisitos — piloto InvestiQ v0.1
 
-- **Estado:** Backlog aprobado para v0.1 por solicitud del usuario
+- **Estado:** Backlog aprobado para v0.1; cambio de acceso aprobado por solicitud del usuario (2026-11-04)
 - **Objetivo:** app educativa en español que explica movimientos de instrumentos, enseña conceptos financieros, ofrece instrumentos similares y por volatilidad, y compara opciones con preferencias del usuario.
-- **Usuarios:** una persona usuaria autenticada en una instalación local.
+- **Usuarios:** una persona usuaria en una instalación local; la app abre directamente sin login.
 - **Alcance:** 20 instrumentos cotizados en EE. UU.; UI Streamlit, orquestación Python simple, tools deterministas, ChatNVIDIA, fuentes citadas y persistencia local SQLite.
 - **Exclusiones:** asesoría o ejecución de operaciones, cartera/conexión a broker, cobertura de instrumentos fuera de la lista, multiusuario/roles, despliegue cloud, LangGraph/FastAPI, y dependencia obligatoria de Twelve Data o Marketaux.
 - **Datos y frescura:** yfinance para histórico batch de investigación; Twelve Data y Marketaux son opcionales; SEC EDGAR es la fuente oficial de filings. La respuesta expone fuente y fecha/hora de los datos.
@@ -144,16 +144,16 @@ La inclusión solo fija cobertura del producto y del pipeline; no constituye una
 4. La salida estructurada del LLM se valida antes de mostrarla; una salida inválida se reintenta según política y después se degrada con un mensaje seguro.
 5. Fuentes en inglés pueden resumirse en español conservando la cita y URL original.
 
-### REQ-011 — Autenticación single-user y secretos
+### REQ-011 — Acceso local directo y gestión de secretos
 
-**EARS:** Cuando se abra una sesión protegida, el sistema deberá autenticar a la única persona usuaria configurada y proteger sus credenciales.
+**EARS:** Cuando se inicie la app local, el sistema deberá permitir el acceso directo sin solicitar correo, contraseña ni crear una cuenta.
 
 **Criterios de aceptación:**
 
-1. La contraseña se guarda con Argon2 y la sesión se mantiene del lado servidor.
-2. No se permite registrarse ni crear una segunda cuenta en v0.1.
+1. La app presenta directamente el chat y las preferencias locales.
+2. No se solicitan ni persisten credenciales de acceso; las preferencias y trazas usan un identificador local fijo.
 3. `NVIDIA_API_KEY` es la única key obligatoria; Twelve Data y Marketaux son opcionales. Secretos provienen de entorno/secret manager, nunca del repositorio, UI o logs.
-4. Configuración faltante o autenticación fallida devuelve un error claro sin filtrar secretos.
+4. La ausencia de credenciales de proveedores no bloquea el acceso y se comunica con un aviso claro.
 
 ### REQ-012 — Trazabilidad y retención local
 
@@ -194,3 +194,4 @@ La inclusión solo fija cobertura del producto y del pipeline; no constituye una
 | 2026-11-01 | Spec inicial EARS, backlog de implementación y universo de 20 instrumentos aprobados para el piloto v0.1. |
 | 2026-11-01 | Fase 1 completada: universo cotejado con el catálogo de Fase 2 y trazabilidad REQ/TASK validada. |
 | 2026-11-01 | Implementación Fase 3: app local, auth, router/tools, trazabilidad y tests. La suite y smoke pasan; SEC EDGAR y yfinance se verificaron en vivo. ChatNVIDIA y demo end-to-end pendientes de rotar la clave y repetir el test. |
+| 2026-11-04 | Por solicitud del usuario, se elimina el login del piloto local; la app abre directamente y conserva preferencias/trazas bajo una identidad local anónima. |

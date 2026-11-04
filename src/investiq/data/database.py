@@ -6,8 +6,6 @@ from pathlib import Path
 from sqlmodel import Session, SQLModel, create_engine, select
 
 from investiq.data.models import (
-    AppUser,
-    AuthSession,
     FilingCacheEntry,
     Instrument,
     InstrumentFeature,
@@ -39,8 +37,6 @@ def create_db(engine=None):
     engine = engine or make_engine()
     # Importing every table model registers it in SQLModel.metadata.
     _ = (
-        AppUser,
-        AuthSession,
         FilingCacheEntry,
         InstrumentFeature,
         MLClusterMembership,

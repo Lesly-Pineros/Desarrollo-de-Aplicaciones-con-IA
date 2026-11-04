@@ -14,7 +14,6 @@ class Settings(BaseSettings):
     )
 
     database_url: str = Field(default="sqlite:///./investiq.db", validation_alias="DATABASE_URL")
-    login_email: str = Field(default="", validation_alias="INVESTIQ_EMAIL")
     nvidia_api_key: str | None = Field(default=None, repr=False, validation_alias="NVIDIA_API_KEY")
     nvidia_model: str = Field(default="nvidia/nemotron-3.5-lightning-30b-a3b", validation_alias="NVIDIA_MODEL")
     nvidia_timeout_seconds: float = Field(default=25.0, gt=0, le=120, validation_alias="NVIDIA_TIMEOUT_SECONDS")

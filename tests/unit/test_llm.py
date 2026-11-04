@@ -49,3 +49,37 @@ def test_structured_output_exhaustion_hides_provider_exception_text():
 
     assert "must-never-appear" not in str(raised.value)
     assert raised.value.provider_error_type == "RuntimeError"
+
+
+def test_semantic_interpreter_receives_catalog_and_returns_textual_evidence():
+    import json
+
+    model = FakeModel([json.dumps({
+        "kind": "preference", "changes": [{"field": "sector", "value": "Health Care",
+                                               "evidence": "Prefiero salud", "operation": "set"}],
+    })])
+    client = ChatNVIDIAClient(Settings(_env_file=None), model=model)
+    proposal = client.interpret_preferences("Prefiero salud", {"expecting_preference": False})
+    payload = json.loads(model.calls[0][1].content)
+
+    assert proposal.changes[0].evidence == "Prefiero salud"
+    assert "Health Care" in payload["allowed_sectors"]
+    assert "AAPL" in payload["allowed_symbols"]
+    assert "evidence" in model.calls[0][0].content
+
+
+def test_sdk_initialization_failure_never_exposes_credentials_in_a_traceback(monkeypatch):
+    import traceback
+
+    def broken_sdk(**kwargs):
+        raise RuntimeError("Authorization Bearer constructor-secret-sentinel")
+
+    monkeypatch.setattr("investiq.llm.ChatNVIDIA", broken_sdk)
+    settings = Settings(_env_file=None, nvidia_api_key="constructor-secret-sentinel")
+    with pytest.raises(LLMUnavailable) as raised:
+        ChatNVIDIAClient(settings)
+
+    rendered = "".join(traceback.format_exception(raised.value))
+    assert "constructor-secret-sentinel" not in rendered
+    assert raised.value.provider_error_type == "RuntimeError"
+    assert raised.value.provider_failure_category == "provider-error"

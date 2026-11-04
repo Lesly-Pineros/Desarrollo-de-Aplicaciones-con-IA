@@ -6,7 +6,7 @@ from investiq.data.database import create_db, make_engine
 from investiq.data.models import QueryLog
 from investiq.domain import Narration
 from investiq.orchestration import answer_query, purge_query_logs
-from investiq.orchestration import _fallback_route
+from investiq.routing import fallback_route
 from investiq.settings import Settings
 
 
@@ -21,7 +21,7 @@ def test_education_has_disclaimer_and_log_excludes_raw_query(tmp_path):
 
 
 def test_invalid_fabricated_citation_or_numeric_narration_is_rejected():
-    from investiq.orchestration import _safe_narrate
+    from investiq.response_style import safe_narration
     from investiq.domain import SourceReference
 
     class Client:
@@ -29,7 +29,7 @@ def test_invalid_fabricated_citation_or_numeric_narration_is_rejected():
             return Narration(answer="El precio subió 20%.", cited_source_ids=["invented"])
 
     source = SourceReference(source_id="real", title="Price", url="https://example.com", provider="test")
-    assert _safe_narrate(Client(), "education", "q", {"x": 1}, [source]) is None
+    assert safe_narration(Client(), "education", "q", {"x": 1}, [source]) is None
 
 
 def test_log_retention_purges_old_records(tmp_path):
@@ -63,4 +63,4 @@ import pytest
     ("compara AAPL con MSFT", "compare"),
 ])
 def test_spanish_golden_fallback_intent(query, intent):
-    assert _fallback_route(query).intent == intent
+    assert fallback_route(query).intent == intent

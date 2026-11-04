@@ -17,3 +17,15 @@ Comparación orientada a las necesidades del proyecto, no a una medición de ren
 Se elige Codex para el desarrollo porque el proceso SDD puede quedar versionado junto al proyecto y aplicarse por tarea. La matriz no afirma que sea superior en todos los equipos; la elección prioriza trazabilidad repo-céntrica.
 
 En el runtime de InvestiQ, la decisión es distinta: v0.1 usa Python plano (router y tools deterministas). LangGraph queda para v0.2 si aparecen bucles con estado, checkpointing, estado compartido complejo o paralelismo que lo justifique, conforme a `decisions/ADR-001-orquestacion.md`.
+
+## Skills, metodología y conversación
+
+| Artefacto | Papel en InvestiQ | Estado |
+|---|---|---|
+| `.codex/skills/sdd-feature/` | Definir requisitos EARS, diseño, tareas y verificaciones antes de implementar | Disponible y utilizada |
+| [Agent Skills](https://github.com/agentskills/agentskills) | Formato de instrucciones reutilizables para agentes de desarrollo | Referencia del formato; no es una skill concreta |
+| Ejemplo externo `skill-creator` | Ayudar a crear o mantener otras skills | Descarga intentada, permiso de red rechazado; instalación pendiente |
+| BMAD | Apoyo posible para UX, planificación y revisión, aprovechando el SDD existente | Evaluado; sin instalación ni dependencia del runtime |
+| `prompts/conversation.md`, estado y validadores | Voz del asistente, continuidad, contexto recordado y respuestas apoyadas en resultados verificables | Implementados en la app; ver specs y evidencias actuales |
+
+La instalación externa prevista se limita a `/.agents/skills/skill-creator/`, ignorada por Git. Los planes, specs y pruebas producidos para el proyecto permanecen versionables. El estado real de las verificaciones está en [PLAN.md](../PLAN.md); las simulaciones locales y las comprobaciones de APIs se reportan por separado.

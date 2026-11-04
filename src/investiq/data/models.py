@@ -1,5 +1,5 @@
 from datetime import date as Date
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import UniqueConstraint
 from sqlmodel import Field, SQLModel
@@ -107,3 +107,18 @@ class QueryLog(SQLModel, table=True):
     status: str
     input_tokens: int | None = None
     output_tokens: int | None = None
+
+
+class ConversationMemory(SQLModel, table=True):
+    user_id: str = Field(primary_key=True)
+    enabled: bool = True
+    state_json: str = "{}"
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    expires_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc) + timedelta(days=90), index=True)
+
+
+class ResponseTrace(SQLModel, table=True):
+    query_log_id: int = Field(primary_key=True)
+    routing: str = "rules"
+    narration: str = "not_requested"
+    fallback_reason: str | None = None

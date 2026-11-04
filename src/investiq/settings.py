@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     news_cache_hours: int = Field(default=6, ge=1, le=12)
     filing_cache_hours: int = Field(default=24, ge=1, le=168)
     query_log_retention_days: int = Field(default=90, ge=1, le=3650)
+    conversation_memory_days: int = Field(default=90, ge=1, le=365)
+    show_diagnostics: bool = Field(default=False, validation_alias="INVESTIQ_SHOW_DIAGNOSTICS")
 
     @property
     def has_nvidia_key(self) -> bool:

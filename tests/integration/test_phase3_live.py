@@ -1,16 +1,21 @@
+import os
+
 import pytest
 from investiq.settings import Settings
 
-pytestmark = pytest.mark.integration
+pytestmark = [pytest.mark.integration, pytest.mark.skipif(
+    os.getenv("RUN_LIVE_INTEGRATION") != "1", reason="Activa RUN_LIVE_INTEGRATION=1 solo en el entorno conectado",
+)]
 
 
 @pytest.mark.skipif(not Settings().has_nvidia_key, reason="NVIDIA_API_KEY no configurada en entorno/.env")
+@pytest.mark.skipif(os.getenv("NVIDIA_KEY_ROTATED") != "1", reason="Confirma NVIDIA_KEY_ROTATED=1 tras rotar la clave expuesta")
 def test_chatnvidia_structured_output_live():
     from investiq.llm import ChatNVIDIAClient
     from investiq.settings import Settings
 
     result = ChatNVIDIAClient(Settings()).classify("¿Qué es la volatilidad?")
-    assert result.intent in {"education", "unknown"}
+    assert result.intent == "education"
 
 
 @pytest.mark.skipif(not Settings().sec_user_agent.strip() or "@" not in Settings().sec_user_agent,

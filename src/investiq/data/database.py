@@ -1,4 +1,3 @@
-import os
 import threading
 from collections.abc import Iterator
 from pathlib import Path
@@ -6,6 +5,7 @@ from pathlib import Path
 from sqlmodel import Session, SQLModel, create_engine, select
 
 from investiq.data.models import (
+    ConversationMemory,
     FilingCacheEntry,
     Instrument,
     InstrumentFeature,
@@ -16,15 +16,17 @@ from investiq.data.models import (
     PriceCacheEntry,
     ProviderUsage,
     QueryLog,
+    ResponseTrace,
     UserPreference,
 )
 from investiq.instruments import INSTRUMENTS
+from investiq.settings import get_settings
 
 _schema_init_lock = threading.Lock()
 
 
 def database_url() -> str:
-    return os.getenv("DATABASE_URL", "sqlite:///./investiq.db")
+    return get_settings().database_url
 
 
 def make_engine(url: str | None = None):
@@ -37,6 +39,7 @@ def create_db(engine=None):
     engine = engine or make_engine()
     # Importing every table model registers it in SQLModel.metadata.
     _ = (
+        ConversationMemory,
         FilingCacheEntry,
         InstrumentFeature,
         MLClusterMembership,
@@ -45,6 +48,7 @@ def create_db(engine=None):
         PriceCacheEntry,
         ProviderUsage,
         QueryLog,
+        ResponseTrace,
         UserPreference,
     )
     # Streamlit may execute the app for multiple sessions at once. Serialize

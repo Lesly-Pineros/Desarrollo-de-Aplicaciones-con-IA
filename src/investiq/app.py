@@ -1,12 +1,12 @@
-from sqlmodel import Session, select
+from sqlmodel import Session
 import streamlit as st
 
+from investiq.conversation import WELCOME_MESSAGE, answer_turn
 from investiq.data.database import create_db, make_engine, seed_instruments
-from investiq.data.models import UserPreference
-from investiq.domain import PreferenceInput
+from investiq.domain import ConversationState
 from investiq.instruments import INSTRUMENTS
-from investiq.orchestration import answer_query
 from investiq.settings import get_settings
+from investiq.memory import forget_memory, load_memory, save_memory, set_memory_enabled
 
 LOCAL_USER_ID = "local"
 
@@ -17,6 +17,69 @@ def _get_engine(database_url: str):
     return create_db(make_engine(database_url))
 
 
+def _sidebar(session: Session, state: ConversationState, snapshot, settings) -> None:
+    with st.sidebar:
+        st.title("Conoce InvestiQ")
+        st.write("Un espacio para entender acciones y ETF, paso a paso y en tus palabras.")
+        st.markdown(
+            "Podemos explorar juntos:\n\n"
+            "- Qué significa un concepto financiero.\n"
+            "- Cómo se ha movido un instrumento, con sus fuentes.\n"
+            "- Qué instrumentos se parecen entre sí.\n"
+            "- Cómo compararlos según lo que te interesa."
+        )
+        st.write(
+            "Cuéntame tus preferencias cuando quieras. Si hace falta aclarar algo "
+            "para una comparación, te lo preguntaré en el chat."
+        )
+        by_symbol = {item.symbol: item for item in INSTRUMENTS}
+        selected = st.selectbox(
+            "Símbolos disponibles para consultar",
+            options=list(by_symbol),
+            format_func=lambda symbol: f"{symbol} · {by_symbol[symbol].name}",
+            index=None,
+            placeholder="Busca un símbolo o nombre",
+            key="investiq_available_symbol",
+        )
+        if selected:
+            st.caption(
+                f"Puedes escribir «cuéntame sobre {selected}» o "
+                f"«busca instrumentos similares a {selected}» en el chat."
+            )
+        else:
+            st.caption("Elige uno para ver cómo puedes consultarlo. Puedes escribir el símbolo directamente en el chat.")
+        with st.expander("Lo que recuerdo"):
+            st.write(snapshot.summary)
+            st.caption("Guardo un resumen del contexto, sin el chat literal. Este recuerdo pertenece a esta instalación.")
+            enabled = st.toggle("Recordar contexto entre visitas", value=snapshot.enabled, key="investiq_memory_enabled")
+            if enabled != snapshot.enabled:
+                set_memory_enabled(session, LOCAL_USER_ID, enabled)
+                st.session_state["investiq_memory_record_enabled"] = enabled
+                if enabled:
+                    save_memory(session, LOCAL_USER_ID, state, settings.conversation_memory_days)
+                st.rerun()
+            st.caption("Puedes decir «prefiero explicaciones sencillas», «qué recuerdas de mí» u «olvida el contexto».")
+            if st.button("Olvidar el contexto", key="investiq_forget_context"):
+                forget_memory(session, LOCAL_USER_ID)
+                st.session_state.pop("investiq_conversation", None)
+                st.session_state.pop("investiq_messages", None)
+                st.rerun()
+        st.caption("InvestiQ es educativo. No es asesoría financiera.")
+
+
+def _render_message(item: dict, *, show_diagnostics: bool = False) -> None:
+    with st.chat_message(item["role"]):
+        st.markdown(item["content"])
+        for source in item.get("sources", []):
+            if source["url"].startswith("https://"):
+                st.markdown(f"[{source['title']}]({source['url']}) · {source['provider']}")
+            else:
+                st.caption(f"Fuente local: {source['title']} ({source['provider']})")
+        if show_diagnostics and item.get("diagnostics"):
+            with st.expander("Diagnóstico de respuesta"):
+                st.json(item["diagnostics"])
+
+
 def main() -> None:
     st.set_page_config(page_title="InvestiQ", page_icon="📊", layout="wide")
     settings = get_settings()
@@ -25,46 +88,41 @@ def main() -> None:
         seed_instruments(session)
 
         st.title("InvestiQ")
-        st.caption("Educación financiera con datos trazables. No es asesoría financiera.")
-        with st.sidebar:
-            st.subheader("Preferencias")
-            saved = session.get(UserPreference, LOCAL_USER_ID)
-            with st.form("preferences"):
-                volatility = st.selectbox("Volatilidad objetivo", ["(sin preferencia)", "baja", "media", "alta"],
-                                          index=(["(sin preferencia)", "baja", "media", "alta"].index(saved.volatility_target) if saved and saved.volatility_target in {"baja", "media", "alta"} else 0))
-                sector_options = ["(sin preferencia)"] + sorted({i.sector for i in INSTRUMENTS})
-                sector = st.selectbox("Sector", sector_options, index=sector_options.index(saved.sector) if saved and saved.sector in sector_options else 0)
-                symbols = ["(sin preferencia)"] + sorted(i.symbol for i in INSTRUMENTS)
-                reference = st.selectbox("Símbolo de referencia", symbols, index=symbols.index(saved.reference_symbol) if saved and saved.reference_symbol in symbols else 0)
-                beta = st.number_input("Beta objetivo (opcional)", min_value=-3.0, max_value=5.0,
-                                       value=float(saved.beta_target or 0.0) if saved else 0.0, step=0.1)
-                save = st.form_submit_button("Guardar preferencias")
-            if save:
-                preferences = PreferenceInput(volatility_target=None if volatility.startswith("(") else volatility,
-                                             sector=None if sector.startswith("(") else sector,
-                                             reference_symbol=None if reference.startswith("(") else reference,
-                                             beta_target=beta if beta != 0 else None)
-                session.merge(UserPreference(email=LOCAL_USER_ID, **preferences.model_dump()))
-                session.commit()
-                st.success("Preferencias guardadas.")
+        st.caption("Aprende, pregunta y compara con fuentes a mano. No es asesoría financiera.")
+        snapshot = load_memory(session, LOCAL_USER_ID, settings.conversation_memory_days)
+        if st.session_state.get("investiq_memory_record_enabled") != snapshot.enabled:
+            st.session_state["investiq_memory_enabled"] = snapshot.enabled
+            st.session_state["investiq_memory_record_enabled"] = snapshot.enabled
+        state = ConversationState.model_validate(st.session_state.get("investiq_conversation", snapshot.state.model_dump()))
+        if "investiq_conversation" not in st.session_state:
+            st.session_state["investiq_conversation"] = state.model_dump(mode="json")
+        _sidebar(session, state, snapshot, settings)
 
         if not settings.has_nvidia_key:
-            st.info("NVIDIA_API_KEY no está configurada: las rutas deterministas siguen disponibles.")
-        for item in st.session_state.get("investiq_messages", []):
-            with st.chat_message(item["role"]):
-                st.markdown(item["content"])
-                for source in item.get("sources", []):
-                    if source["url"].startswith("https://"):
-                        st.markdown(f"[{source['title']}]({source['url']}) · {source['provider']}")
-                    else:
-                        st.caption(f"Fuente local: {source['title']} ({source['provider']})")
-        query = st.chat_input("Pregunta por un precio, concepto o instrumentos similares")
+            st.info(
+                "Estoy en modo local: puedo explicar conceptos y explorar los datos ya cargados. "
+                "Algunas respuestas tendrán menos detalle."
+            )
+        welcome = WELCOME_MESSAGE
+        if snapshot.updated_at:
+            welcome = "Hola de nuevo. " + snapshot.summary + " Podemos retomarlo o hablar de otra cosa.\n\nNo es asesoría financiera."
+        messages = st.session_state.setdefault(
+            "investiq_messages", [{"role": "assistant", "content": welcome, "sources": []}]
+        )
+        for item in messages:
+            _render_message(item, show_diagnostics=settings.show_diagnostics)
+        query = st.chat_input("Cuéntame qué te gustaría entender o comparar")
         if query:
-            response = answer_query(session, LOCAL_USER_ID, query, settings)
-            messages = st.session_state.setdefault("investiq_messages", [])
             messages.append({"role": "user", "content": query})
+            _render_message(messages[-1])
+            with st.spinner("Déjame revisarlo…"):
+                response = answer_turn(session, LOCAL_USER_ID, query, settings, state=state)
+            if response.clear_history:
+                messages.clear()
+            st.session_state["investiq_conversation"] = state.model_dump(mode="json")
             messages.append({"role": "assistant", "content": response.answer,
-                             "sources": [source.model_dump(mode="json") for source in response.sources]})
+                             "sources": [source.model_dump(mode="json") for source in response.sources],
+                             "diagnostics": response.diagnostics.model_dump()})
             st.rerun()
 
 

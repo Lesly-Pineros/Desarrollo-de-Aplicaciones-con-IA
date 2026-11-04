@@ -1,9 +1,13 @@
+import os
+
 import pytest
 
 from investiq.mcp_sec import handle_message
 from investiq.settings import Settings
 
-pytestmark = pytest.mark.integration
+pytestmark = [pytest.mark.integration, pytest.mark.skipif(
+    os.getenv("RUN_LIVE_INTEGRATION") != "1", reason="Activa RUN_LIVE_INTEGRATION=1 solo en el entorno conectado",
+)]
 
 
 @pytest.mark.skipif(not Settings().sec_user_agent.strip() or "@" not in Settings().sec_user_agent,

@@ -117,7 +117,7 @@ La inclusión solo fija cobertura del producto y del pipeline; no constituye una
 
 **Criterios de aceptación:**
 
-1. Las preferencias se solicitan mediante campos comprensibles (por ejemplo, tolerancia de volatilidad, sector y referencia); se permite omitirlas.
+1. Las preferencias se solicitan de forma gradual dentro del chat (volatilidad, sector, beta o referencia); se permite omitirlas. La sidebar explica la app y muestra símbolos consultables.
 2. Las reglas, pesos y datos que forman cada score se muestran; el mismo input genera el mismo resultado.
 3. No se presenta el ranking como recomendación personalizada ni garantía de rendimiento.
 
@@ -195,3 +195,7 @@ La inclusión solo fija cobertura del producto y del pipeline; no constituye una
 | 2026-11-01 | Fase 1 completada: universo cotejado con el catálogo de Fase 2 y trazabilidad REQ/TASK validada. |
 | 2026-11-01 | Implementación Fase 3: app local, auth, router/tools, trazabilidad y tests. La suite y smoke pasan; SEC EDGAR y yfinance se verificaron en vivo. ChatNVIDIA y demo end-to-end pendientes de rotar la clave y repetir el test. |
 | 2026-11-04 | Por solicitud del usuario, se elimina el login del piloto local; la app abre directamente y conserva preferencias/trazas bajo una identidad local anónima. |
+| 2026-11-04 | Conversación con contexto y preferencias por chat detalladas en specs/conversacion-preferencias; sidebar informativa y catálogo de símbolos. |
+| 2026-11-04 | Guía de tono, narración factual validada, memoria resumida opcional y comprensión semántica con evidencia detalladas en specs/agente-amigable; NIM live pendiente. |
+| 2026-11-04 | Depuración de procedencia, beta pendiente, reemplazo de comparación y configuración compartida en specs/depuracion-agente. README raíz con comandos y estado de skill externa pendiente. |
+| 2026-11-04 | Agente modular: fachadas de diálogo/ejecución, componentes separados, aprendizaje sin mutar preferencias y un solo cliente por turno. Verificación offline detallada en specs/agente-modular. |

@@ -10,4 +10,9 @@ investiq.db-*
 .env
 .venv/
 
+# Optional external development skill (local only; installation pending).
+/.agents/skills/skill-creator/
+/.agents/skills/investiq-agent-review/
+/.local/agentskills-reference/
+
 # Keep ml/artifacts/ tracked: these are versioned model outputs.

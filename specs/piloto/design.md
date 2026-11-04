@@ -22,6 +22,16 @@ Streamlit (acceso local directo)
 - `Comparador`: `instr_features` + preferencias; score determinista, narración LLM.
 - Fallback de reglas del router permite resolver intenciones claras cuando ChatNVIDIA falla. No se incorporan LangGraph ni LangChain como motor; ChatNVIDIA usa su cliente proveedor conforme a ADR-001.
 
+### Conversación y preferencias
+
+`conversation.answer_turn` conserva una aclaración pendiente y un historial acotado en `ConversationState` por sesión de Streamlit. Respuestas cortas completan el campo solicitado y reanudan la consulta original; una pregunta educativa puede interrumpirla. Las preferencias se expresan, consultan y cambian por chat, sin formulario lateral. Los filtros puntuales no se guardan como preferencias. La comparación admite omitir criterios y muestra features sin puntaje personalizado. La sidebar explica el propósito educativo y ofrece el catálogo informativo de símbolos consultables. Requisitos y verificación detallados en `specs/conversacion-preferencias/`.
+
+La ampliación `specs/agente-amigable/` incorpora una guía de tono cargada por NIM, redacción con bloque factual inmutable, comprensión de preferencias respaldada por palabras del usuario y diagnósticos seguros en ResponseTrace. ConversationMemory conserva un resumen estructurado opcional —sin historial literal ni cotizaciones antiguas— con controles de consulta/desactivación/borrado. La identidad local es compartida por la instalación y las copias del repositorio mantienen bases independientes.
+
+`specs/depuracion-agente/` centraliza procedencia y lenguaje antes de los parsers, añade el campo de beta pendiente y limita la prosa factual exterior al catálogo de conectores. App y pipeline resuelven DATABASE_URL mediante Settings; los comandos portables y el estado real de instalación/pruebas se documentan en README.
+
+La organización final está descrita en `docs/architecture.md` y `specs/agente-modular/`: conversation coordina diálogo; routing prepara decisiones; handlers ejecuta tools; responses construye el resultado y query_log registra una sola traza. Las dependencias se pasan entre funciones Python y los tests se sitúan en el componente propietario.
+
 El score inicial de comparación normaliza solo criterios disponibles y usa pesos explícitos: compatibilidad con volatilidad objetivo 0.40, sector 0.30, similitud con referencia 0.15 y beta objetivo 0.15. Si la persona usuaria no da un criterio, su peso se excluye y los restantes se renormalizan; los pesos quedan versionados junto al resultado. El score es una explicación de preferencias declaradas, no una recomendación.
 
 ## Datos e interfaces
@@ -36,7 +46,7 @@ El score inicial de comparación normaliza solo criterios disponibles y usa peso
 - `similar_instruments(ref, top_n) -> list[InstrumentFeatures]`: vecinos del clúster evaluado ordenados por distancia.
 - `compare_instruments(symbols, preferences) -> ComparisonResult`: score determinista y desglose reproducible.
 
-Los resultados de tools son modelos Pydantic y contienen identificadores/enlaces de fuente. La capa de datos SQLModel contempla `User`, `Session`, `Instrument`, `UserPreference`, `PriceCacheEntry`, `NewsCacheEntry`, `FilingRef`, `InstrumentFeatures`, `MLClusterRun`, `MLClusterMembership`, `VolatilityBucket` y `QueryLog`. Se reutiliza la persistencia/modelos de Fase 2 donde encaje.
+Los resultados de tools son modelos Pydantic y contienen identificadores/enlaces de fuente. La capa de datos SQLModel contempla instrumentos, preferencias locales, precios/cachés, referencias de filings, features, ejecuciones/pertenencia de clustering y `QueryLog`. El estado conversacional reside en la sesión de Streamlit; no requiere una cuenta ni se persiste en las trazas. Se reutiliza la persistencia/modelos de Fase 2 donde encaje.
 
 ### Proveedores y degradación
 

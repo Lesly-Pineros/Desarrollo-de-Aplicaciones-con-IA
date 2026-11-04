@@ -43,9 +43,23 @@ def sec_docs_tool(session: Session, symbol: str, settings: Settings):
     return sec_docs(session, symbol, settings)
 
 
-def education_tool(topic: str) -> str | None:
-    lowered = topic.strip().casefold()
-    return next((definition for term, definition in GLOSSARY.items() if term in lowered), None)
+def education_tool(topic: str, *, followup: str = "") -> str | None:
+    from investiq.language import canonical_education_topic
+
+    term = canonical_education_topic(topic)
+    if not term:
+        return None
+    if any(word in followup.casefold() for word in ("ejemplo", "sencill", "no entend", "más fácil", "mas facil")):
+        examples = {
+            "volatilidad": "Imagina dos recorridos: uno suave y otro con muchos saltos. La volatilidad describe cuánto variaron los retornos históricos, como esos saltos; no asegura qué pasará después.",
+            "beta": "Piensa en un instrumento y un mercado de referencia. Beta resume cómo se relacionaron sus movimientos históricos. Esa relación puede cambiar; no es una promesa sobre el futuro.",
+            "correlación": "Imagina dos personas caminando: a veces avanzan juntas y a veces se separan. La correlación describe cuánto coincidieron dos series de retornos; no significa que una haya causado la otra.",
+            "etf": "Piensa en una canasta de inversiones que se compra y vende en bolsa mediante participaciones. Eso ayuda a imaginar un ETF, aunque su composición, costos y riesgos dependen del fondo.",
+            "retorno": "Si comparas el valor de una inversión al inicio y al final de un período, observas su retorno. La definición usada debe aclarar si incluye distribuciones, como dividendos.",
+            "riesgo": "Imagina que el resultado de una decisión puede ser distinto al que esperabas, incluso una pérdida. Esa posibilidad es parte del riesgo, y una sola medida no cuenta toda la historia.",
+        }
+        return examples[term]
+    return GLOSSARY[term]
 
 
 def instr_features(session: Session, symbol: str) -> dict | None:
@@ -62,6 +76,21 @@ def instr_features(session: Session, symbol: str) -> dict | None:
         "volatility_bucket": feature.volatility_bucket,
         "calculated_at": feature.calculated_at.isoformat(),
     }
+
+
+def feature_sources(session: Session, symbols: list[str]) -> list[SourceReference]:
+    """Trace metrics to actual local feature records even without a clustering run."""
+    sources = []
+    for symbol in dict.fromkeys(symbols):
+        feature = session.get(InstrumentFeature, symbol)
+        if feature:
+            sources.append(SourceReference(
+                source_id=f"features:{symbol}:{feature.calculated_at.isoformat()}",
+                title=f"Características históricas de {symbol} ({feature.calculated_at.isoformat()})",
+                url=f"local://features/{symbol}", provider="Datos históricos locales",
+                published_at=feature.calculated_at,
+            ))
+    return sources
 
 
 def volatility_bucket(session: Session, target: str) -> list[dict]:
@@ -160,10 +189,9 @@ def _preference_for_user(session: Session, email: str) -> PreferenceInput | None
     )
 
 
-def compare_instruments(session: Session, email: str, symbols: list[str]) -> list[dict]:
-    preferences = _preference_for_user(session, email)
-    if not preferences or not any(preferences.model_dump().values()):
-        raise ValueError("Guarda al menos una preferencia en el panel antes de comparar.")
+def compare_instruments(session: Session, email: str, symbols: list[str], *, use_preferences: bool = True) -> list[dict]:
+    preferences = _preference_for_user(session, email) if use_preferences else None
+    preferences = preferences or PreferenceInput()
     unique = list(dict.fromkeys(symbol.strip().upper() for symbol in symbols if normalize_symbol(symbol)))
     if not 2 <= len(unique) <= 4:
         raise ValueError("Indica entre 2 y 4 símbolos cubiertos para comparar.")
@@ -199,9 +227,9 @@ def compare_instruments(session: Session, email: str, symbols: list[str]) -> lis
         if preferences.beta_target is not None:
             components["beta"] = max(0.0, 1.0 - abs(feature["beta"] - preferences.beta_target) / 2.0)
         weight_sum = sum(weights[key] for key in components)
-        score = sum(weights[key] * value for key, value in components.items()) / weight_sum if weight_sum else 0.0
-        results.append({**feature, "score": round(score * 100, 2), "components": components})
-    return sorted(results, key=lambda row: (-row["score"], row["symbol"]))
+        score = sum(weights[key] * value for key, value in components.items()) / weight_sum if weight_sum else None
+        results.append({**feature, "score": round(score * 100, 2) if score is not None else None, "components": components})
+    return sorted(results, key=lambda row: (-(row["score"] or 0), row["symbol"]))
 
 
 def source_references(quote, news_items: list[NewsItem], filings: list[FilingItem]) -> list[SourceReference]:

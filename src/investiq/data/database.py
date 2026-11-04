@@ -1,4 +1,5 @@
 import os
+import threading
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -20,6 +21,8 @@ from investiq.data.models import (
     UserPreference,
 )
 from investiq.instruments import INSTRUMENTS
+
+_schema_init_lock = threading.Lock()
 
 
 def database_url() -> str:
@@ -48,7 +51,11 @@ def create_db(engine=None):
         QueryLog,
         UserPreference,
     )
-    SQLModel.metadata.create_all(engine)
+    # Streamlit may execute the app for multiple sessions at once. Serialize
+    # create_all so two threads cannot both observe a missing table and race
+    # to create it in SQLite.
+    with _schema_init_lock:
+        SQLModel.metadata.create_all(engine)
     return engine
 
 

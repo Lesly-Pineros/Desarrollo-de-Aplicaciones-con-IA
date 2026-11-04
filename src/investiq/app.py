@@ -10,6 +10,12 @@ from investiq.orchestration import answer_query
 from investiq.settings import get_settings
 
 
+@st.cache_resource
+def _get_engine(database_url: str):
+    """Initialize the database once and reuse its engine across Streamlit reruns."""
+    return create_db(make_engine(database_url))
+
+
 def _login(session: Session, configured_email: str) -> bool:
     st.title("InvestiQ · acceso local")
     if not configured_email:
@@ -31,7 +37,7 @@ def _login(session: Session, configured_email: str) -> bool:
 def main() -> None:
     st.set_page_config(page_title="InvestiQ", page_icon="📊", layout="wide")
     settings = get_settings()
-    engine = create_db(make_engine(settings.database_url))
+    engine = _get_engine(settings.database_url)
     with Session(engine) as session:
         seed_instruments(session)
         token = st.session_state.get("investiq_session_token")

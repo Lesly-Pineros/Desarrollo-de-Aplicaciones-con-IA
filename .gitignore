@@ -2,6 +2,8 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
+/build/
+/dist/
 .pytest_cache/
 
 # Local database and environment
@@ -14,5 +16,8 @@ investiq.db-*
 /.agents/skills/skill-creator/
 /.agents/skills/investiq-agent-review/
 /.local/agentskills-reference/
+/.local/design-skills/
+/.local/browser-review/
+/.impeccable/review/
 
 # Keep ml/artifacts/ tracked: these are versioned model outputs.

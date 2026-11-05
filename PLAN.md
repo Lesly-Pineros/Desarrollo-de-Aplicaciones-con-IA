@@ -4,7 +4,7 @@
 >
 > **No es asesoría financiera.** Todo output lleva disclaimer y trazabilidad de fuente.
 
-**Estado actual consolidado (2026-11-04):** app local sin login, preferencias conversacionales, memoria resumida opcional y resultados financieros protegidos. El agente separa diálogo, enrutamiento, handlers, respuestas y registro de consultas; las peticiones de aprendizaje no escriben preferencias y el cliente NIM se crea como máximo una vez por turno. Verificación offline: **270 pruebas pasan**; las **4 integraciones reales se omiten** sin activación explícita. Comandos en [README.md](README.md) y responsabilidades en [docs/architecture.md](docs/architecture.md). Pendientes: NIM real con clave rotada, descarga de la referencia externa y creación de una nueva skill local (permisos de red/escritura rechazados). Se usaron las skills ya disponibles. Fase 5 sin iniciar.
+**Estado actual consolidado (2026-11-04):** web local conversacional como entrada principal (`bash run_web.sh`), sin login ni compilación frontend; Streamlit queda como alternativa. Catálogo buscable, preferencias por chat y memoria resumida opcional. Se corrigieron las definiciones de símbolos y las aclaraciones de la captura; olvidar contexto invalida copias antiguas en otras ventanas. Verificación: **338 pruebas offline pasan**, **38 comprobaciones en Chrome real** a cuatro tamaños y **9 specs válidas**. Las **4 integraciones reales se omiten** sin activación explícita; NIM con clave rotada sigue pendiente. Taste, Emil e Impeccable están descargadas en una carpeta local ignorada por Git y aplicadas al rediseño; no se confunden con la referencia agentskills anterior que sigue pendiente. Guías en [README.md](README.md), [arquitectura](docs/architecture.md) y [evidencia de la web](specs/web-conversacional/tasks.md). Fase 5 sin iniciar.
 
 ---
 
@@ -12,13 +12,13 @@
 
 | # | Decisión | Justificación | Revisión |
 |---|----------|---------------|----------|
-| D1 | **Frontend Streamlit, SIN backend separado en v0.1** — Streamlit llama directo a la capa de orquestación (un solo proceso Python) | Piloto single-user; "un solo stack"; evita doble despliegue | FastAPI como capa API en v0.2 si surge cliente externo |
+| D1 | **Web local HTML/CSS/JS + API mínima en el mismo proceso Python**, sobre la orquestación existente. Streamlit queda como alternativa heredada. Ver [ADR-004](decisions/ADR-004-web-local.md) | Rediseño solicitado; control de conversación y accesibilidad sin Node ni nuevo framework | Hosting de la nueva web se revisa en fase 5 |
 | D2 | **Single-user local sin login**; la app abre directamente y guarda preferencias/trazas bajo una identidad local fija | Acceso simple para el piloto educativo local | Auth y multiusuario diferidos |
 | D3 | **Noticias near-real-time con caché + aviso de retraso** | Marketaux free = 100 req/día y **delay 24 h** | Plan de pago = hito posterior |
 | D4 | **SQLite (local) → Postgres gestionado (Neon free) en nube** vía SQLAlchemy/SQLModel | SQLite no persiste en hosting efímero; capa portable desde el día 1 | — |
 | D5 | **yfinance solo ingesta batch para ML** (offline), nunca como fuente "oficial" en vivo | yfinance es "research/educational", no respaldado por Yahoo | — |
 | D6 | **LLM: ChatNVIDIA (NVIDIA NIM / API Catalog)**, modelo **configurable**. **Única API key real que se configura** | Free tier amplio, tool-calling y structured output | Fallback / 2º proveedor en v0.2 |
-| D7 | **Despliegue nube GRATIS no-Vercel**: **Streamlit Community Cloud** (app) + **Neon** (Postgres). Vercel descartado para v0.1 | Streamlit no es target nativo de Vercel; este camino es gratis y de una sola pieza. Ver [ADR-002](decisions/ADR-002-despliegue.md) | Contenedor único (Render/Railway) o Vercel+API en v0.2 |
+| D7 | **Nube pendiente**: ADR-002 prevé Streamlit Community Cloud + Neon para la alternativa Streamlit. La nueva web local requiere revisar hosting según ADR-004 | El rediseño local no equivale a desplegar ni validar compatibilidad cloud | Fase 5 sin iniciar; no se selecciona otro proveedor aquí |
 | D8 | Límites de free tier = **requisitos no funcionales** (caché, cuotas, degradación). **Solo LLM key configurada**; Twelve Data/Marketaux = free key **opcional** y degradable | Twelve Data 8/min·800/día; Marketaux 100/día; SEC ≤10 req/s + User-Agent | — |
 | D9 | **v0.1: orquestación en Python plano** (router + tools como funciones puras + cliente ChatNVIDIA, **sin LangGraph/LangChain**). **LangGraph en v0.2** si el flujo lo justifica | Complejidad proporcional. Ver [ADR-001](decisions/ADR-001-orquestacion.md) | LangGraph en v0.2 |
 | D10 | **Columna vertebral sin key**: yfinance (histórico/ML) + SEC EDGAR (docs). Twelve Data/Marketaux **enriquecen** y degradan si no hay key/cuota | Garantiza app funcional con una sola key (LLM) | — |
@@ -58,7 +58,7 @@ requisitos (EARS + criterios aceptación) → diseño técnico → tareas → im
 ├── .codex/
 │   ├── skills/sdd-feature/        # Skill: andamiar una feature SDD
 │   └── agents/dev-agent.md        # Subagente de desarrollo
-├── src/investiq/                  # App (Streamlit + orquestación + tools + datos)
+├── src/investiq/                  # Web Python local + alternativa Streamlit + agente y datos
 ├── ml/                            # Pipeline ML offline + artefactos
 └── tests/                         # unit / integration (marcados, ver §9)
 ```
@@ -94,8 +94,8 @@ Ejes: **Codex (elegido)** vs. alternativas de orquestación/flujo (agentes de ID
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│  Streamlit UI (ES) — chat educativo, explicaciones, recomend. │
-│  (v0.1: la UI invoca DIRECTO la capa de orquestación)         │
+│  Web local (ES) — chat, catálogo y memoria                   │
+│  API mínima + servicio → answer_turn (alternativa Streamlit) │
 └───────────────┬──────────────────────────────────────────────┘
                 │ (in-process, mismo proceso Python)
 ┌───────────────▼──────────────────────────────────────────────┐
@@ -228,12 +228,14 @@ Nodos (idénticos en v0.1 y v0.2):
 Capa SQLModel (SQLite), ingesta **yfinance** batch (20 instrumentos), features (vol, corr, beta, sector), **clustering scikit-learn** + **umbrales de volatilidad**, eval ML (silhouette/ARI), artefactos versionados. **Hito:** `similar_instruments` y `volatility_bucket` reproducibles y evaluados.
 
 ### Fase 3 — App local full-stack v0.1 (Resultados 4, 7)
-**Streamlit** (UI) llamando **directo** a la orquestación en **Python plano** (router + tools como funciones puras) + ChatNVIDIA real + acceso local sin login + caché/cuotas + trazabilidad + disclaimers + mitigación de prompt-injection. Integraciones yfinance/SEC (sin key) con tests reales; Twelve Data/Marketaux opcionales. **Despliegue local:** `uv run streamlit run ...` (SQLite). **Hito v0.1:** demo local end-to-end con fuentes citadas, **un solo proceso, sin framework de grafos**.
+**Web local** HTML/CSS/JS y API mínima en el mismo proceso Python, sobre orquestación en **Python plano** (router + tools como funciones puras), ChatNVIDIA configurable, sin login, caché/cuotas, trazabilidad, disclaimers y mitigación de prompt-injection. Streamlit queda como alternativa. Integraciones yfinance/SEC con verificaciones históricas; Twelve Data/Marketaux opcionales. **Arranque local:** `bash run_web.sh` (SQLite). **Hito v0.1:** demo end-to-end con fuentes citadas, **un solo proceso, sin framework de grafos**. La aceptación NIM real sigue pendiente; el rediseño no la acredita.
 
 ### Fase 4 — Hardening → v0.2 (evolución)
 Debugging guiado por eval, ampliar cobertura de tests, caso **MCP SEC EDGAR**, (opcional) **extraer FastAPI** como capa API, **commits trazables** por `TASK`. **Hito v0.2:** eval en verde + MCP operativo.
 
 ### Fase 5 — Despliegue en nube GRATIS (Resultado 9)
+
+**Sin iniciar.** ADR-004 cambia la entrada local; antes de publicar la nueva web se revisará un hosting compatible. Las opciones siguientes conservan el plan histórico para Streamlit y no constituyen un despliegue de la web nueva.
 - **App Streamlit** → **Streamlit Community Cloud** (gratis, target nativo de Streamlit).
 - **Datos** → **Neon Postgres (free)**; migración SQLite→Postgres vía SQLModel; `DATABASE_URL` por entorno.
 - **ML** → entrenamiento **offline**; se despliegan solo **artefactos** + inferencia ligera.
@@ -298,3 +300,5 @@ Escalar de 20 → 150+50 instrumentos; multiusuario + roles (RBAC); plan de pago
 **Depuración y documentación (2026-11-04):** se unifican normalización y procedencia antes de ambos parsers; preguntas/citas ajenas no escriben preferencias. Una comparación completa sustituye la anterior y la aclaración de beta acepta un número breve incluso tras reiniciar. La prosa que acompaña datos de mercado se limita a conectores controlados. App y pipeline usan Settings/.env y el lanzador respeta INVESTIQ_PYTHON. README y guías actualizados, regresión 223 passed y 4 integraciones omitidas sin red; siete specs SDD válidas. La organización Agent Skills enlaza un ejemplo skill-creator cuya descarga fue rechazada antes de ejecutarse: no instalado ni utilizado. Se usó sdd-feature local y se reservó una exclusión exacta de Git para la instalación futura.
 
 **Modularización (2026-11-04):** conversation y orchestration son fachadas de coordinación; dialogue separa comandos, estado, preferencias y aclaraciones, mientras routing/handlers/responses/query_log poseen sus responsabilidades. Se quitaron imports privados usados por pruebas y se trasladaron los mocks a los módulos propietarios. La revisión independiente detectó aprendizaje confundido con preferencias, META ambiguo y creación duplicada del cliente; los tres casos tienen corrección y regresiones. Se protegen además errores al iniciar el SDK para evitar exponer credenciales. Resultado: 270 pruebas offline pasan, cuatro integraciones omitidas, ocho specs válidas y sdd-feature validada. Las skills disponibles sdd-feature/skill-creator guiaron el trabajo; investiq-agent-review no se creó porque se rechazó el permiso de escritura en .agents.
+
+**Web conversacional (2026-11-04):** por solicitud del usuario se sustituye la entrada local principal por HTML/CSS/JS servido desde Python (ADR-004). Las tres skills de diseño solicitadas se descargaron y leyeron; su CLI Impeccable no arrancó por permisos de caché y se siguió la alternativa de lectura directa, sin atribuirle checks. Backend, sesiones y frontend separados; fuentes tipográficas locales con licencia. AAPL se define desde catálogo y los conceptos usan glosario trazable. La revisión independiente corrigió contraste, texto secundario pequeño y restauración de contexto olvidado desde otras ventanas. Evidencia: 338 tests offline, 38 comprobaciones Chrome, nueve capturas válidas, nueve specs y wheel construido con los siete assets actuales. Cuatro pruebas live omitidas; NIM pendiente. README incorpora arranque y validación portable. Fase 5 no iniciada; hosting de la web se revisará allí.

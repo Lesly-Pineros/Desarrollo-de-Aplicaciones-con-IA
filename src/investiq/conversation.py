@@ -73,8 +73,9 @@ def _answer_turn(session: Session, email: str, query: str, settings: Settings,
         return reply(courtesy)
 
     base = fallback_route(query)
-    educational_question = is_educational_question(query)
-    if educational_question:
+    concept_question = is_educational_question(query)
+    educational_question = concept_question or base.intent == "instrument_info"
+    if concept_question:
         base = RouterDecision(intent="education", education_topic=query)
     if state.last_decision and state.last_decision.intent == "education" and base.intent == "unknown" and re.search(
         r"\b(?:ejemplo|mas sencillo|mas facil|no entendi)\b", plain(query)

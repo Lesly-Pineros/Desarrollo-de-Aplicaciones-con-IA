@@ -2,6 +2,7 @@
 
 - **Estado:** Aceptado
 - **Fecha:** 2026-10-31
+- **Revisión local (2026-11-04):** [ADR-004](ADR-004-web-local.md) sustituye la interfaz principal local por una web servida desde Python. Esta ADR conserva el destino previsto para la alternativa Streamlit; el hosting de la nueva web requiere revisión en fase 5, que no se ha iniciado.
 - **Contexto:** La petición inicial sugería Vercel como nube de despliegue. El frontend elegido es Streamlit (ADR implícito D1). Vercel **no es un target nativo de Streamlit** (está orientado a Next.js/funciones serverless), por lo que desplegar Streamlit en Vercel exige separar la app de la API y añadir piezas. El usuario priorizó: "lo que sea, pero que me sirva para desplegar y gratis".
 
 ## Decisión

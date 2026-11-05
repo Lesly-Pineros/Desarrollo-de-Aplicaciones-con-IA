@@ -60,6 +60,18 @@ def is_educational_question(query: str) -> bool:
     if topic is None:
         return False
     text = plain(query)
+    if topic == "etf":
+        # In "qué es el ETF QQQ", ETF qualifies the named instrument. It is
+        # different from "qué es un ETF como QQQ", which asks for the concept.
+        from investiq.instruments import INSTRUMENT_BY_SYMBOL, mentioned_symbols
+
+        for symbol in mentioned_symbols(query):
+            item = INSTRUMENT_BY_SYMBOL[symbol]
+            if item.kind == "ETF" and (
+                re.search(r"\betf\s+\$?" + re.escape(symbol.casefold()) + r"\b", text)
+                or contains_phrase(query, item.name)
+            ):
+                return False
     term = re.escape(plain(topic))
     # Concept questions take precedence over incidental references to price.
     # A request such as "explica el movimiento del ETF" remains a market query.

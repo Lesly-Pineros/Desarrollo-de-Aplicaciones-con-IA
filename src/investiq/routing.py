@@ -5,7 +5,7 @@ import re
 
 from investiq.domain import ResponseDiagnostics, RouterDecision
 from investiq.instruments import mentioned_symbols
-from investiq.language import is_educational_question
+from investiq.language import is_educational_question, plain
 from investiq.llm import ChatNVIDIAClient, LLMUnavailable
 from investiq.response_style import provider_failure
 from investiq.tools import normalize_symbol
@@ -13,6 +13,7 @@ from investiq.tools import normalize_symbol
 
 def fallback_route(query: str) -> RouterDecision:
     text = query.casefold()
+    normalized = plain(query)
     covered = mentioned_symbols(query)
     if is_educational_question(query):
         return RouterDecision(intent="education", education_topic=query)
@@ -25,6 +26,11 @@ def fallback_route(query: str) -> RouterDecision:
     if any(word in text for word in ("precio", "movimiento", "subió", "bajó", "cotización", "cotizacion", "cuéntame sobre", "cuentame sobre")):
         return RouterDecision(intent="explanation", symbol=covered[0] if covered else None,
                               needs_clarification=not bool(covered))
+    if len(covered) == 1 and re.search(
+        r"\b(?:que (?:es|significa)|quien es|que empresa es|explica\w*|define\w*|"
+        r"hablame de|(?:saber|conocer|entender)(?: mas)? (?:sobre|que es|a))\b", normalized,
+    ):
+        return RouterDecision(intent="instrument_info", symbol=covered[0])
     if any(word in text for word in ("volatilidad", "riesgo bajo", "riesgo medio", "riesgo alto")) and any(
         word in text for word in ("recom", "busca", "dame", "instrumentos", "acciones", "etf")
     ):
@@ -38,6 +44,11 @@ def fallback_route(query: str) -> RouterDecision:
 
 def normalize_decision(decision: RouterDecision, *, query: str) -> RouterDecision:
     """Resolve supported symbols before deterministic handlers consume a decision."""
+    # Defining a known ticker is a catalogue lookup, even if the model mistakes
+    # the phrase "qué es" for a glossary question or a live market request.
+    explicit = fallback_route(query)
+    if explicit.intent == "instrument_info":
+        return explicit
     decision = decision.model_copy(deep=True)
     if decision.symbol:
         decision.symbol = normalize_symbol(decision.symbol)
@@ -45,7 +56,7 @@ def normalize_decision(decision: RouterDecision, *, query: str) -> RouterDecisio
         decision.reference_symbol = normalize_symbol(decision.reference_symbol)
     decision.comparison_symbols = [symbol for value in decision.comparison_symbols
                                    if (symbol := normalize_symbol(value))]
-    if decision.intent == "explanation" and not decision.symbol:
+    if decision.intent in {"explanation", "instrument_info"} and not decision.symbol:
         decision.symbol = fallback_route(query).symbol
     return decision
 

@@ -22,6 +22,19 @@ def resume_pending(query: str, base: RouterDecision, state: ConversationState, *
                    educational_question: bool = False) -> DialogueResolution:
     if state.pending_field is None:
         return DialogueResolution()
+    if state.pending_field == "education_topic":
+        mentioned = mentioned_symbols(query)
+        clear_pending(state)
+        if base.intent == "unknown" and len(mentioned) == 1:
+            return DialogueResolution(
+                decision=RouterDecision(intent="instrument_info", symbol=mentioned[0]), used_context=True,
+            )
+        if base.intent in {"education", "instrument_info"}:
+            return DialogueResolution(decision=base, used_context=True)
+        if base.intent == "unknown":
+            return DialogueResolution(decision=RouterDecision(intent="education", education_topic=query),
+                                      used_context=True)
+        return DialogueResolution()
     if educational_question:
         return DialogueResolution(decision=base, interrupted=True)
     field = state.pending_field
@@ -71,6 +84,9 @@ def resolve_followup(query: str, base: RouterDecision, state: ConversationState)
         if previous.intent == "education" and not mentioned and base.intent in {"unknown", "education"} and canonical_education_topic(query) is None:
             return DialogueResolution(decision=previous.model_copy(deep=True), used_context=True)
         if len(mentioned) == 1 and base.intent == "unknown":
+            if previous.intent == "instrument_info":
+                return DialogueResolution(decision=RouterDecision(intent="instrument_info", symbol=mentioned[0]),
+                                          used_context=True)
             if previous.intent == "explanation":
                 return DialogueResolution(decision=RouterDecision(intent="explanation", symbol=mentioned[0]), used_context=True)
             if previous.intent == "recommend_similar":

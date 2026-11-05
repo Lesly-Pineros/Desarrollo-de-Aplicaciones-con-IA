@@ -26,6 +26,7 @@ En el runtime de InvestiQ, la decisión es distinta: v0.1 usa Python plano (rout
 | [Agent Skills](https://github.com/agentskills/agentskills) | Formato de instrucciones reutilizables para agentes de desarrollo | Referencia del formato; no es una skill concreta |
 | Ejemplo externo `skill-creator` | Ayudar a crear o mantener otras skills | Descarga intentada, permiso de red rechazado; instalación pendiente |
 | BMAD | Apoyo posible para UX, planificación y revisión, aprovechando el SDD existente | Evaluado; sin instalación ni dependencia del runtime |
+| Taste, Emil e Impeccable | Diseño de la web local, detalles de interacción y revisión visual | Descargadas y utilizadas en `.local/design-skills/`; ignoradas por Git |
 | `prompts/conversation.md`, estado y validadores | Voz del asistente, continuidad, contexto recordado y respuestas apoyadas en resultados verificables | Implementados en la app; ver specs y evidencias actuales |
 
-La instalación externa prevista se limita a `/.agents/skills/skill-creator/`, ignorada por Git. Los planes, specs y pruebas producidos para el proyecto permanecen versionables. El estado real de las verificaciones está en [PLAN.md](../PLAN.md); las simulaciones locales y las comprobaciones de APIs se reportan por separado.
+La instalación anterior de `/.agents/skills/skill-creator/` sigue pendiente. Las tres skills de diseño sí están descargadas localmente; sus fuentes y límites se documentan en [design-skills.md](design-skills.md). Los planes, specs y pruebas del proyecto permanecen versionables. El estado real está en [PLAN.md](../PLAN.md); las simulaciones, el navegador local y las APIs externas se reportan por separado.

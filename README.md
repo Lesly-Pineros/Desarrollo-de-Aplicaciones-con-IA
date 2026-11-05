@@ -1,6 +1,6 @@
 # InvestiQ
 
-InvestiQ es una app educativa en español para entender conceptos financieros, consultar movimientos con sus fuentes y explorar similitudes o comparaciones entre 20 acciones y ETF. Abre directamente, sin registro ni contraseña. Las preferencias se conversan en el chat y la izquierda muestra ayuda y símbolos disponibles.
+InvestiQ es una web educativa en español para entender conceptos financieros, consultar movimientos con sus fuentes y explorar similitudes o comparaciones entre 20 acciones y ETF. Abre directamente, sin registro ni contraseña. Las preferencias se conversan en el chat; el catálogo y la ayuda están a mano.
 
 **No es asesoría financiera.** Los precios y las métricas provienen de herramientas y datos verificables; el modelo redacta sobre esos resultados.
 
@@ -38,20 +38,30 @@ Las variables exportadas en la consola tienen prioridad sobre `.env`. Conserva `
 ## Arrancar la app
 
 ```bash
-bash run_streamlit.sh
+bash run_web.sh
 ```
 
-Abre la dirección local que indique Streamlit, normalmente `http://localhost:8501`. Detén el proceso con `Ctrl+C`.
+Abre `http://127.0.0.1:8000`. Detén el proceso con `Ctrl+C`. La web y su API se sirven desde el mismo proceso Python; no necesitas Node, npm ni compilar el frontend. Las fuentes y los estilos están en el repositorio y funcionan sin CDN.
 
 El lanzador detecta su propia carpeta, entra en la raíz correcta y utiliza el Python local. Puedes llamarlo desde otra carpeta indicando la ruta al script. Para elegir otro intérprete o puerto:
 
 ```bash
-INVESTIQ_PYTHON=/ruta/al/entorno/bin/python bash run_streamlit.sh --server.port 8502
+INVESTIQ_PYTHON=/ruta/al/entorno/bin/python bash run_web.sh --port 8001
 ```
 
 `INVESTIQ_PYTHON` tiene prioridad; si no lo defines, se utiliza `.venv/bin/python` y después el Python disponible en la consola.
 
-Puedes empezar con «¿Qué es beta?», «precio AAPL» o «compara AAPL y MSFT». Si falta un criterio, el agente lo pregunta en el chat. Una respuesta corta completa la consulta pendiente. También admite «sin preferencias», «qué recuerdas de mí», «olvida el contexto» y «borra mis preferencias».
+Puedes empezar con «¿Qué es AAPL?», «¿Qué es beta?» o «compara AAPL y MSFT». Si falta un criterio, el agente lo pregunta en el chat. Una respuesta corta completa la consulta pendiente. También admite «sin preferencias», «qué recuerdas de mí», «olvida el contexto» y «borra mis preferencias».
+
+Para abrir sin llamadas al modelo ni enriquecimientos externos, aunque `.env` tenga claves:
+
+```bash
+NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= SEC_USER_AGENT= bash run_web.sh
+```
+
+Sin Internet puedes aprender conceptos y definir símbolos del catálogo. Las consultas de mercado necesitan datos locales o acceso a sus fuentes; la app informa cuando no están disponibles. La web escucha únicamente en `127.0.0.1` o `localhost`: es un piloto local, no un servidor público.
+
+La interfaz Streamlit anterior sigue disponible con `bash run_streamlit.sh` en `http://localhost:8501`. El cambio de interfaz local está documentado en [ADR-004](decisions/ADR-004-web-local.md); no se ha desplegado en la nube.
 
 ## Cargar datos históricos y entrenar
 
@@ -91,7 +101,17 @@ Para comprobar las especificaciones SDD, el siguiente bucle omite las plantillas
 )
 ```
 
-Consulta el estado real y la trazabilidad en [PLAN.md](PLAN.md) y [specs/agente-modular/tasks.md](specs/agente-modular/tasks.md). Los resultados offline y las integraciones en vivo se registran por separado.
+Consulta el estado real y la trazabilidad en [PLAN.md](PLAN.md) y [specs/web-conversacional/tasks.md](specs/web-conversacional/tasks.md). Los resultados offline y las integraciones en vivo se registran por separado.
+
+## Verificar la web en Chrome
+
+Esta comprobación opcional necesita Node 22 o superior y Chrome instalado. Son herramientas de prueba, no requisitos para arrancar la app:
+
+```bash
+node tools/check_web.mjs
+```
+
+El script inicia su propio servidor y una base SQLite temporal, desactiva las credenciales, prueba la conversación y controles en Chrome headless y cierra los procesos al terminar. No debes arrancar la app primero. Necesita permiso para abrir puertos locales. Las capturas y el informe quedan en `.impeccable/review/`, excluida de Git. Si Chrome está en otra ubicación, indica su ejecutable con `CHROME_PATH=/ruta/a/chrome` antes del comando. No sustituye una prueba con el modelo real.
 
 ## Comprobar NVIDIA en vivo
 
@@ -119,19 +139,19 @@ La prueba NIM de integración exige también `NVIDIA_KEY_ROTATED=1`; para el dia
 
 ## Memoria y datos locales
 
-Las preferencias se conservan en la base bajo una identidad local compartida por esta instalación. El recuerdo opcional entre visitas guarda tema, símbolos, consulta pendiente y nivel de explicación; excluye el historial literal y los precios antiguos. Puedes verlo, desactivarlo o borrarlo desde «Lo que recuerdo» o por chat. Borrar contexto y borrar preferencias son acciones distintas.
+Las preferencias se conservan en la base bajo una identidad local compartida por esta instalación. El recuerdo opcional entre visitas guarda tema, símbolos, consulta pendiente y nivel de explicación; excluye el historial literal y los precios antiguos. Puedes verlo, desactivarlo o borrarlo desde los controles de memoria o por chat. Borrar contexto y borrar preferencias son acciones distintas. «Nueva conversación» vacía el chat y su contexto; conserva las preferencias y la elección de activar o desactivar memoria.
 
-El historial visible pertenece a la sesión de Streamlit. `QueryLog` registra intención, herramientas, fuentes y consumo disponible, no el texto de tus consultas; su retención objetivo es de 90 días. `ResponseTrace` conserva categorías seguras para distinguir narración y respuestas de respaldo.
+El historial visible permanece temporalmente en el servidor local, asociado a una cookie de sesión opaca; no se guarda en localStorage. La sesión expira tras dos horas de inactividad y el servidor mantiene un máximo de 128 sesiones y 80 mensajes por sesión. Las pestañas del mismo navegador comparten cookie; la memoria persistente sigue siendo común a la instalación. `QueryLog` registra intención, herramientas, fuentes y consumo disponible, no el texto de tus consultas; su retención objetivo es de 90 días. `ResponseTrace` conserva categorías seguras para distinguir narración y respuestas de respaldo.
 
 ## Cómo está organizado el agente
 
-`conversation.answer_turn` recibe cada turno y coordina el contexto con los componentes de `dialogue/`: comandos, estado pendiente y preferencias. `orchestration.answer_query` coordina la consulta financiera: `routing.py` elige la ruta, `handlers.py` ejecuta las herramientas, `responses.py` construye la respuesta y `query_log.py` registra sus metadatos una sola vez. La redacción con el modelo se valida antes de mostrarse.
+`web/server.py` sirve archivos y API; `web/service.py` adapta las operaciones del chat y `web/sessions.py` mantiene el estado temporal. `conversation.answer_turn` recibe cada turno y coordina el contexto con los componentes de `dialogue/`: comandos, estado pendiente y preferencias. `orchestration.answer_query` coordina la consulta financiera: `routing.py` elige la ruta, `handlers.py` ejecuta las herramientas, `responses.py` construye la respuesta y `query_log.py` registra sus metadatos una sola vez. La redacción con el modelo se valida antes de mostrarse.
 
 La [guía de arquitectura](docs/architecture.md) describe las responsabilidades, la memoria y cómo añadir una capacidad conservando las comprobaciones deterministas. Las skills son guías de desarrollo; la conversación del producto se implementa en estos módulos y en sus prompts.
 
 ## Desarrollar y ejecutar en dos copias
 
-Lleva al equipo de ejecución el código actualizado completo, incluidos `src/investiq/prompts/`, `pyproject.toml`, el lanzador y las herramientas. Prepara allí su entorno Python y su `.env`; las carpetas `.venv`, las claves y SQLite son locales. Las copias del repositorio no sincronizan conversaciones, preferencias o datos automáticamente.
+Lleva al equipo de ejecución el código actualizado completo, incluidos `src/investiq/prompts/`, `src/investiq/web/static/` (con sus fuentes y licencias), `pyproject.toml`, `run_web.sh` y las herramientas. Prepara allí su entorno Python y su `.env`; las carpetas `.venv`, las claves y SQLite son locales. Las copias del repositorio no sincronizan conversaciones, preferencias o datos automáticamente.
 
 Git excluye `.env`, `.venv` y la SQLite local predeterminada. Los artefactos de `ml/artifacts/` sí forman parte del repositorio. En una copia nueva, carga sus datos con `all`; si trasladarás una base existente, conserva una copia de respaldo y usa el mismo conjunto de base y artefactos.
 
@@ -147,6 +167,8 @@ El proceso espera mensajes MCP por entrada estándar; su salida está reservada 
 
 ## Skills de desarrollo
 
+Las tres skills de diseño solicitadas están **descargadas localmente y utilizadas**: Taste, Emil Design Engineering e Impeccable, en `.local/design-skills/`. Esa carpeta está excluida de Git; no es necesaria para ejecutar la aplicación. Impeccable guía la interfaz, Taste la composición y Emil los detalles de interacción. Los orígenes, reinstalación y límites de sus herramientas están en [docs/design-skills.md](docs/design-skills.md).
+
 Se utilizaron [.codex/skills/sdd-feature/SKILL.md](.codex/skills/sdd-feature/SKILL.md), versionada en este repositorio, y `skill-creator`, disponible en el entorno de desarrollo. Orientan la especificación, las instrucciones y su validación; la app funciona independientemente de su instalación en el equipo de ejecución.
 
 El formato [Agent Skills](https://github.com/agentskills/agentskills) describe cómo empaquetar estas instrucciones. La creación de una nueva skill local `investiq-agent-review` quedó bloqueada por el permiso de escritura de `.agents/skills`, y la autorización fue rechazada: esa skill no se creó ni se utilizó. La descarga del ejemplo externo [skill-creator](https://github.com/anthropics/skills/tree/main/skills/skill-creator) también quedó pendiente por el rechazo del permiso de red; es distinta de la skill ya disponible en el entorno. `.gitignore` reserva `/.agents/skills/skill-creator/` para aquella instalación local.
@@ -157,4 +179,4 @@ La clonación del repositorio solicitado `https://github.com/agentskills/agentsk
 git clone --depth 1 https://github.com/agentskills/agentskills.git .local/agentskills-reference
 ```
 
-`.local/agentskills-reference/` está excluido de Git. Puedes trasladar esa carpeta completa desde el equipo conectado a la misma ruta de la copia de desarrollo. El repositorio contiene la especificación y `skills-ref`, la biblioteca de referencia para validar skills; su descarga no instala automáticamente una skill de revisión. La mejora actual se realizó con las skills disponibles y su alcance está documentado en [specs/agente-modular](specs/agente-modular/requirements.md).
+`.local/agentskills-reference/` está excluido de Git. Puedes trasladar esa carpeta completa desde el equipo conectado a la misma ruta de la copia de desarrollo. El repositorio contiene la especificación y `skills-ref`, la biblioteca de referencia para validar skills; su descarga no instala automáticamente una skill de revisión. La modularización previa se realizó con las skills entonces disponibles y su alcance está documentado en [specs/agente-modular](specs/agente-modular/requirements.md). Esa referencia pendiente es distinta de las tres skills de diseño ahora instaladas.

@@ -42,8 +42,8 @@ def _decision(decision: RouterDecision | None) -> RouterDecision | None:
         # Preserve only a glossary key, never the original question or a generated summary.
         canonical = canonical_education_topic(decision.education_topic or "")
         return RouterDecision(intent="education", education_topic=canonical) if canonical else None
-    if intent == "explanation":
-        return RouterDecision(intent="explanation", symbol=_covered(decision.symbol))
+    if intent in {"explanation", "instrument_info"}:
+        return RouterDecision(intent=intent, symbol=_covered(decision.symbol))
     if intent == "recommend_volatility":
         target = decision.volatility_target if decision.volatility_target in {"baja", "media", "alta"} else None
         return RouterDecision(intent="recommend_volatility", volatility_target=target)
@@ -83,7 +83,7 @@ def _summary(state: ConversationState, *, enabled: bool) -> str:
     if last:
         if last.intent == "education" and last.education_topic:
             pieces.append(f"Hablamos de {last.education_topic}.")
-        elif last.intent == "explanation" and last.symbol:
+        elif last.intent in {"explanation", "instrument_info"} and last.symbol:
             pieces.append(f"Estábamos explorando {last.symbol}.")
         elif last.intent == "recommend_similar" and last.reference_symbol:
             pieces.append(f"Buscábamos instrumentos parecidos a {last.reference_symbol}.")
@@ -98,6 +98,7 @@ def _summary(state: ConversationState, *, enabled: bool) -> str:
         "comparison_symbols": "Quedó pendiente elegir los símbolos para comparar.",
         "comparison_preference": "Quedó pendiente saber si quieres usar alguna preferencia para comparar.",
         "preference_beta": "Quedó pendiente elegir la beta objetivo que quieres usar.",
+        "education_topic": "Quedó pendiente elegir qué palabra o símbolo quieres entender.",
     }
     if state.pending_field:
         pieces.append(pending[state.pending_field])

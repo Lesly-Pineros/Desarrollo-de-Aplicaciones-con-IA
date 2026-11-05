@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, HttpUrl
 
 Intent = Literal[
     "explanation",
+    "instrument_info",
     "education",
     "recommend_volatility",
     "recommend_similar",
@@ -14,6 +15,7 @@ Intent = Literal[
 
 PendingField = Literal[
     "mode", "volatility", "reference", "comparison_symbols", "comparison_preference", "preference_beta",
+    "education_topic",
 ]
 
 

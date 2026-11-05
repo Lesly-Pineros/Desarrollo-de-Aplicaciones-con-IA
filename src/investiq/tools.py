@@ -15,12 +15,12 @@ from investiq.providers.sec import sec_docs
 from investiq.settings import Settings
 
 GLOSSARY = {
-    "volatilidad": "La volatilidad resume cuánto han variado los retornos históricos durante un horizonte. No predice por sí sola el riesgo futuro.",
-    "beta": "Beta compara la sensibilidad histórica de los retornos de un instrumento con los del benchmark elegido. Una beta histórica no garantiza el comportamiento futuro.",
-    "correlación": "La correlación describe qué tan juntos se movieron dos conjuntos de retornos durante un período; no demuestra causalidad.",
-    "etf": "Un ETF es un fondo cuyas participaciones se negocian en bolsa; su composición, costos y riesgos dependen del fondo específico.",
-    "retorno": "El retorno expresa el cambio de valor durante un período, con o sin distribuciones según la definición usada.",
-    "riesgo": "Riesgo describe la posibilidad de resultados distintos a los esperados, incluida una pérdida. No existe una medida única que cubra todos sus tipos.",
+    "volatilidad": "La volatilidad describe cuánto han variado los rendimientos de una inversión en un período. Piensa en un recorrido: cuantos más saltos tiene, mayor es su volatilidad histórica. Eso no permite saber qué pasará después.",
+    "beta": "Beta relaciona los movimientos históricos de una inversión con los de un mercado de referencia. Sirve para mirar cómo se han acompañado, aunque esa relación puede cambiar. No anticipa lo que ocurrirá después.",
+    "correlación": "La correlación describe qué tanto se movieron juntas dos inversiones durante un período. Que hayan coincidido no significa que una haya causado los cambios de la otra ni que vayan a seguir igual.",
+    "etf": "Un ETF es un fondo que se compra y vende en bolsa mediante participaciones. Puedes imaginarlo como una canasta de inversiones, aunque cada fondo tiene su propia composición, sus costos y sus riesgos.",
+    "retorno": "El retorno expresa cuánto cambió el valor de una inversión durante un período. Al compararlo, conviene revisar si también incluye pagos como dividendos o solo el cambio de precio.",
+    "riesgo": "El riesgo es la posibilidad de que una inversión tenga un resultado distinto al esperado, incluida una pérdida. Hay distintas formas de observarlo; una sola medida no cuenta toda la historia.",
 }
 
 

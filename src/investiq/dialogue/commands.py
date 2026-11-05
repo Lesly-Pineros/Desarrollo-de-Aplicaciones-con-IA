@@ -5,8 +5,8 @@ from dataclasses import dataclass
 
 from sqlmodel import Session
 
-from investiq.dialogue.state import clear_pending
-from investiq.domain import ConversationState
+from investiq.dialogue.state import clear_pending, set_pending
+from investiq.domain import ConversationState, RouterDecision
 from investiq.language import plain
 from investiq.memory import forget_memory, load_memory, set_memory_enabled
 from investiq.preferences import describe_preferences, get_preferences
@@ -59,8 +59,24 @@ def smalltalk_reply(query: str, state: ConversationState) -> str | None:
         return "Hola. ¿Qué tienes en mente? Podemos empezar por una duda o por un instrumento que te interese."
     if re.fullmatch(r"(?:muchas )?gracias(?: por (?:todo|la ayuda))?|perfecto|genial|listo", text):
         return "Con gusto. Cuando quieras, seguimos explorando."
-    if text in {"ayuda", "que puedes hacer", "para que sirves", "como funciona el agente"}:
-        return "Puedo ayudarte a entender conceptos, consultar movimientos con sus fuentes, encontrar instrumentos similares y comparar características. Dime qué te interesa; las preferencias podemos irlas definiendo aquí."
+    if text in {"ayuda", "para que sirves", "para que sirve esto", "para que sirve el agente",
+                "como funciona el agente", "como funciona esto", "en que me ayudas",
+                "en que puedes ayudarme", "en que me puedes ayudar"} or re.fullmatch(
+        r"(?:y )?que (?:mas )?puedes hacer(?: por mi)?", text,
+    ):
+        return (
+            "Podemos entender un concepto, explorar una acción o ETF, comparar instrumentos "
+            "o encontrar otros parecidos a uno que ya conoces. Cuando consulte movimientos, "
+            "te mostraré los datos disponibles y sus fuentes.\n\n"
+            "Puedes empezar con «qué es AAPL» o «explícame la volatilidad». "
+            "Las preferencias me las puedes contar sobre la marcha."
+        )
+    if re.fullmatch(
+        r"(?:(?:quiero|quisiera|me gustaria) (?:saber|entender)|(?:puedes|podrias) explicarme|explicame)?"
+        r"\s*(?:que (?:es|significa)|(?:la )?definicion de)(?: (?:el|la|un|una))?", text,
+    ):
+        set_pending(state, "education_topic", RouterDecision(intent="education"))
+        return "¿Qué palabra o símbolo quieres entender?"
     if text in {"cancelar", "cancela", "olvidalo", "dejemos eso", "otra cosa"}:
         clear_pending(state)
         return "De acuerdo, dejamos esa consulta. ¿Qué te gustaría explorar ahora?"

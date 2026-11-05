@@ -12,6 +12,8 @@ Se identificó el ejemplo [skill-creator](https://github.com/anthropics/skills/t
 
 Las skills ayudan al desarrollo del repositorio. El tono del agente que usa la persona se configura en `src/investiq/prompts/conversation.md`, cargado por el runtime, junto con sus contratos y validadores.
 
+Para el rediseño web se descargaron y utilizaron Taste, Emil Design Engineering e Impeccable en `.local/design-skills/`, ignorada por Git. Son distintas del ejemplo externo pendiente descrito arriba. Rutas, fuentes y reinstalación en [design-skills.md](design-skills.md). Se acceden por su `SKILL.md` local; no se ha modificado la configuración global ni se requieren al ejecutar la app.
+
 ## MCP SEC EDGAR
 
 `.codex/config.example.toml` contiene el bloque `mcp_servers.investiq_sec`. Antes de copiarlo a tu configuración personal, adapta la ruta al repo. El ejemplo usa `uv`; si tu entorno se preparó con los comandos del README, puedes definir `command` con la ruta absoluta a su `.venv/bin/python` y `args = ["-m", "investiq.mcp_sec"]`, manteniendo como directorio de trabajo la raíz de esa copia.

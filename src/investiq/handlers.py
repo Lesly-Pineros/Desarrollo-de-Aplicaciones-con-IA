@@ -6,7 +6,8 @@ from typing import Literal
 from sqlmodel import Session
 
 from investiq.domain import RouterDecision, SourceReference
-from investiq.instruments import INSTRUMENTS
+from investiq.instruments import INSTRUMENTS, INSTRUMENT_BY_SYMBOL
+from investiq.language import canonical_education_topic, plain
 from investiq.settings import Settings
 from investiq.tools import (
     compare_instruments, education_tool, feature_sources, local_model_source, market_quote_tool,
@@ -69,10 +70,42 @@ def _educate(query: str, decision: RouterDecision, explanation_level: str) -> Ha
     definition = education_tool(decision.education_topic or query, followup=followup)
     if not definition:
         return HandlerResult(
-            "Puedo explicar volatilidad, beta, correlación, ETF, retorno o riesgo. ¿Cuál te interesa?",
+            "Todavía no tengo una explicación verificada para ese término. "
+            "Podemos empezar por volatilidad, beta, correlación, ETF, retorno o riesgo.",
             status="degraded",
         )
-    return HandlerResult(definition, facts={"definition": definition})
+    topic = canonical_education_topic(decision.education_topic or query)
+    source = SourceReference(
+        source_id=f"glossary:{plain(topic)}", title=f"Glosario educativo: {topic}",
+        url=f"local://glossary/{plain(topic)}", provider="Glosario local de InvestiQ",
+    )
+    return HandlerResult(definition, facts={"definition": definition}, sources=[source])
+
+
+def _instrument_info(decision: RouterDecision) -> HandlerResult:
+    symbol = normalize_symbol(decision.symbol)
+    item = INSTRUMENT_BY_SYMBOL.get(symbol)
+    if item is None:
+        return HandlerResult("¿Qué empresa o símbolo quieres conocer? Puedes elegir uno del catálogo.",
+                             status="degraded")
+    sectors = {
+        "Technology": "tecnología", "Consumer Discretionary": "consumo discrecional",
+        "Communication Services": "servicios de comunicación", "Financials": "finanzas",
+        "Energy": "energía", "Health Care": "salud", "Consumer Staples": "consumo básico",
+        "Broad Market": "mercado amplio",
+    }
+    kind = "una acción" if item.kind == "equity" else "un ETF"
+    answer = (
+        f"**{item.symbol}** es el símbolo bursátil de **{item.name}**. "
+        f"En nuestro catálogo es {kind}, en la categoría de {sectors.get(item.sector, item.sector)}.\n\n"
+        "Puedes usar ese símbolo para consultar sus movimientos o compararlo con otro instrumento."
+    )
+    source = SourceReference(
+        source_id=f"catalogue:{item.symbol}", title=f"Catálogo local: {item.symbol} · {item.name}",
+        url=f"local://catalogue/{item.symbol}", provider="Catálogo de instrumentos de InvestiQ",
+    )
+    return HandlerResult(answer, facts={"symbol": item.symbol, "name": item.name, "kind": item.kind,
+                                        "sector": item.sector}, sources=[source], tools_used=["instrument_catalogue"])
 
 
 def _recommend_volatility(session: Session, decision: RouterDecision) -> HandlerResult:
@@ -146,6 +179,8 @@ def execute_query(session: Session, email: str, query: str, settings: Settings, 
         return _explain(session, settings, decision)
     if decision.intent == "education":
         return _educate(query, decision, explanation_level)
+    if decision.intent == "instrument_info":
+        return _instrument_info(decision)
     if decision.intent == "recommend_volatility":
         return _recommend_volatility(session, decision)
     if decision.intent == "recommend_similar":
@@ -153,6 +188,7 @@ def execute_query(session: Session, email: str, query: str, settings: Settings, 
     if decision.intent == "compare":
         return _compare(session, email, decision, use_preferences)
     return HandlerResult(
-        "Puedo explicar precios, enseñar conceptos, buscar instrumentos similares o filtrar por volatilidad. ¿Qué necesitas?",
+        "No estoy seguro de qué quieres explorar. Dime un concepto o un símbolo y empezamos por ahí; "
+        "por ejemplo, «qué es AAPL» o «explícame la volatilidad».",
         status="degraded",
     )

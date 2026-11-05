@@ -1,8 +1,8 @@
 # App local de InvestiQ
 
-La guía de instalación y los comandos de consola se mantienen en el [README principal](../README.md). El arranque recomendado es `bash run_streamlit.sh`: resuelve la raíz del repositorio dinámicamente y permite ejecutar copias ubicadas en rutas distintas.
+La guía de instalación y los comandos de consola están en el [README principal](../README.md). El arranque recomendado es `bash run_web.sh`, en `http://127.0.0.1:8000`: resuelve la raíz dinámicamente y funciona en copias ubicadas en rutas distintas. No requiere Node, compilación ni CDN. Streamlit sigue como alternativa con `bash run_streamlit.sh`.
 
-La interfaz Streamlit envía los turnos a `conversation.answer_turn` en el mismo proceso. Abre sin login; las preferencias se definen y corrigen en el chat. La izquierda explica la app, muestra los símbolos consultables y permite ver, desactivar o borrar el recuerdo resumido.
+La web sirve HTML/CSS/JS y API en un proceso Python. `web/server.py` valida las peticiones y recursos permitidos, `web/service.py` adapta las operaciones a `conversation.answer_turn` y `web/sessions.py` mantiene el contexto temporal. Abre sin login; las preferencias se definen en el chat. El catálogo permite preguntar por un símbolo y la ayuda explica el propósito. En móvil se recogen en un explorador accesible. Véase [ADR-004](../decisions/ADR-004-web-local.md).
 
 La fachada de conversación coordina comandos, preferencias y aclaraciones. Las consultas de dominio pasan a `orchestration.answer_query`, que delega en router, handlers, construcción de respuesta y registro. La [guía de arquitectura](architecture.md) explica estos límites y cómo ampliar el agente.
 
@@ -14,13 +14,15 @@ App y pipeline leen `DATABASE_URL` desde las variables de entorno y `.env`, con 
 
 ## Memoria y trazas
 
-Las preferencias se guardan bajo la identidad `local`, compartida por la instalación. El historial literal permanece en la sesión; el recuerdo opcional entre visitas guarda solo contexto estructurado y expira según `CONVERSATION_MEMORY_DAYS` (90 por defecto). Borrar contexto conserva las preferencias hasta que la persona pida borrarlas.
+Las preferencias y el recuerdo persistente usan la identidad `local`, compartida por instalación. La cookie opaca HttpOnly SameSite=Strict separa los chats temporales, sin separar preferencias persistentes. El historial visible queda temporalmente en el servidor: máximo 80 mensajes, 128 sesiones y dos horas de inactividad. Reiniciar el servidor borra esos chats, no la base. El recuerdo entre visitas guarda solo contexto estructurado y expira según `CONVERSATION_MEMORY_DAYS` (90 por defecto).
 
-`QueryLog` conserva metadatos, herramientas, fuentes y consumo disponible; no guarda texto de consulta ni credenciales. La purga se aplica con la política de retención configurada al registrar respuestas. `ResponseTrace` registra categorías seguras de ruta, narración y respaldo. `INVESTIQ_SHOW_DIAGNOSTICS=true` permite consultarlas en la interfaz de desarrollo.
+«Nueva conversación» y «Olvidar contexto» vacían chat y recuerdo, conservando preferencias y elección de memoria. Se invalidan las copias antiguas de contexto para evitar que otra ventana restaure lo olvidado. Desactivar memoria elimina el resumen persistente; el chat abierto conserva su contexto temporal.
+
+`QueryLog` conserva metadatos, herramientas, fuentes y consumo disponible; no guarda texto de consulta ni credenciales. La purga aplica la retención al registrar respuestas. `ResponseTrace` guarda categorías seguras de ruta, narración y respaldo. La web no expone detalles internos de proveedores; `INVESTIQ_SHOW_DIAGNOSTICS=true` permite inspección en la alternativa Streamlit de desarrollo.
 
 ## Verificación local y en vivo
 
-Sin NVIDIA siguen disponibles las rutas y datos locales. La suite offline utiliza SQLite temporal y respuestas simuladas; no acredita proveedores reales. Cubre rutas, transiciones de diálogo, procedencia de preferencias, trazas y AppTest de Streamlit. El estado y la evidencia de ejecución se mantienen en [PLAN.md](../PLAN.md) y [las tareas de modularización](../specs/agente-modular/tasks.md).
+Sin NVIDIA puedes aprender conceptos y definir símbolos desde el catálogo; consultar movimientos necesita datos locales o acceso a fuentes. La suite offline utiliza SQLite temporal y respuestas simuladas; no acredita proveedores reales. Cubre diálogo, guardrails, API HTTP local, sesiones y AppTest de Streamlit. La prueba de Chrome verifica interacciones y diseño con otra base temporal y sin proveedores financieros. Evidencia en [PLAN.md](../PLAN.md) y [las tareas de la web](../specs/web-conversacional/tasks.md).
 
 El diagnóstico `tools/verify_agent.py` requiere `--live --key-rotated` para llamar a NVIDIA, únicamente en el entorno autorizado con internet y después de reemplazar la clave expuesta. SEC requiere `SEC_USER_AGENT` con contacto real. Los comandos completos están en el README.
 

@@ -8,6 +8,8 @@
 
 La entrada principal local será una web HTML/CSS/JS servida junto a una API mínima por Python. La API adapta la fachada `answer_turn`; no duplica el router, las herramientas ni la memoria. Se usa la biblioteca estándar para evitar un nuevo runtime o una instalación npm. Streamlit queda disponible como alternativa heredada.
 
+Actualización del mismo día: `investiq-app` e `investiq-web` arrancan la web; `run_web.sh` sigue siendo el comando recomendado para checkouts. Streamlit se instala solo con el extra `legacy-ui` y sus entradas explícitas son `investiq-streamlit` y `run_streamlit.sh`. No es una dependencia de la aplicación principal.
+
 ## Consecuencias
 
 Un solo comando y proceso; assets locales, sin CDN ni login. El servidor escucha por defecto solo en loopback y está diseñado para el piloto local single-user. Las fuentes, cuotas, validación factual, clustering y umbrales conservan sus contratos.

@@ -33,7 +33,8 @@ def answer_query(session: Session, email: str, query: str, settings: Settings,
     if result.facts:
         facts = {**result.facts, "conversation_context": history or [], "explanation_level": explanation_level}
         narrated = safe_narration(client, decision.intent, query, facts, result.sources,
-                                  result=None if decision.intent == "education" else result.answer,
+                                  result=(result.answer if result.protected_narration
+                                          or decision.intent != "education" else None),
                                   diagnostics=diagnostics)
         if narrated:
             result.answer = narrated

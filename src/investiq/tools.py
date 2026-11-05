@@ -6,6 +6,7 @@ from sqlmodel import Session, select
 
 from investiq.data.models import InstrumentFeature, MLClusterRun, UserPreference
 from investiq.domain import FilingItem, NewsItem, PreferenceInput, SourceReference
+from investiq.education import EDUCATION_CATALOGUE
 from investiq.instruments import INSTRUMENT_BY_SYMBOL
 from investiq.ml.similarity import load_model_artifact, similar_instruments as find_similar
 from investiq.ml.volatility import assign_volatility_buckets
@@ -14,14 +15,8 @@ from investiq.providers.news import news
 from investiq.providers.sec import sec_docs
 from investiq.settings import Settings
 
-GLOSSARY = {
-    "volatilidad": "La volatilidad describe cuánto han variado los rendimientos de una inversión en un período. Piensa en un recorrido: cuantos más saltos tiene, mayor es su volatilidad histórica. Eso no permite saber qué pasará después.",
-    "beta": "Beta relaciona los movimientos históricos de una inversión con los de un mercado de referencia. Sirve para mirar cómo se han acompañado, aunque esa relación puede cambiar. No anticipa lo que ocurrirá después.",
-    "correlación": "La correlación describe qué tanto se movieron juntas dos inversiones durante un período. Que hayan coincidido no significa que una haya causado los cambios de la otra ni que vayan a seguir igual.",
-    "etf": "Un ETF es un fondo que se compra y vende en bolsa mediante participaciones. Puedes imaginarlo como una canasta de inversiones, aunque cada fondo tiene su propia composición, sus costos y sus riesgos.",
-    "retorno": "El retorno expresa cuánto cambió el valor de una inversión durante un período. Al compararlo, conviene revisar si también incluye pagos como dividendos o solo el cambio de precio.",
-    "riesgo": "El riesgo es la posibilidad de que una inversión tenga un resultado distinto al esperado, incluida una pérdida. Hay distintas formas de observarlo; una sola medida no cuenta toda la historia.",
-}
+# Public text view retained for callers such as the opt-in live verifier.
+GLOSSARY = {topic: entry.definition for topic, entry in EDUCATION_CATALOGUE.items()}
 
 
 def normalize_symbol(value: str | None) -> str | None:
@@ -50,15 +45,7 @@ def education_tool(topic: str, *, followup: str = "") -> str | None:
     if not term:
         return None
     if any(word in followup.casefold() for word in ("ejemplo", "sencill", "no entend", "más fácil", "mas facil")):
-        examples = {
-            "volatilidad": "Imagina dos recorridos: uno suave y otro con muchos saltos. La volatilidad describe cuánto variaron los retornos históricos, como esos saltos; no asegura qué pasará después.",
-            "beta": "Piensa en un instrumento y un mercado de referencia. Beta resume cómo se relacionaron sus movimientos históricos. Esa relación puede cambiar; no es una promesa sobre el futuro.",
-            "correlación": "Imagina dos personas caminando: a veces avanzan juntas y a veces se separan. La correlación describe cuánto coincidieron dos series de retornos; no significa que una haya causado la otra.",
-            "etf": "Piensa en una canasta de inversiones que se compra y vende en bolsa mediante participaciones. Eso ayuda a imaginar un ETF, aunque su composición, costos y riesgos dependen del fondo.",
-            "retorno": "Si comparas el valor de una inversión al inicio y al final de un período, observas su retorno. La definición usada debe aclarar si incluye distribuciones, como dividendos.",
-            "riesgo": "Imagina que el resultado de una decisión puede ser distinto al que esperabas, incluso una pérdida. Esa posibilidad es parte del riesgo, y una sola medida no cuenta toda la historia.",
-        }
-        return examples[term]
+        return EDUCATION_CATALOGUE[term].example
     return GLOSSARY[term]
 
 

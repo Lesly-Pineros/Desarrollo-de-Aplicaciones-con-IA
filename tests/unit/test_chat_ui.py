@@ -1,11 +1,13 @@
 from pathlib import Path
 
+import pytest
 from sqlmodel import Session, select
-from streamlit.testing.v1 import AppTest
 
 from investiq.data.database import make_engine
 from investiq.data.models import QueryLog, UserPreference
 from investiq.instruments import INSTRUMENTS
+
+AppTest = pytest.importorskip("streamlit.testing.v1", reason="Interfaz heredada opcional: instala .[legacy-ui]").AppTest
 
 
 def test_sidebar_explains_the_agent_and_symbol_selection_is_informational(tmp_path, monkeypatch):

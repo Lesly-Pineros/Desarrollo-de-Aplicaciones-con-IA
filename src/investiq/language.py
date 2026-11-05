@@ -49,10 +49,9 @@ def contains_phrase(text: str, phrase: str) -> bool:
 
 
 def canonical_education_topic(query: str) -> str | None:
-    # Lazy import keeps language helpers independent of tool initialization.
-    from investiq.tools import GLOSSARY
+    from investiq.education import match_education_topic
 
-    return next((topic for topic in GLOSSARY if contains_phrase(query, topic)), None)
+    return match_education_topic(query)
 
 
 def is_educational_question(query: str) -> bool:
@@ -60,19 +59,32 @@ def is_educational_question(query: str) -> bool:
     if topic is None:
         return False
     text = plain(query)
-    if topic == "etf":
+    if topic in {"etf", "S&P 500"}:
         # In "qué es el ETF QQQ", ETF qualifies the named instrument. It is
         # different from "qué es un ETF como QQQ", which asks for the concept.
         from investiq.instruments import INSTRUMENT_BY_SYMBOL, mentioned_symbols
+        from investiq.education import is_education_subject
 
         for symbol in mentioned_symbols(query):
             item = INSTRUMENT_BY_SYMBOL[symbol]
-            if item.kind == "ETF" and (
-                re.search(r"\betf\s+\$?" + re.escape(symbol.casefold()) + r"\b", text)
-                or contains_phrase(query, item.name)
+            symbol_subject = any(
+                is_education_subject(re.sub(r"\betf\s+$", "", text[:match.start()]))
+                for match in re.finditer(r"(?<!\w)\$?" + re.escape(symbol.casefold()) + r"(?!\w)", text)
+            )
+            name_subject = any(
+                is_education_subject(text[:match.start()])
+                for match in re.finditer(r"(?<!\w)" + re.escape(plain(item.name)) + r"(?!\w)", text)
+            )
+            if (item.kind == "ETF" or topic == "S&P 500") and (
+                symbol_subject or name_subject
             ):
                 return False
-    term = re.escape(plain(topic))
+    from investiq.education import concept_pattern, is_education_subject
+
+    term = concept_pattern(topic)
+    if any(is_education_subject(text[:match.start()])
+           for match in re.finditer(r"(?<!\w)" + term + r"(?!\w)", text)):
+        return True
     # Concept questions take precedence over incidental references to price.
     # A request such as "explica el movimiento del ETF" remains a market query.
     return bool(re.search(

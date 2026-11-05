@@ -12,6 +12,7 @@ Los módulos de esta tabla están bajo `src/investiq/`.
 | `web/service.py`, `web/sessions.py` | Adaptación al agente, controles de memoria y sesiones temporales acotadas. |
 | `web/static/` | Web HTML/CSS/JS, catálogo, chat y tipografías locales. |
 | `app.py` | Interfaz Streamlit heredada, disponible como alternativa local. |
+| `legacy_ui.py` | Entrada opcional que inicia la CLI Streamlit, sin importarla en la web principal. |
 | `conversation.py` · `answer_turn` | Fachada de cada turno: coordina controles, preferencias, aclaraciones y consulta de dominio. |
 | `dialogue/commands.py` | Comandos de memoria, nivel de explicación y controles conversacionales. |
 | `dialogue/state.py` | Actualización del contexto del turno y limpieza de la consulta pendiente. |
@@ -26,8 +27,11 @@ Los módulos de esta tabla están bajo `src/investiq/`.
 | `query_log.py` · `record_response`, `purge_query_logs` | Registro de metadatos y aplicación de la retención. |
 | `response_style.py`, `prompts/`, `llm.py` | Guía de tono, narración opcional y validación de la salida del modelo. |
 | `tools.py`, `providers/`, `ml/`, `data/` | Consulta de fuentes, cálculos deterministas, similitud por clustering y persistencia. |
+| `education.py` | Catálogo educativo con conceptos, variantes de escritura, ejemplos y referencias por término. |
 
 Los contratos de entrada y salida se expresan en `domain.py`. Los handlers se concentran en ejecutar las herramientas; la creación del cliente LLM, la interfaz y el registro de consultas corresponden a sus componentes coordinadores.
+
+El catálogo educativo separa los conceptos de los símbolos negociables. Incluye variantes de S&P 500, definición, ejemplo y fuente oficial guardados localmente; no añade el índice al universo de 20 acciones/ETF ni lo sustituye por SPY. Los conceptos que necesitan preservar cifras, como «500», marcan su resultado para narración con bloque factual protegido.
 
 ## Flujo de un turno
 

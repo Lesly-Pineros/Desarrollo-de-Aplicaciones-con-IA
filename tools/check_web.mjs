@@ -233,6 +233,14 @@ try {
   await waitFor("document.querySelectorAll('.message.assistant').length===1", "comparison suggestion completed");
   await expect("document.querySelector('.answer-content').textContent.includes('compar')", "Comparison suggestion asks a relevant next question");
   await noOverflow("mobile after suggestions");
+  await send("que es el sp500");
+  await expect("(() => {const text=document.querySelector('.message.assistant:last-child .answer-content').textContent;return text.includes('S&P 500') && text.includes('500') && text.toLowerCase().includes('empresas');})()", "SP500 receives a grounded index explanation in the web chat");
+  await click(".message.assistant:last-child .response-sources summary");
+  await expect("document.querySelector('.message.assistant:last-child .source-link').href==='https://www.spglobal.com/spdji/en/indices/equity/sp-500/'", "Index explanation links to its official S&P source");
+  await send("un ejemplo");
+  await expect("document.querySelector('.message.assistant:last-child .answer-content').textContent.includes('S&P 500')", "Index follow-up keeps the educational topic");
+  await noOverflow("mobile index explanation");
+  await screenshot("mobile-sp500");
   assert.deepEqual(errors, [], "No uncaught browser exceptions");
   checks.push("No uncaught browser exceptions");
   await fs.writeFile(path.join(out, "browser-report.json"), JSON.stringify({checks, snapshots, providerCalls: false, database: "temporary", browser: "Chrome headless"}, null, 2));

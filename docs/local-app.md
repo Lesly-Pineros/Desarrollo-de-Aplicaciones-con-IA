@@ -1,6 +1,6 @@
 # App local de InvestiQ
 
-La guía de instalación y los comandos de consola están en el [README principal](../README.md). El arranque recomendado es `bash run_web.sh`, en `http://127.0.0.1:8000`: resuelve la raíz dinámicamente y funciona en copias ubicadas en rutas distintas. No requiere Node, compilación ni CDN. Streamlit sigue como alternativa con `bash run_streamlit.sh`.
+La guía de instalación y los comandos de consola están en el [README principal](../README.md). El arranque recomendado es `bash run_web.sh`, en `http://127.0.0.1:8000`: resuelve la raíz dinámicamente y funciona en copias ubicadas en rutas distintas. No requiere Node, compilación, CDN ni Streamlit. `investiq-app` e `investiq-web` apuntan también a la web tras actualizar la instalación. Streamlit queda en el extra opcional `legacy-ui`, con sus entradas explícitas `run_streamlit.sh` e `investiq-streamlit`.
 
 La web sirve HTML/CSS/JS y API en un proceso Python. `web/server.py` valida las peticiones y recursos permitidos, `web/service.py` adapta las operaciones a `conversation.answer_turn` y `web/sessions.py` mantiene el contexto temporal. Abre sin login; las preferencias se definen en el chat. El catálogo permite preguntar por un símbolo y la ayuda explica el propósito. En móvil se recogen en un explorador accesible. Véase [ADR-004](../decisions/ADR-004-web-local.md).
 

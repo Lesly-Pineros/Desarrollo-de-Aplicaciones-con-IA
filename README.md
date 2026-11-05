@@ -43,6 +43,8 @@ bash run_web.sh
 
 Abre `http://127.0.0.1:8000`. Detén el proceso con `Ctrl+C`. La web y su API se sirven desde el mismo proceso Python; no necesitas Node, npm ni compilar el frontend. Las fuentes y los estilos están en el repositorio y funcionan sin CDN.
 
+Este es el **frontend gratuito principal**, hecho con HTML, CSS y JavaScript, sin dependencia de Streamlit. Tras instalar o actualizar el paquete, `investiq-app` e `investiq-web` también arrancan esta web. Si tenías una instalación anterior, actualiza sus entradas con `.venv/bin/python -m pip install -e '.[dev]'`; `bash run_web.sh` utiliza directamente el código de esta copia.
+
 El lanzador detecta su propia carpeta, entra en la raíz correcta y utiliza el Python local. Puedes llamarlo desde otra carpeta indicando la ruta al script. Para elegir otro intérprete o puerto:
 
 ```bash
@@ -51,7 +53,7 @@ INVESTIQ_PYTHON=/ruta/al/entorno/bin/python bash run_web.sh --port 8001
 
 `INVESTIQ_PYTHON` tiene prioridad; si no lo defines, se utiliza `.venv/bin/python` y después el Python disponible en la consola.
 
-Puedes empezar con «¿Qué es AAPL?», «¿Qué es beta?» o «compara AAPL y MSFT». Si falta un criterio, el agente lo pregunta en el chat. Una respuesta corta completa la consulta pendiente. También admite «sin preferencias», «qué recuerdas de mí», «olvida el contexto» y «borra mis preferencias».
+Puedes empezar con «¿Qué es el sp500?», «¿Qué es AAPL?», «¿Qué es beta?» o «compara AAPL y MSFT». «SP500», «SP 500» y «S&P 500» identifican el mismo tema educativo. Puedes continuar con «un ejemplo» o «más sencillo». Si falta un criterio, el agente lo pregunta en el chat. Una respuesta corta completa la consulta pendiente. También admite «sin preferencias», «qué recuerdas de mí», «olvida el contexto» y «borra mis preferencias».
 
 Para abrir sin llamadas al modelo ni enriquecimientos externos, aunque `.env` tenga claves:
 
@@ -61,7 +63,9 @@ NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= SEC_USER_AGENT= bash run
 
 Sin Internet puedes aprender conceptos y definir símbolos del catálogo. Las consultas de mercado necesitan datos locales o acceso a sus fuentes; la app informa cuando no están disponibles. La web escucha únicamente en `127.0.0.1` o `localhost`: es un piloto local, no un servidor público.
 
-La interfaz Streamlit anterior sigue disponible con `bash run_streamlit.sh` en `http://localhost:8501`. El cambio de interfaz local está documentado en [ADR-004](decisions/ADR-004-web-local.md); no se ha desplegado en la nube.
+La interfaz Streamlit anterior es una alternativa opcional. Para usarla expresamente, instala `.venv/bin/python -m pip install -e '.[legacy-ui]'` y ejecuta `bash run_streamlit.sh` o `investiq-streamlit`, en `http://localhost:8501`. Esa dirección corresponde al frontend anterior. Para abrir la nueva web, usa el puerto 8000. Actualiza el código también en el equipo donde la ejecutas; las copias no se sincronizan por sí solas.
+
+El cambio está en [ADR-004](decisions/ADR-004-web-local.md). Usar el frontend local no tiene una tarifa de framework; publicarlo en Internet y el consumo de proveedores son cuestiones separadas. No se ha iniciado el despliegue cloud.
 
 ## Cargar datos históricos y entrenar
 
@@ -89,6 +93,8 @@ NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= SEC_USER_AGENT= .venv/bi
 
 El comando configurado en `pyproject.toml` recoge `tests/unit`. La suite unitaria también aísla las credenciales mediante un fixture compartido. Incluye lógica local, modelos simulados y la interfaz con SQLite temporal; un resultado en verde no acredita una integración en vivo.
 
+Los tests de la interfaz Streamlit heredada se omiten cuando no está instalado su extra; las pruebas de memoria y de la web principal siguen ejecutándose. Solo para comprobar también esa alternativa, instala `.[dev,legacy-ui]`. La web principal no necesita ese extra.
+
 Para comprobar las especificaciones SDD, el siguiente bucle omite las plantillas y se detiene si encuentra un error:
 
 ```bash
@@ -101,7 +107,7 @@ Para comprobar las especificaciones SDD, el siguiente bucle omite las plantillas
 )
 ```
 
-Consulta el estado real y la trazabilidad en [PLAN.md](PLAN.md) y [specs/web-conversacional/tasks.md](specs/web-conversacional/tasks.md). Los resultados offline y las integraciones en vivo se registran por separado.
+Consulta el estado real y la trazabilidad en [PLAN.md](PLAN.md), [las tareas de la web](specs/web-conversacional/tasks.md) y [la ampliación educativa sobre índices](specs/educacion-indices/tasks.md). Los resultados offline y las integraciones en vivo se registran por separado.
 
 ## Verificar la web en Chrome
 

@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pytest
 from sqlmodel import Session
-from streamlit.testing.v1 import AppTest
 
 from investiq.conversation import answer_turn
 from investiq.data.database import create_db, make_engine
@@ -137,6 +136,7 @@ def test_disabled_memory_does_not_save_new_topics_until_explicitly_reenabled(mem
 
 @pytest.fixture
 def ui_memory(tmp_path, monkeypatch):
+    AppTest = pytest.importorskip("streamlit.testing.v1", reason="Interfaz heredada opcional: instala .[legacy-ui]").AppTest
     monkeypatch.chdir(tmp_path)
     url = f"sqlite:///{tmp_path / 'memory-ui.db'}"
     monkeypatch.setenv("DATABASE_URL", url)

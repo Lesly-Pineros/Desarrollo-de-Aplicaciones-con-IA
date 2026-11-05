@@ -5,7 +5,7 @@ import re
 
 from investiq.domain import ResponseDiagnostics, RouterDecision
 from investiq.instruments import mentioned_symbols
-from investiq.language import is_educational_question, plain
+from investiq.language import canonical_education_topic, is_educational_question, plain
 from investiq.llm import ChatNVIDIAClient, LLMUnavailable
 from investiq.response_style import provider_failure
 from investiq.tools import normalize_symbol
@@ -37,7 +37,7 @@ def fallback_route(query: str) -> RouterDecision:
         target = next((bucket for bucket in ("baja", "media", "alta") if re.search(r"\b" + bucket + r"\b", text)), None)
         return RouterDecision(intent="recommend_volatility", volatility_target=target,
                               needs_clarification=target is None)
-    if any(word in text for word in ("qué es", "que es", "qué significa", "que significa", "explica", "explícame", "explicame", "define", "beta", "volatilidad", "etf", "correlación", "retorno", "riesgo")):
+    if canonical_education_topic(query) or any(word in text for word in ("qué es", "que es", "qué significa", "que significa", "explica", "explícame", "explicame", "define", "beta", "volatilidad", "etf", "correlación", "retorno", "riesgo")):
         return RouterDecision(intent="education", education_topic=query)
     return RouterDecision(intent="unknown")
 
@@ -48,6 +48,13 @@ def normalize_decision(decision: RouterDecision, *, query: str) -> RouterDecisio
     # the phrase "qué es" for a glossary question or a live market request.
     explicit = fallback_route(query)
     if explicit.intent == "instrument_info":
+        return explicit
+    if canonical_education_topic(query) == "S&P 500" and (
+        explicit.intent == "education"
+        or (explicit.intent == "explanation" and not mentioned_symbols(query))
+    ):
+        # The index is an educational concept, not the SPY fund. A classifier
+        # cannot substitute that ticker or invent an index quote provider.
         return explicit
     decision = decision.model_copy(deep=True)
     if decision.symbol:

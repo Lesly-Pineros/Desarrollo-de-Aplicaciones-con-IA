@@ -6,8 +6,9 @@ from typing import Literal
 from sqlmodel import Session
 
 from investiq.domain import RouterDecision, SourceReference
+from investiq.education import EDUCATION_CATALOGUE, education_sources
 from investiq.instruments import INSTRUMENTS, INSTRUMENT_BY_SYMBOL
-from investiq.language import canonical_education_topic, plain
+from investiq.language import canonical_education_topic
 from investiq.settings import Settings
 from investiq.tools import (
     compare_instruments, education_tool, feature_sources, local_model_source, market_quote_tool,
@@ -25,6 +26,7 @@ class HandlerResult:
     sources: list[SourceReference] = field(default_factory=list)
     status: Literal["ok", "degraded", "error"] = "ok"
     tools_used: list[str] = field(default_factory=list)
+    protected_narration: bool = False
 
 
 def _explain(session: Session, settings: Settings, decision: RouterDecision) -> HandlerResult:
@@ -75,11 +77,10 @@ def _educate(query: str, decision: RouterDecision, explanation_level: str) -> Ha
             status="degraded",
         )
     topic = canonical_education_topic(decision.education_topic or query)
-    source = SourceReference(
-        source_id=f"glossary:{plain(topic)}", title=f"Glosario educativo: {topic}",
-        url=f"local://glossary/{plain(topic)}", provider="Glosario local de InvestiQ",
+    return HandlerResult(
+        definition, facts={"definition": definition}, sources=education_sources(topic),
+        protected_narration=EDUCATION_CATALOGUE[topic].protected_narration,
     )
-    return HandlerResult(definition, facts={"definition": definition}, sources=[source])
 
 
 def _instrument_info(decision: RouterDecision) -> HandlerResult:

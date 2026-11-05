@@ -52,7 +52,7 @@ Los resultados de tools son modelos Pydantic y contienen identificadores/enlaces
 
 - ChatNVIDIA es obligatorio; `NVIDIA_API_KEY`, `NVIDIA_MODEL`, timeout y presupuesto máximo de tokens se configuran por entorno/secret manager.
 - Twelve Data es opcional para cotización; caché de 15 min; cuota limitada internamente a 8/min y 800/día. Fallback: último precio histórico yfinance, rotulado con su fecha; sin dato, no se calcula variación.
-- Marketaux es opcional para noticias; caché configurable 6–12 h y aviso de retraso de hasta 24 h. Sin key se oculta/deshabilita la integración y se declara la falta de fuente.
+- Marketaux es opcional para noticias; caché configurable 6–12 h por símbolo y quince minutos por día/filtros para titulares. Sin key se declara la falta de fuente. ADR-006 sustituye la antigua suposición de retraso fijo de 24 h por fechas y aviso de caché desactualizada, según documentación actual (100 peticiones/día, tres artículos/petición y acceso inmediato).
 - SEC EDGAR no requiere key. El cliente usa `User-Agent` identificable con contacto configurado (por ejemplo, `SEC_USER_AGENT`) y rate limit ≤10 req/s. Filing unavailable o CIK sin mapping se informa explícitamente.
 - Las cachés preservan último dato válido ante timeout/cuota y nunca lo presentan como actual si caducó.
 

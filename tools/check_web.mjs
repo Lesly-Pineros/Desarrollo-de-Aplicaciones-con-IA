@@ -131,7 +131,7 @@ try {
   if (!executable) throw new Error("Chrome no encontrado. Define CHROME_PATH con su ejecutable.");
   app = spawn("bash", [path.join(root, "run_web.sh"), "--port", String(appPort)], {
     cwd: scratch,
-    env: {...process.env, DATABASE_URL: `sqlite:///${path.join(scratch, "test.db")}`, NVIDIA_API_KEY: "", TWELVE_DATA_API_KEY: "", MARKETAUX_API_KEY: "", SEC_USER_AGENT: ""},
+    env: {...process.env, DATABASE_URL: `sqlite:///${path.join(scratch, "test.db")}`, NVIDIA_API_KEY: "", TWELVE_DATA_API_KEY: "", MARKETAUX_API_KEY: "", FMP_API_KEY: "", SEC_USER_AGENT: ""},
     stdio: "ignore",
   });
   app.on("error", () => {processError = new Error("No se pudo iniciar el servidor Python.");});
@@ -241,6 +241,173 @@ try {
   await expect("document.querySelector('.message.assistant:last-child .answer-content').textContent.includes('S&P 500')", "Index follow-up keeps the educational topic");
   await noOverflow("mobile index explanation");
   await screenshot("mobile-sp500");
+  await viewport(1440, 900);
+  await click("#new-conversation");
+  await waitFor("!document.querySelector('#welcome').hidden", "teacher lesson reset");
+  await send("¿Qué es una acción?");
+  await expect("/propiedad|parte|participación/i.test(document.querySelector('.message.assistant:last-child .answer-content').textContent)", "Teacher explains ownership with retrieved educational evidence");
+  await expect("document.querySelector('.message.assistant:last-child .source-link').href.startsWith('https://')", "Teacher lesson includes an official source");
+  await send("¿En qué se diferencia un ETF de una acción?");
+  await expect("(() => {const text=document.querySelector('.message.assistant:last-child .answer-content').textContent;return text.includes('ETF') && text.toLowerCase().includes('acción');})()", "Conceptual comparison stays in the classroom flow");
+  await send("¿Qué brokers existen para invertir?");
+  await expect("/Interactive Brokers|Schwab|Fidelity/.test(document.querySelector('.message.assistant:last-child .answer-content').textContent)", "Broker lesson gives sourced examples");
+  await expect("/país|residencia|jurisdicción/.test(document.querySelector('.message.assistant:last-child .answer-content').textContent)", "Broker examples retain jurisdiction limits");
+  await screenshot("teacher-brokers");
+  await send("¿Qué puedo usar en Colombia?");
+  await expect("document.querySelector('.message.assistant:last-child .answer-content').textContent.includes('no permite confirmar')", "Country follow-up acknowledges the limits of the reviewed library");
+  await send("¿Y cuánto cobra hoy?");
+  await expect("document.querySelector('.message.assistant:last-child .answer-content').textContent.includes('no permite confirmar')", "Current fees are not invented");
+  await send("¿Qué es un ETF apalancado?");
+  await send("¿Y sus riesgos?");
+  await expect("!document.querySelector('.message.assistant:last-child .answer-content').textContent.includes('No encontré evidencia')", "Risk follow-up keeps the specific educational subject");
+  await viewport(390, 844);
+  await evaluate("(() => { const scroll=document.querySelector('#conversation-scroll'); scroll.scrollTop=scroll.scrollHeight; })()");
+  await noOverflow("mobile teacher lesson");
+  await screenshot("mobile-teacher");
+  await send("¿Qué es una criptomoneda?");
+  await expect("document.querySelector('.message.assistant:last-child .answer-content').textContent.toLowerCase().includes('cripto')", "Teacher explains crypto assets with reviewed evidence");
+  await send("¿Qué es el RSI?");
+  await expect("document.querySelector('.message.assistant:last-child .answer-content').textContent.includes('RSI')", "Technical indicators are explained without trading instructions");
+  await send("¿Cómo se interpreta?");
+  await expect("/sobrecompra|sobreventa/.test(document.querySelector('.message.assistant:last-child .answer-content').textContent)", "Interpretation follow-up keeps the RSI lesson");
+  await expect("document.querySelector('.message.assistant:last-child .source-link').href.endsWith('/rsi')", "Interpretation retains the RSI evidence");
+  await send("¿Cómo funciona esto?");
+  await expect("document.querySelector('.message.assistant:last-child .source-link').href.endsWith('/rsi')", "An active lesson takes priority over generic app help");
+  await send("No entiendo");
+  await expect("(() => {const text=document.querySelector('.message.assistant:last-child .answer-content').textContent;return text.includes('RSI') && text.includes('tendencia persistente');})()", "Clarification combines the meaning with a reviewed example");
+  await send("¿Qué es la diversificación?");
+  await send("¿Por qué importa?");
+  await expect("document.querySelector('.message.assistant:last-child .answer-content').textContent.includes('dependencia de un solo resultado')", "Importance follow-up stays on diversification");
+  await send("Ahora explícame qué es un ETF");
+  await send("¿Me lo explicas con un ejemplo?");
+  await expect("document.querySelector('.message.assistant:last-child .answer-content').textContent.includes('una sola empresa')", "Conversational request receives the ETF example");
+  await send("¿Y qué costes tiene?");
+  await expect("document.querySelector('.message.assistant:last-child .source-link').href.endsWith('/exchange-traded-fund-etf')", "Costs follow-up retains its specific fund context");
+  await send("Ahora explícame la inflación");
+  await expect("document.querySelector('.message.assistant:last-child .source-link').href.includes('imf.org')", "An explicit new subject replaces the preceding lesson");
+  await send("¿Qué es AAPL?");
+  await send("Un ejemplo");
+  await expect("document.querySelector('.message.assistant:last-child .answer-content').textContent.includes('informe anual')", "An instrument definition continues as an educational example");
+  await send("¿Y sus riesgos?");
+  await expect("document.querySelector('.message.assistant:last-child .answer-content').textContent.includes('Reconocer una marca')", "Instrument risk follow-up uses its reviewed issuer document");
+  await send("Soy principiante");
+  await send("¿Qué es un fondo de inversión?");
+  await expect("(() => {const text=document.querySelector('.message.assistant:last-child .answer-content').textContent;return text.includes('Un fondo reúne dinero') && text.includes('cartera administrada');})()", "Beginner lesson preserves both the definition and the example");
+  await expect("Array.from(document.querySelectorAll('.message.assistant')).every(e=>e.textContent.includes('No es asesoría financiera'))", "Every response in the extended lesson retains the disclaimer");
+  await noOverflow("mobile contextual lesson");
+  await screenshot("mobile-contextual-lesson");
+  await send("¿Por qué importa?");
+  await expect("document.querySelector('.message.assistant:last-child .answer-content').textContent.includes('folleto')", "Beginner follow-up answers the requested explanation");
+  await send("¿Qué es mejor para obtener mayores rentabilidades a largo plazo: un ETF o acciones individuales? ¿Qué sectores lideran hoy?");
+  await expect("document.querySelector('.message.assistant:last-child .answer-content').textContent.includes('No hay un ganador universal')", "Combined question retains the long-term educational comparison");
+  await expect("document.querySelector('.message.assistant:last-child .answer-content').textContent.includes('¿De qué mercado')", "Current sector query asks for market scope");
+  await send("Estados Unidos");
+  await expect("document.querySelector('.message.assistant:last-child .answer-content').textContent.includes('no tengo un ranking sectorial actual verificado')", "Current sector leaders are not fabricated from static knowledge");
+  await noOverflow("mobile trading education");
+  await screenshot("mobile-trading-education");
+
+  // Exercise the added branches against the actual Python service with a
+  // separate temporary database. All values below are labelled offline fixtures.
+  const branchPort = await freePort();
+  const branchEnv = {...process.env, DATABASE_URL: `sqlite:///${path.join(scratch, 'branches.db')}`,
+    PYTHONPATH: path.join(root, 'src'), NVIDIA_API_KEY: '', TWELVE_DATA_API_KEY: '',
+    MARKETAUX_API_KEY: '', FMP_API_KEY: '', SEC_USER_AGENT: ''};
+  const python = process.env.INVESTIQ_PYTHON || path.join(root, '.venv', 'bin', 'python');
+  const fixtureCode = String.raw`
+from datetime import datetime, timedelta, timezone, date
+import json
+import os
+import pandas as pd
+from sqlmodel import Session
+from investiq.data.database import create_db, make_engine
+from investiq.data.models import InstrumentFeature, MLClusterRun, MarketContextCache
+from investiq.domain import RouterDecision
+from investiq.instruments import INSTRUMENTS
+from investiq.ml.similarity import fit_similarity_model, save_model_artifact
+from investiq.providers.headlines import daily_headlines
+from investiq.providers.sectors import SECTOR_LABELS
+from investiq.settings import Settings
+from zoneinfo import ZoneInfo
+from types import SimpleNamespace
+now = datetime.now(timezone.utc)
+settings = Settings(_env_file=None, database_url=os.environ['DATABASE_URL'], marketaux_api_key='offline-fixture')
+engine = create_db(make_engine(settings.database_url))
+frame = pd.DataFrame({item.symbol: {'volatility': .1+(i//7)*.2+(i%7)*.004,
+    'mean_peer_correlation': .1+(i//7)*.3+(i%7)*.003,
+    'beta': .3+(i//7)*.7+(i%7)*.006} for i,item in enumerate(INSTRUMENTS)}).T
+fit = fit_similarity_model(frame)
+assert fit.passed_thresholds
+artifact = {**fit.model, 'observation_start': '2025-01-01', 'observation_end': '2026-10-30'}
+filename = save_model_artifact(artifact, 'ml/artifacts/offline-web-fixture.joblib')
+with Session(engine) as db:
+    for item in INSTRUMENTS:
+        db.add(InstrumentFeature(symbol=item.symbol, calculated_at=now-timedelta(minutes=1),
+            sector=item.sector, volatility_bucket='fixture', **frame.loc[item.symbol].to_dict()))
+    db.add(MLClusterRun(run_id='offline-web-fixture', created_at=now, artifact_path=str(filename),
+        universe_size=20, observation_start=date(2025,1,1), observation_end=date(2026,10,30), seed=42,
+        n_clusters=fit.model['model'].n_clusters, silhouette=fit.silhouette, stability_ari=fit.stability_ari,
+        passed_thresholds=fit.passed_thresholds))
+    day = now.astimezone(ZoneInfo('America/New_York')).date().isoformat()
+    sectors = [{'sector': name, 'exchange': 'NASDAQ', 'date': day, 'averageChange': i/10}
+               for i,name in enumerate(SECTOR_LABELS)]
+    db.add(MarketContextCache(cache_key='sectors:NASDAQ:'+day, payload_json=json.dumps(sectors),
+        fetched_at=now, expires_at=now+timedelta(minutes=15)))
+    db.commit()
+    articles = [{'title': 'OFFLINE FIXTURE: Bank ACME update '+str(i),
+        'description': 'OFFLINE FIXTURE excerpt number '+str(i)+': this is synthetic browser test content.',
+        'url': 'https://example.org/offline-news/'+str(i), 'language': 'en', 'published_at': now.isoformat()}
+        for i in range(1,4)]
+    daily_headlines(db, RouterDecision(intent='market_news'), settings, now=now,
+        http_get=lambda *a,**k: SimpleNamespace(raise_for_status=lambda:None, json=lambda:{'data':articles}))
+engine.dispose()
+`;
+  const setup = spawn(python, ['-c', fixtureCode], {cwd: scratch, env: branchEnv, stdio: 'ignore'});
+  await new Promise((resolve, reject) => {
+    setup.once('error', reject);
+    setup.once('exit', code => code === 0 ? resolve() : reject(new Error('No se pudieron preparar los fixtures offline de navegador.')));
+  });
+  const previousApp = app;
+  previousApp.kill('SIGTERM');
+  await new Promise(resolve => previousApp.exitCode !== null ? resolve() : previousApp.once('exit', resolve));
+  app = spawn(python, ['-m', 'investiq.web.server', '--port', String(branchPort)],
+    {cwd: scratch, env: branchEnv, stdio: 'ignore'});
+  app.on('error', () => {processError = new Error('No arrancó el servidor de fixtures offline.');});
+  const branchBase = `http://127.0.0.1:${branchPort}`;
+  await poll(async () => (await fetch(`${branchBase}/api/health`)).ok, 'offline branch server');
+  await cdp('Page.navigate', {url: branchBase});
+  await waitFor(`location.port==='${branchPort}' && document.querySelector('#message-input') && !document.querySelector('#message-input').disabled`, 'branch app bootstrap');
+  await expect("document.querySelectorAll('.branch-action').length===3", 'News, exploration and sector actions stay available beside the chat');
+  await click('#open-news');
+  await waitFor("document.querySelectorAll('.response-action').length===3", 'cached offline fixture headlines');
+  await expect("document.querySelector('.message.assistant:last-child').textContent.includes('OFFLINE FIXTURE')", 'News displays retrieved fixture headlines and sources');
+  await click('.message.assistant:last-child .response-action:nth-child(2)');
+  await waitFor("document.querySelector('.message.assistant:last-child').textContent.includes('excerpt number 2')", 'selected fixture summary');
+  await expect("document.querySelector('.message.assistant:last-child .source-link').href.endsWith('/offline-news/2')", 'Summary button selects its exact article source');
+  await expect("document.querySelector('.message.assistant:last-child').textContent.toLowerCase().includes('extracto')", 'Summary discloses the excerpt boundary');
+  await expect("!document.querySelector('.message.user:last-of-type')?.textContent.includes('news:day:') && Array.from(document.querySelectorAll('.message.user')).every(e=>!e.textContent.includes('news:day:'))", 'Selecting a summary keeps internal IDs out of the visible conversation');
+  await screenshot('mobile-news-offline-fixture');
+  await click('#open-exploration');
+  await waitFor("document.querySelector('.message.assistant:last-child').textContent.includes('acciones, ETF o ambos')", 'exploration kind question');
+  await send('ambos');
+  await expect("document.querySelector('.message.assistant:last-child').textContent.includes('cuándo necesitarías')", 'Exploration asks for the cash horizon in the chat');
+  await send('largo plazo');
+  await expect("document.querySelector('.message.assistant:last-child').textContent.includes('baja, media o alta')", 'Exploration asks for a historical-variation criterion');
+  await send('baja');
+  await send('sin referencia');
+  await expect("document.querySelector('.message.assistant:last-child table')!==null", 'Fitted fixture KMeans produces a rendered candidate table');
+  await expect("document.querySelector('.message.assistant:last-child').textContent.includes('11.20%')", 'Candidate volatility is formatted as an annualized percentage');
+  await expect("document.querySelector('.message.assistant:last-child').textContent.includes('no una probabilidad')", 'ML coincidence is not presented as a profit probability');
+  await expect("Array.from(document.querySelectorAll('.message.assistant:last-child .local-source')).some(e=>e.textContent.includes('clustering'))", 'Candidates retain their model provenance');
+  await noOverflow('mobile fitted-model candidates');
+  await screenshot('mobile-exploration-offline-fixture');
+  await click('#open-sectors');
+  await waitFor("document.querySelector('.message.assistant:last-child').textContent.includes('¿De qué mercado')", 'sector market question');
+  await send('Estados Unidos');
+  await expect("document.querySelector('.message.assistant:last-child table').rows.length===12", 'Sector fixture requires all eleven sectors before displaying the ranking');
+  await expect("document.querySelector('.message.assistant:last-child').textContent.includes('NASDAQ')", 'Sector ranking declares the exchange scope');
+  await expect("document.querySelector('.message.assistant:last-child').textContent.includes('hora exacta')", 'Snapshot date is not invented as a provider timestamp');
+  await noOverflow('mobile sector snapshot');
+  await screenshot('mobile-sectors-offline-fixture');
   assert.deepEqual(errors, [], "No uncaught browser exceptions");
   checks.push("No uncaught browser exceptions");
   await fs.writeFile(path.join(out, "browser-report.json"), JSON.stringify({checks, snapshots, providerCalls: false, database: "temporary", browser: "Chrome headless"}, null, 2));

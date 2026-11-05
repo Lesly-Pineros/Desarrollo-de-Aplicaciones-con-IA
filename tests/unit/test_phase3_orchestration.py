@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+import json
 
 from sqlmodel import Session, select
 
@@ -17,7 +18,10 @@ def test_education_has_disclaimer_and_log_excludes_raw_query(tmp_path):
         assert "No es asesoría financiera" in result.answer
         log = session.exec(select(QueryLog)).one()
         assert not hasattr(log, "query")
-        assert result.tools_used == []
+        assert result.tools_used == ["knowledge_search"]
+        assert result.sources and all(source.url.startswith("https://") for source in result.sources)
+        assert log.intent == "education" and json.loads(log.tools_json) == ["knowledge_search"]
+        assert result.answer.count("No es asesoría financiera") == 1
 
 
 def test_invalid_fabricated_citation_or_numeric_narration_is_rejected():

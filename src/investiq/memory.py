@@ -11,6 +11,7 @@ from investiq.data.models import ConversationMemory
 from investiq.domain import ConversationState, PendingField, RouterDecision
 from investiq.instruments import INSTRUMENT_BY_SYMBOL
 from investiq.language import canonical_education_topic
+from investiq.sector_context import MARKETS
 
 _PENDING_FIELDS = set(get_args(PendingField))
 _LEVELS = {"basic", "standard", "advanced"}
@@ -42,6 +43,20 @@ def _decision(decision: RouterDecision | None) -> RouterDecision | None:
         # Preserve only a glossary key, never the original question or a generated summary.
         canonical = canonical_education_topic(decision.education_topic or "")
         return RouterDecision(intent="education", education_topic=canonical) if canonical else None
+    if intent == "sector_performance":
+        market = decision.sector_market if decision.sector_market in MARKETS else None
+        return RouterDecision(intent=intent, sector_market=market)
+    if intent == "market_news":
+        from investiq.news_context import NEWS_COUNTRIES, NEWS_SECTORS
+        return RouterDecision(intent=intent, symbol=_covered(decision.symbol),
+            news_sector=decision.news_sector if decision.news_sector in NEWS_SECTORS else None,
+            news_country=decision.news_country if decision.news_country in NEWS_COUNTRIES else None)
+    if intent == "explore":
+        from investiq.preferences import SECTORS
+        return RouterDecision(intent=intent, exploration_kind=decision.exploration_kind,
+            exploration_horizon=decision.exploration_horizon, volatility_target=decision.volatility_target,
+            reference_symbol=_covered(decision.reference_symbol), reference_skipped=bool(decision.reference_skipped),
+            exploration_sector=decision.exploration_sector if decision.exploration_sector in SECTORS else None)
     if intent in {"explanation", "instrument_info"}:
         return RouterDecision(intent=intent, symbol=_covered(decision.symbol))
     if intent == "recommend_volatility":
@@ -83,6 +98,13 @@ def _summary(state: ConversationState, *, enabled: bool) -> str:
     if last:
         if last.intent == "education" and last.education_topic:
             pieces.append(f"Hablamos de {last.education_topic}.")
+        elif last.intent == "sector_performance":
+            pieces.append("Querías consultar liderazgo sectorial actual" +
+                          (f" en {last.sector_market}." if last.sector_market else "."))
+        elif last.intent == "market_news":
+            pieces.append("Consultamos noticias financieras; los titulares no se guardan en esta memoria.")
+        elif last.intent == "explore":
+            pieces.append("Explorábamos acciones o ETF con criterios para una consulta educativa.")
         elif last.intent in {"explanation", "instrument_info"} and last.symbol:
             pieces.append(f"Estábamos explorando {last.symbol}.")
         elif last.intent == "recommend_similar" and last.reference_symbol:
@@ -99,6 +121,13 @@ def _summary(state: ConversationState, *, enabled: bool) -> str:
         "comparison_preference": "Quedó pendiente saber si quieres usar alguna preferencia para comparar.",
         "preference_beta": "Quedó pendiente elegir la beta objetivo que quieres usar.",
         "education_topic": "Quedó pendiente elegir qué palabra o símbolo quieres entender.",
+        "sector_market": "Quedó pendiente elegir el mercado para la consulta sectorial.",
+        "news_scope": "Quedó pendiente elegir sector o país de las noticias.",
+        "explore_kind": "Quedó pendiente elegir acciones, ETF o ambos.",
+        "explore_horizon": "Quedó pendiente conocer el plazo para explorar candidatos.",
+        "explore_volatility": "Quedó pendiente elegir la variación histórica deseada.",
+        "explore_reference": "Quedó pendiente elegir u omitir una referencia para explorar.",
+        "explore_sector": "Quedó pendiente aclarar el sector de los candidatos.",
     }
     if state.pending_field:
         pieces.append(pending[state.pending_field])

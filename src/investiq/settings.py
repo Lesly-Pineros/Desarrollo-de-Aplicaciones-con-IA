@@ -1,4 +1,5 @@
-from pydantic import Field
+from pydantic import Field, field_validator
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -21,6 +22,9 @@ class Settings(BaseSettings):
     http_timeout_seconds: float = Field(default=8.0, gt=0, le=60, validation_alias="HTTP_TIMEOUT_SECONDS")
     twelve_data_api_key: str | None = Field(default=None, repr=False, validation_alias="TWELVE_DATA_API_KEY")
     marketaux_api_key: str | None = Field(default=None, repr=False, validation_alias="MARKETAUX_API_KEY")
+    fmp_api_key: str | None = Field(default=None, repr=False, validation_alias="FMP_API_KEY")
+    market_timezone: str = Field(default="America/Bogota", validation_alias="MARKET_TIMEZONE")
+    headlines_cache_minutes: int = Field(default=15, ge=1, le=60)
     sec_user_agent: str = Field(default="", validation_alias="SEC_USER_AGENT")
     price_cache_minutes: int = Field(default=15, ge=1, le=60)
     news_cache_hours: int = Field(default=6, ge=1, le=12)
@@ -40,6 +44,19 @@ class Settings(BaseSettings):
     @property
     def has_marketaux_key(self) -> bool:
         return bool(self.marketaux_api_key and self.marketaux_api_key.strip())
+
+    @property
+    def has_fmp_key(self) -> bool:
+        return bool(self.fmp_api_key and self.fmp_api_key.strip())
+
+    @field_validator("market_timezone")
+    @classmethod
+    def valid_timezone(cls, value):
+        try:
+            ZoneInfo(value)
+        except (ZoneInfoNotFoundError, ValueError):
+            raise ValueError("MARKET_TIMEZONE debe ser una zona IANA válida") from None
+        return value
 
 
 def get_settings() -> Settings:

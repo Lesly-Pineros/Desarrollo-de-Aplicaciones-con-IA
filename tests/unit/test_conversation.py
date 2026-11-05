@@ -338,7 +338,8 @@ def test_education_followup_keeps_the_topic_and_an_explicit_new_concept_changes_
     example = ask(chat, "Un ejemplo")
 
     assert example.intent == "education"
-    assert "beta" in example.answer.casefold()
+    from investiq.education import EDUCATION_CATALOGUE
+    assert EDUCATION_CATALOGUE["beta"].example in example.answer
     assert example.answer != first.answer
     assert "beta" in chat[2].last_decision.education_topic.casefold()
 

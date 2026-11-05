@@ -7,11 +7,12 @@ from sqlmodel import Session, select
 
 from investiq.data.database import create_db, make_engine
 from investiq.data.models import QueryLog, ResponseTrace
-from investiq.domain import Narration, NewsCollection, QuoteResult, RouterDecision, SourceReference
+from investiq.domain import NewsCollection, QuoteResult, RouterDecision, SourceReference
 from investiq.handlers import execute_query
 from investiq.orchestration import answer_query
 from investiq.routing import route_query
 from investiq.settings import Settings
+from investiq.tutor import TutorEvidence, TutorNarration, TutorParagraph
 
 
 @pytest.fixture
@@ -98,9 +99,10 @@ def test_auto_client_false_still_uses_an_injected_client(local_query_session, mo
             calls.append("classify")
             return RouterDecision(intent="education", education_topic="beta")
 
-        def narrate(self, intent, query, facts, sources):
-            calls.append("narrate")
-            return Narration(answer="Beta relaciona movimientos históricos y puede cambiar.")
+        def teach(self, query, passages, context):
+            calls.append("teach")
+            return TutorNarration(paragraphs=[TutorParagraph(text=passages[0]["text"], evidence=[
+                TutorEvidence(passage_id=passages[0]["passage_id"], quote=passages[0]["text"])])])
 
     def unexpected_construction(*args, **kwargs):
         pytest.fail("An injected client must be reused")
@@ -110,10 +112,11 @@ def test_auto_client_false_still_uses_an_injected_client(local_query_session, mo
     response = answer_query(session, "local", "¿Qué es beta?", settings,
                             client=Client(), auto_client=False)
 
-    assert calls == ["classify", "narrate"]
+    assert calls == ["classify", "teach"]
     assert response.diagnostics.routing == "llm"
     assert response.diagnostics.narration == "used"
-    assert response.answer.startswith("Beta relaciona movimientos históricos y puede cambiar.")
+    assert response.tools_used == ["knowledge_search"]
+    assert response.sources and "Beta" in response.answer
 
 
 @pytest.mark.parametrize("symbol", [None, "OUTSIDE_COVERAGE"])

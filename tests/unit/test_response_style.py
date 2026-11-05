@@ -17,6 +17,7 @@ from investiq.orchestration import answer_query, purge_query_logs
 from investiq.responses import DISCLAIMER
 from investiq.response_style import provider_failure, safe_narration
 from investiq.settings import Settings
+from investiq.tutor import TutorEvidence, TutorNarration, TutorParagraph
 
 
 SOURCE = SourceReference(source_id="verified-source", title="Verified local fixture",
@@ -35,6 +36,13 @@ class Narrator:
         if self.error:
             raise self.error
         return Narration(answer=self.answer, cited_source_ids=self.citations)
+
+    def teach(self, query, passages, context):
+        self.calls.append(("education", query, {"retrieved_passages": passages}, context))
+        if self.error:
+            raise self.error
+        return TutorNarration(paragraphs=[TutorParagraph(text=passages[0]["text"], evidence=[
+            TutorEvidence(passage_id=passages[0]["passage_id"], quote=passages[0]["text"])])])
 
 
 def test_grounded_narration_preserves_the_factual_block_exactly():
@@ -133,6 +141,11 @@ class RoutedNarrator:
                   if intent == "education" else "Con lo que tenemos:\n\n{{result}}")
         return Narration(answer=answer, cited_source_ids=[source["source_id"] for source in sources])
 
+    def teach(self, query, passages, context):
+        self.calls.append(("education", query, {"retrieved_passages": passages}, context))
+        return TutorNarration(paragraphs=[TutorParagraph(text=passages[0]["text"], evidence=[
+            TutorEvidence(passage_id=passages[0]["passage_id"], quote=passages[0]["text"])])])
+
 
 @pytest.mark.parametrize("decision,query,expected_tool", [
     (RouterDecision(intent="education", education_topic="beta"), "¿Qué es beta?", None),
@@ -171,6 +184,9 @@ def test_all_tool_routes_can_narrate_and_persist_safe_diagnostics(local_session,
         assert [source.source_id for source in response.sources] == [SOURCE.source_id]
     else:
         assert "response_block" not in client.calls[0][2]
+        assert "knowledge_search" in response.tools_used
+        assert client.calls[0][2]["retrieved_passages"]
+        assert response.sources and all(source.url.startswith("https://") for source in response.sources)
     log = session.exec(select(QueryLog)).one()
     trace = session.get(ResponseTrace, log.id)
     assert trace.routing == "llm"
@@ -186,7 +202,7 @@ def test_no_key_and_provider_failure_have_different_persisted_diagnostics(local_
     local = answer_query(session, "local", "¿Qué es beta?", settings, decision=decision)
     error = LLMUnavailable("Authorization: Bearer sentinel-secret")
     error.provider_failure_category = "authentication"
-    failed = answer_query(session, "local", "private-user-input-sentinel", settings,
+    failed = answer_query(session, "local", "¿Qué es beta?", settings,
                           decision=decision, client=Narrator("unused", error=error))
 
     assert local.diagnostics.narration == "unavailable"
@@ -198,7 +214,22 @@ def test_no_key_and_provider_failure_have_different_persisted_diagnostics(local_
     persisted = json.dumps([row.model_dump(mode="json") for row in session.exec(select(QueryLog)).all()] +
                            [row.model_dump(mode="json") for row in traces])
     assert "sentinel-secret" not in persisted + failed.answer
-    assert "private-user-input-sentinel" not in persisted
+
+
+def test_no_evidence_query_is_not_stored_or_sent_to_the_teacher(local_session):
+    session, settings = local_session
+    client = Narrator("unused", error=LLMUnavailable("must not be called"))
+    response = answer_query(session, "local", "private-user-input-sentinel", settings,
+                            decision=RouterDecision(intent="education", education_topic="beta"), client=client)
+
+    assert response.status == "degraded"
+    assert response.diagnostics.narration == "not_requested"
+    assert client.calls == []
+    logs = session.exec(select(QueryLog)).all()
+    traces = session.exec(select(ResponseTrace)).all()
+    persisted = json.dumps([row.model_dump(mode="json") for row in [*logs, *traces]])
+    assert "private-user-input-sentinel" not in persisted + response.answer
+    assert all(not hasattr(row, "query") for row in logs)
 
 
 def test_query_retention_purges_corresponding_diagnostics_without_removing_recent_rows(local_session):

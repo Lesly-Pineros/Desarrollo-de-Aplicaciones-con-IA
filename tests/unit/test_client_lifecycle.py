@@ -6,9 +6,10 @@ from sqlmodel import Session, select
 from investiq.conversation import answer_turn
 from investiq.data.database import create_db, make_engine
 from investiq.data.models import ConversationMemory, QueryLog, ResponseTrace
-from investiq.domain import ConversationState, Narration, RouterDecision
+from investiq.domain import ConversationState, RouterDecision
 from investiq.llm import LLMUnavailable
 from investiq.settings import Settings
+from investiq.tutor import TutorEvidence, TutorNarration, TutorParagraph
 
 
 @pytest.fixture
@@ -58,19 +59,21 @@ def test_nonfinancial_commands_do_not_construct_a_model(chat, monkeypatch, query
     assert len(session.exec(select(QueryLog)).all()) == 1
 
 
-def test_a_supplied_client_is_reused_for_routing_and_narration(chat, monkeypatch):
+def test_a_supplied_client_is_reused_for_routing_and_teaching(chat, monkeypatch):
     class Client:
         def __init__(self):
-            self.routing_calls = self.narration_calls = 0
+            self.routing_calls = self.teaching_calls = 0
 
         def classify(self, query):
             self.routing_calls += 1
             assert json.loads(query)["current_message"] == "¿Qué es beta?"
             return RouterDecision(intent="education", education_topic="beta")
 
-        def narrate(self, *args):
-            self.narration_calls += 1
-            return Narration(answer="Beta relaciona movimientos históricos con un mercado de referencia.")
+        def teach(self, query, passages, context):
+            self.teaching_calls += 1
+            assert query == "¿Qué es beta?" and passages
+            return TutorNarration(paragraphs=[TutorParagraph(text=passages[0]["text"], evidence=[
+                TutorEvidence(passage_id=passages[0]["passage_id"], quote=passages[0]["text"])])])
 
     def unexpected_factory(settings):
         raise AssertionError("The caller already supplied its client")
@@ -80,6 +83,7 @@ def test_a_supplied_client_is_reused_for_routing_and_narration(chat, monkeypatch
     session, settings, state = chat
     client = Client()
     response = answer_turn(session, "local", "¿Qué es beta?", settings, state=state, client=client)
-    assert client.routing_calls == client.narration_calls == 1
+    assert client.routing_calls == client.teaching_calls == 1
     assert response.diagnostics.narration == "used"
+    assert response.sources and response.tools_used == ["knowledge_search"]
     assert len(session.exec(select(QueryLog)).all()) == 1

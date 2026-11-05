@@ -56,7 +56,7 @@ def test_index_variants_answer_with_official_source_without_prices(index_chat, q
     assert "S&P 500" in response.answer and "índice" in response.answer
     assert "500 empresas" in response.answer and "Estados Unidos" in response.answer
     assert [source.url for source in response.sources] == [OFFICIAL_SOURCE]
-    assert response.tools_used == []
+    assert response.tools_used == ["knowledge_search"]
     assert "SPY" not in response.answer
 
 
@@ -88,8 +88,7 @@ def test_educational_subject_outranks_incidental_index_context(index_chat, query
     assert response.intent == "education"
     assert canonical_education_topic(query) == topic
     assert topic.casefold() in response.answer.casefold()
-    assert response.sources[0].url == (OFFICIAL_SOURCE if topic == "S&P 500"
-                                       else f"local://glossary/{topic}")
+    assert response.sources[0].url == EDUCATION_CATALOGUE[topic].source.url
 
 
 @pytest.mark.parametrize("query,symbol", [
@@ -148,11 +147,12 @@ class MistakenIndexClient:
     def classify(self, query):
         return RouterDecision(intent="explanation", symbol="SPY")
 
-    def narrate(self, intent, query, facts, sources):
-        assert intent == "education"
-        assert "500 empresas" in facts["response_block"]
-        return Narration(answer="Vamos paso a paso.\n\n{{result}}",
-                         cited_source_ids=[source["source_id"] for source in sources])
+    def teach(self, query, passages, context):
+        chosen = next(passage for passage in passages if passage["section"] == "summary")
+        assert "500 empresas" in chosen["text"]
+        return {"paragraphs": [{"text": chosen["text"], "evidence": [{
+            "passage_id": chosen["passage_id"], "quote": chosen["text"],
+        }]}]}
 
 
 def test_llm_cannot_substitute_fund_for_index_definition(index_chat):
@@ -170,18 +170,25 @@ def test_index_price_does_not_fall_back_to_spy_or_call_market_data(index_chat):
     assert response.status == "degraded" and response.tools_used == []
 
 
-@pytest.mark.parametrize("narration", [
-    Narration(answer="El S&P 500 tendrá un retorno del 20%.\n{{result}}",
-              cited_source_ids=["spdj:sp-500"]),
-    Narration(answer="{{result}}", cited_source_ids=[]),
-    Narration(answer="El índice reúne otras empresas.", cited_source_ids=["spdj:sp-500"]),
-])
-def test_index_narration_falls_back_when_facts_or_citations_change(index_chat, narration):
+@pytest.mark.parametrize("violation", ["number", "citation", "quote"])
+def test_index_narration_falls_back_when_facts_or_citations_change(index_chat, violation):
     class Client(MistakenIndexClient):
-        def narrate(self, *args, **kwargs):
-            return narration
+        def teach(self, query, passages, context):
+            chosen = passages[0]
+            paragraph = {"text": chosen["text"], "evidence": [{
+                "passage_id": chosen["passage_id"], "quote": chosen["text"],
+            }]}
+            if violation == "number":
+                paragraph["text"] = "El S&P 500 incluye 5000 empresas líderes de Estados Unidos."
+            elif violation == "citation":
+                paragraph["evidence"][0]["passage_id"] = "not-retrieved"
+            else:
+                paragraph["evidence"][0]["quote"] = "Este texto no está en el documento recuperado."
+            return {"paragraphs": [paragraph]}
 
     response = ask(index_chat, "qué es el sp500", client=Client())
     assert response.diagnostics.narration == "fallback"
-    assert response.answer == EDUCATION_CATALOGUE["S&P 500"].definition + "\n\n" + DISCLAIMER
+    assert EDUCATION_CATALOGUE["S&P 500"].definition in response.answer
+    assert response.answer.count(DISCLAIMER) == 1
+    assert "5000" not in response.answer
     assert response.sources[0].url == OFFICIAL_SOURCE

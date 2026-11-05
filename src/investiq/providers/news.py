@@ -68,7 +68,7 @@ def news(
                 "symbols": symbol,
                 "filter_entities": "true",
                 "language": "en",
-                "limit": 5,
+                "limit": 3,
                 "api_token": settings.marketaux_api_key.strip(),
             },
             timeout=settings.http_timeout_seconds,
@@ -89,7 +89,7 @@ def news(
                     url=url,
                     provider="Marketaux",
                     published_at=_published(item.get("published_at")),
-                    delayed=True,
+                    delayed=False,
                     source_id=f"news:{symbol}:{stable}",
                 )
             )

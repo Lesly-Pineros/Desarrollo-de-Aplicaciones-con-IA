@@ -1,0 +1,63 @@
+# Noticias, sectores y exploración educativa
+
+La web ofrece tres accesos persistentes: **Noticias de hoy**, **Explorar acciones y ETF** y **Sectores de hoy**. Todos usan el mismo chat; no hay formulario de perfil. Arranque: `bash run_web.sh`, en `http://127.0.0.1:8000`.
+
+## Configurar en cada equipo
+
+Añade las variables que necesites a tu `.env` existente sin sobrescribirlo ni compartir claves:
+
+```dotenv
+NVIDIA_API_KEY=
+MARKETAUX_API_KEY=
+FMP_API_KEY=
+MARKET_TIMEZONE=America/Bogota
+```
+
+Los valores vacíos son intencionales. El modelo NVIDIA sigue configurado mediante `NVIDIA_MODEL`; no se contrató otro proveedor de LLM. Marketaux necesita una clave de tu cuenta para consultar noticias; FMP es opcional para snapshots, y el acceso al endpoint depende de tu plan. No se afirma que todos los endpoints de FMP estén incluidos en su cuenta gratuita. No se cambia ninguna suscripción ni se configura una clave real en el repositorio.
+
+## Noticias y resúmenes
+
+Ejemplos: «¿Cuáles son las noticias de hoy?», «Últimas noticias del sector tecnológico», «Noticias financieras de Colombia», «Noticias del sector energético en España» o «Noticias de AAPL».
+
+La [documentación Marketaux](https://www.marketaux.com/documentation) permite filtrar industrias, entidades y países; se soportan los once sectores del proveedor y trece países por nombre: Estados Unidos, Colombia, España, México, Argentina, Chile, Perú, Brasil, Reino Unido, Alemania, Francia, Canadá y Japón. Su filtro de país corresponde al mercado de las entidades identificadas, no a toda la portada nacional ni a la residencia del usuario. Las consultas ambiguas piden un sector o país.
+
+Se muestran hasta tres noticias del día por recencia, con publicación y fuentes; no es un ranking editorial de importancia ni cobertura exhaustiva. «Hoy» usa `MARKET_TIMEZONE` y se convierte a UTC para la API. Se rechazan fechas ausentes, futuras o de otro día. Las fechas históricas solicitadas se reconocen como no cubiertas. La caché de titulares dura quince minutos por filtros/día; ante fallo solo puede mostrarse caché del mismo día, con aviso de desactualización. La cuota de Marketaux se comparte con las noticias de símbolos: 100 peticiones/día y tres artículos/petición según [los precios consultados](https://www.marketaux.com/pricing) el 2026-11-04. No se asume un retraso fijo de 24 horas; no se promete latencia cero.
+
+NVIDIA traduce títulos y, al pulsar **Resumir noticia 2** o escribir «Resume la segunda», resume el extracto de esa noticia. El botón conserva la selección por un identificador oculto; el chat muestra una frase natural. Nunca se descarga el artículo completo ni se inventa su contenido. Si falta extracto, se informa. Si no hay modelo o la salida no pasa los controles, se conserva el original y se explica que no hay traducción/resumen generado. Los titulares ya publicados en español no requieren traducción. La operación del LLM tiene un intento y conserva timeout/tokens configurados. Validar citas y cifras no demuestra equivalencia semántica de la traducción.
+
+Los tres artículos y sus selecciones viven temporalmente en la sesión del chat; no se incluyen en la memoria persistente. Reiniciar la sesión requiere volver a consultar el listado. Los textos recuperados se tratan como datos no confiables y se muestran sin ejecutar HTML o instrucciones.
+
+## Sectores que lideran hoy
+
+La consulta pide mercado. Para Estados Unidos puede usar [FMP](https://site.financialmodelingprep.com/developer/docs/stable/sector-performance-snapshot) con `FMP_API_KEY`: compara los once sectores de **NASDAQ**, según la media diaria publicada por ese proveedor. La fecha corresponde a Nueva York. Se exige el mismo día y bolsa, once sectores únicos y porcentajes finitos; se ordenan por código, sin usar noticias ni ETF como sustitutos de cobertura completa.
+
+La respuesta indica bolsa, fecha, métrica y hora de consulta, separada de la fecha del proveedor. No atribuye una hora intradía que la respuesta no contiene. No representa todo Estados Unidos. Otros mercados, datos incompletos, falta de clave, cuota o falta de acceso conservan la explicación de límites. La caché dura quince minutos y la cuota local de FMP es de 100 consultas/día. Su disponibilidad real sigue pendiente de comprobación con una cuenta autorizada; no se presume acceso de pago ni se presenta un mock como un ranking en vivo.
+
+## Explorar acciones y ETF
+
+«¿Qué acción o ETF me recomiendas para invertir hoy?» inicia una exploración educativa. Se pregunta solo lo que falte: tipo, plazo de necesidad del dinero, variación histórica deseada y referencia opcional. Puedes incluir todo en un mensaje: «Explorar acciones a largo plazo, volatilidad baja, tecnología, referencia AAPL» o «Recomiéndame ETF a largo plazo con volatilidad alta sin referencia». Los criterios parametrizan esa consulta; no escriben preferencias financieras automáticamente. Puedes preguntar qué significa un concepto, retomar la pregunta pendiente o cancelar.
+
+El corto plazo no devuelve candidatos como una solución segura para dinero necesario pronto. Para otros plazos, se usa exclusivamente el modelo KMeans aprobado y su scaler, con features del mismo universo/período y comprobación de huella si está disponible. Primero se filtran tipo, tercil de volatilidad y sector; después se ordena por clúster/distancia a una referencia o por cercanía al centro del clúster. Se muestran hasta tres coincidencias, sin rellenar con instrumentos incompatibles.
+
+La tabla incluye tipo, volatilidad anualizada en porcentaje, tercil, beta, sector, grupo y coincidencia. El score deriva de distancia; no es rentabilidad ni probabilidad de ganar. El nivel de volatilidad no es un perfil financiero completo ni una garantía de protección. Las fechas y fuentes del modelo/features quedan visibles. NVIDIA puede acompañar el bloque factual protegido; no elige símbolos ni cambia métricas. La herramienta no decide qué conviene comprar hoy.
+
+Necesita base y artefactos coherentes del mismo equipo. Si ya tienes históricos locales, prepara el modelo sin descargar datos:
+
+```bash
+.venv/bin/python -m investiq.ml.pipeline train --seed 42
+```
+
+Para preparar una copia nueva con Internet, el comando histórico sigue siendo `.venv/bin/python -m investiq.ml.pipeline all --period 2y --seed 42`. No se ejecuta automáticamente desde el chat y no se utilizó durante los tests offline. Copiar solo el joblib no prepara una base vacía.
+
+## Verificar offline
+
+```bash
+NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= SEC_USER_AGENT= .venv/bin/python -m pytest -q
+NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= SEC_USER_AGENT= .venv/bin/python -m pytest -q tests/unit/test_market_current.py tests/unit/test_guided_exploration.py tests/unit/test_llm.py
+.venv/bin/python -m investiq.knowledge validate
+node tools/check_web.mjs
+```
+
+Chrome prueba la aplicación real con dos servidores/bases temporales: primero la regresión educativa y después fixtures claramente rotulados offline. La segunda base contiene noticias/snapshots sintéticos y un KMeans entrenado sobre características sintéticas. No representan datos actuales ni prueban Marketaux, FMP o NVIDIA en vivo. Los artefactos del fixture se crean en el directorio temporal y se eliminan con él; no se toca la base ni los modelos del usuario.
+
+Trazabilidad: [actualidad](../specs/actualidad-mercados/tasks.md), [exploración](../specs/exploracion-guiada/tasks.md) y [ADR-006](../decisions/ADR-006-actualidad-y-exploracion.md). Fase 5 sin iniciar.

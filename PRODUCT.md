@@ -20,6 +20,10 @@ Catálogo inicial de 20 instrumentos, explicaciones educativas, consultas de mov
 
 Los conceptos educativos pueden incluir índices fuera del catálogo negociable: S&P 500 se reconoce también como SP500 o SP 500 y se explica con fuente oficial, sin necesitar cotizaciones ni conexión para la definición. El frontend principal es gratuito y no requiere Streamlit; la interfaz anterior queda como extra opcional.
 
+El profesor consulta una biblioteca local de 119 documentos sobre fundamentos, fondos, índices, bolsas, intermediarios, criptoactivos, indicadores, riesgos, operativa, costes, análisis, planificación y protección. La generación RAG utiliza pasajes recuperados con fuentes; existe respaldo local sin modelo. La biblioteca se amplía mediante documentos revisados y es independiente de la memoria personal. Los ejemplos de brókers no son recomendaciones ni confirman condiciones actuales por país.
+
+La comparación ETF/acciones a largo plazo explica las condiciones sin garantizar rentabilidad. Los indicadores se enseñan con sus límites, sin convertirlos en órdenes de trading. Las consultas de líderes sectoriales actuales piden mercado cuando falta y reconocen que aún no existe una fuente de ranking actual verificada; no se generan clasificaciones desde definiciones estáticas.
+
 Se mantienen Python plano, SQLModel y los proveedores existentes. La nueva interfaz local no decide todavía un destino de despliegue. No se deben inventar cifras, fuentes ni afirmar que un proveedor está conectado por tener una clave configurada.
 
 ## Voz y compromisos

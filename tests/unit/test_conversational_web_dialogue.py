@@ -45,14 +45,15 @@ def test_screenshot_sequence_answers_each_question_instead_of_repeating_menu(cha
     concept = ask(chat, "volatilidad")
     assert concept.intent == "education" and concept.status == "ok"
     assert "recorrido" in concept.answer
-    assert concept.sources[0].url == "local://glossary/volatilidad"
+    assert concept.sources[0].url.startswith("https://")
+    assert concept.tools_used == ["knowledge_search"]
     assert chat[2].pending_field is None
 
     instrument = ask(chat, "que es el aapl")
     assert instrument.intent == "instrument_info" and instrument.status == "ok"
     assert "Apple" in instrument.answer and "símbolo bursátil" in instrument.answer
     assert instrument.sources[0].url == "local://catalogue/AAPL"
-    assert instrument.tools_used == ["instrument_catalogue"]
+    assert instrument.tools_used == ["instrument_catalogue", "knowledge_search"]
 
     capabilities = ask(chat, "que mas puedes hacer")
     assert capabilities.intent == "unknown" and capabilities.status == "ok"

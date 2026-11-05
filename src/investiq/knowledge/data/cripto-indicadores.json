@@ -1,0 +1,892 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {
+      "id": "etf-acciones-largo-plazo",
+      "title": "ETF o acciones individuales a largo plazo",
+      "category": "planificacion",
+      "aliases": [
+        "ETF o acciones individuales",
+        "acciones individuales o ETF",
+        "mayores rentabilidades a largo plazo",
+        "ETF vs acciones a largo plazo",
+        "ETF dan más rentabilidad que las acciones",
+        "ETF dan mayor rentabilidad que las acciones"
+      ],
+      "questions": [
+        "¿Qué es mejor para obtener mayores rentabilidades a largo plazo: un ETF o acciones individuales?",
+        "¿Un ETF o acciones individuales da más rentabilidad?",
+        "¿Los ETF dan más rentabilidad que las acciones?",
+        "¿Es mejor invertir a largo plazo en ETF o acciones individuales?"
+      ],
+      "summary": "No hay un ganador universal entre un ETF y acciones individuales para obtener mayores rentabilidades a largo plazo. El resultado depende de los activos, sus precios, costes, riesgo y período de inversión.",
+      "explanation": "Un ETF ampliamente diversificado facilita repartir la exposición entre empresas. Las acciones individuales pueden producir resultados muy distintos y concentrar el riesgo en una empresa; esa concentración no garantiza mayor rentabilidad. Un ETF sectorial o concentrado tampoco asegura diversificación amplia. Comparar requiere revisar composición, costes y horizonte.",
+      "example": "Una cartera centrada en una empresa depende más de lo que le ocurra a esa empresa que un fondo que reparte la exposición entre muchas. Es una diferencia de concentración, no una promesa de ganancia.",
+      "cautions": "La diversificación no elimina las pérdidas ni permite saber qué alternativa rendirá más en el futuro. Los resultados históricos no garantizan rentabilidad futura.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "learning:allocation-long-term",
+          "title": "Asset Allocation and Diversification",
+          "url": "https://www.investor.gov/introduction-investing/getting-started/asset-allocation",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "tipos-fondos",
+      "title": "tipos de fondos de inversión",
+      "category": "fondos",
+      "aliases": [
+        "fondos de renta fija",
+        "fondo monetario",
+        "fondos mixtos",
+        "tipos de fondos"
+      ],
+      "questions": [
+        "¿Qué tipos de fondos de inversión existen?",
+        "¿Un fondo de inversión es siempre de acciones?"
+      ],
+      "summary": "Los fondos de inversión reúnen dinero de partícipes para invertir según una política. Pueden concentrarse en acciones, bonos, instrumentos monetarios o combinaciones.",
+      "explanation": "El folleto explica objetivo, activos, riesgos y costes. Compartir la palabra fondo no hace que dos productos tengan el mismo riesgo: importa qué compran y cómo se gestionan.",
+      "example": "Un fondo de bonos y un fondo de acciones pueden tener movimientos y fuentes de riesgo distintos aunque ambos agrupen dinero de varios partícipes.",
+      "cautions": "Un fondo no garantiza recuperar el capital. El tipo de activos, las comisiones y las condiciones de reembolso deben estudiarse en su documentación.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "learning:funds-sec",
+          "title": "Mutual Funds and ETFs",
+          "url": "https://www.investor.gov/sites/investorgov/files/2023-09/mutual-funds-ETFs_2_0.pdf",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "criptomoneda",
+      "title": "criptomoneda",
+      "category": "criptoactivos",
+      "aliases": [
+        "criptomonedas",
+        "criptoactivo",
+        "criptoactivos",
+        "crypto",
+        "cripto",
+        "moneda digital"
+      ],
+      "questions": [
+        "¿Qué es una criptomoneda?",
+        "¿Una criptomoneda es una acción?"
+      ],
+      "summary": "Una criptomoneda es un tipo de criptoactivo digital que utiliza una red y mecanismos criptográficos para registrar o transferir valor. No representa por sí misma una participación en una empresa.",
+      "explanation": "Los criptoactivos tienen diseños y riesgos diferentes. Comprender la red, la función del activo y quién controla las claves ayuda a distinguir el producto de la plataforma donde se negocia.",
+      "example": "Tener un activo digital y tener una acción de una empresa son derechos distintos; no se interpreta uno como si fuera el otro.",
+      "cautions": "Puede haber pérdidas por cambios de valor, fallos de custodia o fraude. Esta biblioteca no ofrece cotizaciones ni recomienda criptomonedas.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "crypto:custody-sec",
+          "title": "Crypto Asset Custody Basics for Retail Investors",
+          "url": "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/crypto-asset-custody-basics-retail-investors-investor-bulletin-0",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "wallet-cripto",
+      "title": "wallet y custodia de criptomonedas",
+      "category": "criptoactivos",
+      "aliases": [
+        "wallet",
+        "billetera cripto",
+        "clave privada",
+        "frase semilla",
+        "cold wallet",
+        "hot wallet"
+      ],
+      "questions": [
+        "¿Qué es una wallet?",
+        "¿Dónde se guardan las criptomonedas?"
+      ],
+      "summary": "Una wallet administra claves que permiten autorizar operaciones con criptoactivos. El registro del activo permanece en la red, no como monedas dentro de la aplicación.",
+      "explanation": "La autocustodia deja la gestión de claves al usuario; en custodia de terceros interviene un proveedor. Las wallets conectadas y desconectadas de Internet tienen riesgos de seguridad y acceso diferentes.",
+      "example": "Una pérdida de acceso a las claves puede impedir utilizar el activo aunque las operaciones sigan registradas en la red.",
+      "cautions": "La frase semilla y las claves privadas no deben compartirse. Pérdida, robo o fallos del custodio pueden causar pérdida de acceso.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "crypto:custody-sec",
+          "title": "Crypto Asset Custody Basics for Retail Investors",
+          "url": "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/crypto-asset-custody-basics-retail-investors-investor-bulletin-0",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "blockchain",
+      "title": "blockchain",
+      "category": "criptoactivos",
+      "aliases": [
+        "cadena de bloques",
+        "block chain"
+      ],
+      "questions": [
+        "¿Qué es blockchain?",
+        "¿Cómo se registran las transacciones de Bitcoin?"
+      ],
+      "summary": "Una blockchain es un registro compartido de transacciones organizado en bloques enlazados. En Bitcoin permite verificar el historial de operaciones y los saldos utilizables.",
+      "explanation": "La red utiliza reglas de consenso y criptografía para mantener el orden y validar operaciones. El registro compartido no implica que cualquier activo emitido sobre una red sea una inversión fiable.",
+      "example": "Puede imaginarse como un historial que los participantes verifican siguiendo las reglas de la red, en lugar de una libreta personal aislada.",
+      "cautions": "Que una operación figure en una cadena no prueba la solvencia de una plataforma ni garantiza el valor del activo.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "crypto:bitcoin-basics",
+          "title": "How does Bitcoin work?",
+          "url": "https://bitcoin.org/en/how-it-works",
+          "provider": "Bitcoin.org",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "bitcoin",
+      "title": "Bitcoin",
+      "category": "criptoactivos",
+      "aliases": [
+        "BTC",
+        "bitcóin"
+      ],
+      "questions": [
+        "¿Qué es Bitcoin?",
+        "¿Cómo funciona Bitcoin?"
+      ],
+      "summary": "Bitcoin es una red de pagos entre participantes; bitcoin es el activo digital utilizado en esa red. Su historial se registra en una blockchain pública.",
+      "explanation": "Las transacciones se autorizan mediante claves y se verifican conforme a las reglas de la red. La minería forma parte del proceso de confirmación de bloques.",
+      "example": "Una transferencia requiere autorización criptográfica y confirmación en la red; no equivale a comprar una participación empresarial.",
+      "cautions": "Entender su funcionamiento técnico no permite predecir su precio. La custodia de claves y el riesgo de pérdida siguen siendo importantes.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "crypto:bitcoin-basics",
+          "title": "How does Bitcoin work?",
+          "url": "https://bitcoin.org/en/how-it-works",
+          "provider": "Bitcoin.org",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "ethereum",
+      "title": "Ethereum y ether",
+      "category": "criptoactivos",
+      "aliases": [
+        "Ethereum",
+        "ether",
+        "ETH"
+      ],
+      "questions": [
+        "¿Qué es Ethereum?",
+        "¿Ethereum y ether son lo mismo?"
+      ],
+      "summary": "Ethereum es una red que permite ejecutar aplicaciones y contratos inteligentes. Ether, también llamado ETH, es su criptomoneda nativa.",
+      "explanation": "La red y su activo son conceptos distintos. Ether interviene en el uso de la red y en su funcionamiento; una aplicación construida sobre Ethereum puede tener sus propios riesgos.",
+      "example": "Es posible distinguir la infraestructura de una red del activo que se utiliza para interactuar con ella.",
+      "cautions": "El uso de una red no garantiza rentabilidad de su activo ni seguridad de cualquier aplicación. Aquí no se estima el precio de ETH.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "crypto:ethereum",
+          "title": "What is Ethereum?",
+          "url": "https://ethereum.org/what-is-ethereum/",
+          "provider": "Ethereum.org",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "contratos-inteligentes",
+      "title": "contratos inteligentes",
+      "category": "criptoactivos",
+      "aliases": [
+        "smart contract",
+        "smart contracts",
+        "contrato inteligente"
+      ],
+      "questions": [
+        "¿Qué es un smart contract?"
+      ],
+      "summary": "Un contrato inteligente es un programa desplegado en una red como Ethereum que ejecuta reglas definidas en código.",
+      "explanation": "Permite automatizar interacciones cuando se cumplen condiciones programadas. El resultado depende del código y de los datos que utilice, no de una valoración humana del caso.",
+      "example": "Una regla programada puede ejecutar una transferencia al cumplirse una condición; eso describe automatización, no una garantía de beneficio.",
+      "cautions": "Errores de código, permisos o dependencias pueden causar pérdidas. Que un contrato sea automático no significa que sea seguro.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "crypto:smart-contracts",
+          "title": "Introduction to smart contracts",
+          "url": "https://ethereum.org/smart-contracts/",
+          "provider": "Ethereum.org",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "staking",
+      "title": "staking",
+      "category": "criptoactivos",
+      "aliases": [
+        "stake",
+        "prueba de participación",
+        "proof of stake"
+      ],
+      "questions": [
+        "¿Qué es staking?",
+        "¿El staking garantiza una rentabilidad?"
+      ],
+      "summary": "El staking participa en la validación y seguridad de una red de prueba de participación, como Ethereum, comprometiendo activos según las reglas del protocolo.",
+      "explanation": "Las modalidades de participación cambian quién opera el validador y qué intermediarios intervienen. Pueden existir penalizaciones, riesgos operativos y riesgos de contraparte.",
+      "example": "Participar directamente en la validación y delegar a un servicio no generan la misma dependencia de terceros.",
+      "cautions": "Las recompensas no son un interés bancario garantizado. Puede haber penalizaciones y pérdidas; el valor del activo también puede variar.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "crypto:staking",
+          "title": "Ethereum staking",
+          "url": "https://ethereum.org/staking/",
+          "provider": "Ethereum.org",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "stablecoins",
+      "title": "stablecoins",
+      "category": "criptoactivos",
+      "aliases": [
+        "stablecoin",
+        "moneda estable",
+        "monedas estables"
+      ],
+      "questions": [
+        "¿Qué es una stablecoin?",
+        "¿Una stablecoin no tiene riesgo?"
+      ],
+      "summary": "Una stablecoin busca mantener una relación de valor con una referencia, habitualmente una moneda. Esa finalidad no equivale a una garantía de estabilidad.",
+      "explanation": "El respaldo, la liquidez de las reservas, los mecanismos de emisión y las condiciones de reembolso influyen en sus riesgos.",
+      "example": "Un activo diseñado para seguir una referencia puede separarse de ella si aparecen problemas de liquidez o confianza.",
+      "cautions": "Puede perder su referencia de valor. El nombre estable no elimina riesgo de mercado, emisor, reservas o reembolso.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "crypto:stablecoins-fed",
+          "title": "Primary and Secondary Markets for Stablecoins",
+          "url": "https://www.federalreserve.gov/econres/notes/feds-notes/primary-and-secondary-markets-for-stablecoins-20240223.html",
+          "provider": "Federal Reserve Board",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "indicadores-tecnicos",
+      "title": "indicadores técnicos",
+      "category": "indicadores",
+      "aliases": [
+        "indicador técnico",
+        "indicadores de trading",
+        "indicadores bursátiles",
+        "indicadores",
+        "indicador"
+      ],
+      "questions": [
+        "¿Qué indicadores utiliza un trader?",
+        "¿Qué tipos de indicadores técnicos hay?"
+      ],
+      "summary": "Los indicadores técnicos resumen información histórica de precios o volumen. Se agrupan en herramientas de tendencia, momentum, volatilidad y volumen.",
+      "explanation": "Medias móviles y MACD ayudan a estudiar tendencias; RSI y estocástico observan momentum; ATR y bandas de Bollinger describen variación; OBV relaciona volumen y cierres. Sus parámetros y horizontes importan.",
+      "example": "Dos indicadores pueden describir aspectos diferentes del mismo gráfico, en lugar de confirmar automáticamente una operación.",
+      "cautions": "Ningún indicador aislado garantiza resultados. Las señales pueden fallar y no sustituyen costes, liquidez, contexto y gestión del riesgo.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "fidelity:indicator:overview",
+          "title": "Technical Analysis Indicator Guide — Fidelity",
+          "url": "https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/overview",
+          "provider": "Fidelity Investments",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "rsi",
+      "title": "RSI",
+      "category": "indicadores",
+      "aliases": [
+        "índice de fuerza relativa",
+        "relative strength index"
+      ],
+      "questions": [
+        "¿Qué es el RSI?",
+        "¿RSI alto significa vender?"
+      ],
+      "summary": "El RSI es un oscilador de momentum que resume la velocidad y el cambio de los movimientos del precio. Su escala va de 0 a 100.",
+      "explanation": "Se interpreta según el contexto y el período. Las zonas tradicionalmente llamadas sobrecompra o sobreventa describen condiciones del indicador, no una orden automática.",
+      "example": "Un RSI elevado puede coexistir con una tendencia persistente; no demuestra por sí solo que el precio vaya a caer.",
+      "cautions": "Un nivel extremo no garantiza un giro. Combinar observaciones no elimina la posibilidad de señales falsas.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "fidelity:indicator:rsi",
+          "title": "Relative Strength Index — Fidelity",
+          "url": "https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/rsi",
+          "provider": "Fidelity Investments",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "macd",
+      "title": "MACD",
+      "category": "indicadores",
+      "aliases": [
+        "moving average convergence divergence",
+        "convergencia divergencia de medias"
+      ],
+      "questions": [
+        "¿Qué es MACD?",
+        "¿En qué se diferencia MACD de RSI?"
+      ],
+      "summary": "MACD compara medias móviles para estudiar momentum y tendencias. Se representa mediante líneas y, habitualmente, un histograma de sus diferencias.",
+      "explanation": "Los cruces y divergencias son formas de interpretar cambios en la relación entre medias. No se utiliza como si tuviera las mismas zonas fijas de sobrecompra y sobreventa de otros osciladores.",
+      "example": "El cambio de distancia entre medias puede mostrar que el comportamiento reciente se está apartando del anterior.",
+      "cautions": "Las señales pueden llegar con retraso o ser falsas, especialmente sin una tendencia clara. No son instrucciones de operación.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "fidelity:indicator:macd",
+          "title": "Moving Average Convergence/Divergence — Fidelity",
+          "url": "https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/macd",
+          "provider": "Fidelity Investments",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "sma",
+      "title": "media móvil simple",
+      "category": "indicadores",
+      "aliases": [
+        "SMA",
+        "promedio móvil simple",
+        "media movil"
+      ],
+      "questions": [
+        "¿Qué es una media móvil simple?"
+      ],
+      "summary": "La media móvil simple, o SMA, calcula el promedio de precios de un número de períodos y lo actualiza al avanzar la serie.",
+      "explanation": "Suaviza fluctuaciones para observar la tendencia. Un período más largo suele suavizar más y reaccionar con mayor retraso.",
+      "example": "Al añadir un cierre nuevo y retirar el más antiguo cambia el promedio representado en el gráfico.",
+      "cautions": "La media describe datos pasados. Un cruce del precio con la media no garantiza continuación ni cambio de tendencia.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "fidelity:indicator:sma",
+          "title": "Simple Moving Average — Fidelity",
+          "url": "https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/sma",
+          "provider": "Fidelity Investments",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "ema",
+      "title": "media móvil exponencial",
+      "category": "indicadores",
+      "aliases": [
+        "EMA",
+        "promedio móvil exponencial"
+      ],
+      "questions": [
+        "¿Qué es una EMA?",
+        "¿Diferencia entre SMA y EMA?"
+      ],
+      "summary": "La media móvil exponencial, o EMA, concede mayor peso a los precios recientes que una media simple equivalente.",
+      "explanation": "Reacciona con más sensibilidad a cambios recientes, aunque esa sensibilidad también puede producir más cambios de señal a corto plazo.",
+      "example": "Ante un movimiento reciente, una EMA y una SMA del mismo período pueden responder de forma diferente.",
+      "cautions": "Más rapidez de respuesta no garantiza mayor precisión ni rentabilidad. Ambas siguen basándose en precios históricos.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "fidelity:indicator:ema",
+          "title": "Exponential Moving Average — Fidelity",
+          "url": "https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/ema",
+          "provider": "Fidelity Investments",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "bollinger",
+      "title": "bandas de Bollinger",
+      "category": "indicadores",
+      "aliases": [
+        "Bollinger",
+        "Bollinger Bands"
+      ],
+      "questions": [
+        "¿Qué son las bandas de Bollinger?"
+      ],
+      "summary": "Las bandas de Bollinger sitúan bandas alrededor de una media móvil usando la dispersión estadística del precio.",
+      "explanation": "La anchura cambia con la volatilidad. Ayudan a estudiar el precio relativo a su comportamiento reciente, con parámetros que deben interpretarse en contexto.",
+      "example": "Unas bandas que se ensanchan muestran más variación reciente que unas bandas estrechas.",
+      "cautions": "Tocar una banda no obliga al precio a volver a la media. La dirección y la continuación del movimiento no quedan garantizadas.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "fidelity:indicator:bollinger-bands",
+          "title": "Bollinger Bands — Fidelity",
+          "url": "https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/bollinger-bands",
+          "provider": "Fidelity Investments",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "atr",
+      "title": "ATR",
+      "category": "indicadores",
+      "aliases": [
+        "average true range",
+        "rango verdadero promedio",
+        "rango medio verdadero"
+      ],
+      "questions": [
+        "¿Qué mide el ATR?"
+      ],
+      "summary": "El ATR promedia rangos verdaderos del precio para observar volatilidad e incorpora saltos respecto al cierre anterior.",
+      "explanation": "Describe la amplitud de los movimientos y no su dirección. Su interpretación depende del período y de la escala del instrumento.",
+      "example": "Un ATR que aumenta puede acompañar tanto una subida amplia como una caída amplia.",
+      "cautions": "Un ATR alto no significa que el activo vaya a subir ni permite fijar una pérdida máxima garantizada.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "fidelity:indicator:atr",
+          "title": "Average True Range — Fidelity",
+          "url": "https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/atr",
+          "provider": "Fidelity Investments",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "adx",
+      "title": "ADX",
+      "category": "indicadores",
+      "aliases": [
+        "average directional index",
+        "índice direccional medio"
+      ],
+      "questions": [
+        "¿Qué es ADX?",
+        "¿ADX dice si el precio sube o baja?"
+      ],
+      "summary": "El ADX estudia la fuerza de una tendencia, no identifica por sí solo si su dirección es alcista o bajista.",
+      "explanation": "Se interpreta junto con las líneas de movimiento direccional y el contexto del gráfico. Fuerza y dirección son dimensiones distintas.",
+      "example": "Una tendencia bajista puede mostrar fuerza elevada; una lectura alta no equivale a una señal alcista.",
+      "cautions": "El ADX utiliza datos de precio y puede reaccionar con retraso. No demuestra que una tendencia vaya a continuar.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "fidelity:indicator:adx",
+          "title": "ADX: How strong is the current trend in stocks?",
+          "url": "https://www.fidelity.com/viewpoints/active-investor/average-directional-index-ADX",
+          "provider": "Fidelity Investments",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "estocastico",
+      "title": "oscilador estocástico",
+      "category": "indicadores",
+      "aliases": [
+        "estocástico",
+        "stochastic",
+        "stochastic oscillator"
+      ],
+      "questions": [
+        "¿Qué es el oscilador estocástico?"
+      ],
+      "summary": "El oscilador estocástico compara el cierre con el rango de máximos y mínimos de un período para estudiar momentum.",
+      "explanation": "Su lectura depende de dónde queda el cierre dentro de ese rango. Sus líneas y cambios se interpretan junto al contexto.",
+      "example": "Un cierre cercano a los máximos recientes ocupa una posición distinta dentro del rango que un cierre próximo a los mínimos.",
+      "cautions": "Sobrecompra y sobreventa no implican automáticamente comprar o vender. El contexto de tendencia puede alterar su utilidad.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "fidelity:indicator:fast-stochastic",
+          "title": "Fast Stochastic Oscillator — Fidelity",
+          "url": "https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/fast-stochastic",
+          "provider": "Fidelity Investments",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "obv",
+      "title": "OBV",
+      "category": "indicadores",
+      "aliases": [
+        "on balance volume",
+        "volumen acumulado"
+      ],
+      "questions": [
+        "¿Qué es OBV?"
+      ],
+      "summary": "OBV acumula volumen según el cierre suba o baje frente al anterior para estudiar la relación entre volumen y precio.",
+      "explanation": "Su dirección y divergencias se analizan junto a los movimientos del precio. El valor absoluto aislado es menos informativo.",
+      "example": "Precio y OBV pueden avanzar en la misma dirección o dejar de acompañarse, lo que plantea una observación para analizar.",
+      "cautions": "Una divergencia no garantiza una reversión y el volumen por sí solo no identifica todas las causas de un movimiento.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "fidelity:indicator:obv",
+          "title": "On Balance Volume — Fidelity",
+          "url": "https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/obv",
+          "provider": "Fidelity Investments",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "cci",
+      "title": "CCI",
+      "category": "indicadores",
+      "aliases": [
+        "commodity channel index",
+        "índice del canal de materias primas"
+      ],
+      "questions": [
+        "¿Qué es CCI?"
+      ],
+      "summary": "El CCI compara el nivel de precio con su media estadística para observar desviaciones relativas y momentum.",
+      "explanation": "Ayuda a describir si el precio se aparta de su comportamiento promedio. No está limitado exclusivamente al análisis de materias primas.",
+      "example": "Un precio alejado de su media produce una lectura diferente de otro que fluctúa cerca de ella.",
+      "cautions": "Una desviación grande no obliga a corregir inmediatamente ni garantiza beneficio en una operación.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "fidelity:indicator:cci",
+          "title": "Commodity Channel Index — Fidelity",
+          "url": "https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/cci",
+          "provider": "Fidelity Investments",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "vwap",
+      "title": "VWAP",
+      "category": "indicadores",
+      "aliases": [
+        "volume weighted average price",
+        "precio medio ponderado por volumen"
+      ],
+      "questions": [
+        "¿Qué es VWAP?"
+      ],
+      "summary": "VWAP es un precio promedio ponderado por el volumen negociado durante el intervalo que se estudia.",
+      "explanation": "Da más peso a las operaciones con mayor volumen. Un VWAP anclado comienza su cálculo desde un momento elegido; cambiar el anclaje cambia la referencia.",
+      "example": "Dos intervalos o anclajes distintos pueden producir referencias distintas aunque se analice el mismo instrumento.",
+      "cautions": "Estar por encima o por debajo de VWAP no garantiza una operación rentable. Importan el intervalo y el contexto.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "fidelity:vwap",
+          "title": "Technical Analysis Session 2 — transcript",
+          "url": "https://media.fidelity.com/assets/Fidelity.com_VMS/756/898/TA_Session_2_Transcript.pdf",
+          "provider": "Fidelity Investments",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "soporte-resistencia",
+      "title": "soporte y resistencia",
+      "category": "indicadores",
+      "aliases": [
+        "soporte",
+        "resistencia",
+        "support resistance"
+      ],
+      "questions": [
+        "¿Qué son soporte y resistencia?"
+      ],
+      "summary": "Soporte y resistencia son zonas que el análisis técnico utiliza para estudiar posibles áreas de interés de demanda y oferta.",
+      "explanation": "Se identifican a partir del comportamiento del precio. Son referencias de análisis, no barreras que el mercado esté obligado a respetar.",
+      "example": "Una zona donde el precio frenó antes puede volver a observarse sin asumir que necesariamente ocurrirá lo mismo.",
+      "cautions": "Puede haber rupturas y señales falsas. Marcar una zona no garantiza un precio de ejecución ni una pérdida máxima.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "fidelity:support-resistance",
+          "title": "Support and Resistance",
+          "url": "https://www.fidelity.com/learning-center/trading-investing/technical-analysis/support-and-resistance",
+          "provider": "Fidelity Investments",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "velas",
+      "title": "velas japonesas",
+      "category": "indicadores",
+      "aliases": [
+        "candlestick",
+        "candlesticks",
+        "gráfico de velas",
+        "vela japonesa"
+      ],
+      "questions": [
+        "¿Cómo se lee una vela japonesa?"
+      ],
+      "summary": "Una vela representa apertura, máximo, mínimo y cierre de un intervalo de negociación.",
+      "explanation": "El cuerpo y las mechas muestran cómo se distribuyen esos precios en el período. Cambiar la temporalidad cambia qué operaciones resume cada vela.",
+      "example": "Una vela diaria resume un intervalo diferente al de una vela intradía; no conviene confundir sus horizontes.",
+      "cautions": "Un patrón visual no garantiza el siguiente movimiento del precio. La interpretación debe considerar contexto y liquidez.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "fidelity:candlesticks",
+          "title": "How to read a crypto chart",
+          "url": "https://www.fidelity.com/learning-center/trading-investing/crypto/how-to-read-a-crypto-chart",
+          "provider": "Fidelity Investments",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "day-trading",
+      "title": "trading e inversión a largo plazo",
+      "category": "trading",
+      "aliases": [
+        "day trading",
+        "trading intradía",
+        "trader",
+        "trading"
+      ],
+      "questions": [
+        "¿Qué necesita saber un trader?",
+        "¿Qué diferencia hay entre trading e inversión?"
+      ],
+      "summary": "El trading frecuente busca aprovechar movimientos de corto plazo. La inversión a largo plazo estudia un horizonte y objetivos diferentes.",
+      "explanation": "La negociación frecuente exige atención, conocimiento de órdenes, liquidez, costes, margen y riesgos. Más operaciones pueden acumular costes y no aseguran mejores resultados.",
+      "example": "Una operación intradía y una inversión pensada para varios años no se evalúan con el mismo horizonte.",
+      "cautions": "El trading puede causar pérdidas importantes; usar margen puede incrementar esas pérdidas. Esta explicación no propone una estrategia ni garantiza ingresos.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "finra:intraday-basics",
+          "title": "Frequent Intraday Trading: Understanding the Basics",
+          "url": "https://syndication.finra.org/content/frequent-intraday-trading-understanding-basics",
+          "provider": "FINRA",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "tamano-posicion",
+      "title": "tamaño de posición",
+      "category": "trading",
+      "aliases": [
+        "position sizing",
+        "riesgo por operación",
+        "gestión del riesgo en trading"
+      ],
+      "questions": [
+        "¿Qué es el tamaño de posición?"
+      ],
+      "summary": "El tamaño de posición describe cuánto se expone en una operación. Es una parte del control de riesgo, distinta de acertar la dirección del precio.",
+      "explanation": "Relaciona exposición, riesgo del instrumento y condiciones de salida. Una misma variación puede tener consecuencias distintas según el tamaño y el apalancamiento.",
+      "example": "Dos posiciones sobre el mismo instrumento pueden generar impactos diferentes en el capital por tener exposiciones distintas.",
+      "cautions": "Una orden de salida no garantiza el precio de ejecución. Aquí no se calcula ni prescribe un tamaño personalizado de operación.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "cme:position-size",
+          "title": "Proper Position Size",
+          "url": "https://www.cmegroup.com/education/courses/trade-and-risk-management/proper-position-size",
+          "provider": "CME Group",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "backtesting",
+      "title": "backtesting",
+      "category": "trading",
+      "aliases": [
+        "prueba retrospectiva",
+        "simulación histórica",
+        "backtest"
+      ],
+      "questions": [
+        "¿Qué es backtesting?",
+        "¿Un backtest rentable garantiza ganancias?"
+      ],
+      "summary": "El backtesting simula cómo habrían funcionado reglas sobre datos históricos; sus resultados son hipotéticos.",
+      "explanation": "Sirve para estudiar una estrategia, pero los supuestos de ejecución y los costes influyen en la simulación. Ver el pasado no reproduce todas las condiciones de una operación real.",
+      "example": "Una simulación que ignora gastos o supone ejecuciones ideales puede diferir de la experiencia real.",
+      "cautions": "Los resultados hipotéticos no son una promesa ni un historial de operaciones reales. El rendimiento pasado no garantiza el futuro.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "fidelity:backtesting",
+          "title": "About Strategy Testing",
+          "url": "https://www.fidelity.com/research/backtesting/about.html",
+          "provider": "Fidelity Investments",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "drawdown",
+      "title": "drawdown",
+      "category": "trading",
+      "aliases": [
+        "caída desde máximos",
+        "maximum drawdown",
+        "máxima caída"
+      ],
+      "questions": [
+        "¿Qué es drawdown?"
+      ],
+      "summary": "El drawdown mide una caída desde un máximo previo hasta un nivel posterior dentro del período estudiado.",
+      "explanation": "Ayuda a describir pérdidas durante un recorrido y no solo el resultado final. El máximo drawdown depende de la serie, frecuencia y ventana analizadas.",
+      "example": "Dos estrategias pueden terminar con un resultado parecido y haber sufrido caídas intermedias diferentes.",
+      "cautions": "El drawdown histórico no es un límite garantizado para pérdidas futuras. Las simulaciones tienen limitaciones de datos y ejecución.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "fidelity:backtesting-glossary",
+          "title": "Strategy Testing glossary",
+          "url": "https://www.fidelity.com/research/backtesting/glossary.html",
+          "provider": "Fidelity Investments",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "margen-operativo",
+      "title": "margen operativo",
+      "category": "analisis",
+      "aliases": [
+        "operating margin",
+        "rentabilidad operativa"
+      ],
+      "questions": [
+        "¿Qué es el margen operativo?"
+      ],
+      "summary": "El margen operativo relaciona el beneficio de las operaciones con los ingresos de la empresa.",
+      "explanation": "Permite estudiar qué parte de las ventas queda tras los costes operativos. La comparación requiere considerar sector, período y criterios contables.",
+      "example": "Empresas con ventas similares pueden conservar una parte distinta como beneficio operativo.",
+      "cautions": "Un margen alto aislado no demuestra que una acción esté barata ni garantiza una buena inversión.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "sec:ratios-learning",
+          "title": "Beginners Guide to Financial Statements",
+          "url": "https://www.sec.gov/reportspubs/investor-publications/investorpubsbegfinstmtguidehtm.html",
+          "provider": "U.S. SEC",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "ratio-corriente",
+      "title": "ratio corriente",
+      "category": "analisis",
+      "aliases": [
+        "current ratio",
+        "razón corriente",
+        "ratio de liquidez corriente"
+      ],
+      "questions": [
+        "¿Qué es el current ratio?"
+      ],
+      "summary": "El ratio corriente compara activos corrientes con pasivos corrientes para observar la situación de liquidez contable.",
+      "explanation": "Resume una relación de corto plazo; la calidad de los activos y el calendario de cobros y pagos también importan.",
+      "example": "Tener activos corrientes no implica que todos puedan convertirse inmediatamente en efectivo.",
+      "cautions": "No existe un valor ideal universal para todos los sectores. Un ratio aislado no sustituye el análisis de la empresa.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "sec:ratios-learning",
+          "title": "Beginners Guide to Financial Statements",
+          "url": "https://www.sec.gov/reportspubs/investor-publications/investorpubsbegfinstmtguidehtm.html",
+          "provider": "U.S. SEC",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "liderazgo-sectorial",
+      "title": "liderazgo y rotación sectorial",
+      "category": "mercados",
+      "aliases": [
+        "rotación sectorial",
+        "liderazgo sectorial",
+        "rendimiento sectorial"
+      ],
+      "questions": [
+        "¿Qué significa que un sector lidere?",
+        "¿Cómo se compara el rendimiento de sectores?"
+      ],
+      "summary": "El liderazgo sectorial compara el rendimiento observado de sectores en un mercado y período definidos. No identifica por sí mismo al ganador futuro.",
+      "explanation": "La comparación requiere una fuente coherente, la misma ventana temporal y conocer qué índice o ETF representa cada sector. Un ETF es una aproximación con composición y costes propios.",
+      "example": "El sector con mejor variación diaria puede ser diferente del que más avanzó en un año.",
+      "cautions": "Un ranking actual necesita datos con fecha y hora. Esta definición estática no contiene líderes actuales ni porcentajes de hoy.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "ssga:sector-tracker-learning",
+          "title": "Sector tracker",
+          "url": "https://www.ssga.com/us/en/intermediary/resources/sector-tracker",
+          "provider": "State Street Investment Management",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "indicadores-fundamentales",
+      "title": "indicadores fundamentales",
+      "category": "analisis",
+      "aliases": [
+        "indicador fundamental",
+        "ratios financieros",
+        "métricas fundamentales"
+      ],
+      "questions": [
+        "¿Qué indicadores fundamentales hay?",
+        "¿Qué indicadores se estudian para analizar una empresa?"
+      ],
+      "summary": "Los indicadores fundamentales ayudan a estudiar resultados, valoración, liquidez y estructura financiera de una empresa.",
+      "explanation": "Beneficio por acción, relación precio-beneficio, márgenes y ratios de liquidez describen aspectos diferentes. Se interpretan junto a estados financieros, sector y evolución temporal, no como una puntuación universal.",
+      "example": "Dos empresas pueden mostrar una valoración parecida y mantener márgenes o necesidades de financiación diferentes.",
+      "cautions": "Un ratio aislado no demuestra que una acción vaya a subir ni sustituye la revisión de sus datos y condiciones de negocio.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "fidelity:fundamentals-learning",
+          "title": "Fundamental analysis",
+          "url": "https://www.fidelity.com/learning-center/trading-investing/fundamental-analysis/analyzing-stock-fundamentals",
+          "provider": "Fidelity Investments",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    }
+  ]
+}

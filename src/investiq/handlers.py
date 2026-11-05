@@ -6,14 +6,16 @@ from typing import Literal
 from sqlmodel import Session
 
 from investiq.domain import RouterDecision, SourceReference
-from investiq.education import EDUCATION_CATALOGUE, education_sources
+from investiq.knowledge import get_library
 from investiq.instruments import INSTRUMENTS, INSTRUMENT_BY_SYMBOL
-from investiq.language import canonical_education_topic
+from investiq.language import plain
 from investiq.settings import Settings
+from investiq.sector_context import sector_limitation
 from investiq.tools import (
-    compare_instruments, education_tool, feature_sources, local_model_source, market_quote_tool,
+    compare_instruments, feature_sources, local_model_source, market_quote_tool,
     news_tool, normalize_symbol, sec_docs_tool, similar_instruments, source_references,
     volatility_bucket,
+    exploration_candidates,
 )
 
 _COVERAGE = ", ".join(sorted(item.symbol for item in INSTRUMENTS))
@@ -26,7 +28,6 @@ class HandlerResult:
     sources: list[SourceReference] = field(default_factory=list)
     status: Literal["ok", "degraded", "error"] = "ok"
     tools_used: list[str] = field(default_factory=list)
-    protected_narration: bool = False
 
 
 def _explain(session: Session, settings: Settings, decision: RouterDecision) -> HandlerResult:
@@ -68,18 +69,15 @@ def _explain(session: Session, settings: Settings, decision: RouterDecision) -> 
 
 
 def _educate(query: str, decision: RouterDecision, explanation_level: str) -> HandlerResult:
-    followup = query + " sencillo" if explanation_level == "basic" else query
-    definition = education_tool(decision.education_topic or query, followup=followup)
-    if not definition:
-        return HandlerResult(
-            "Todavía no tengo una explicación verificada para ese término. "
-            "Podemos empezar por volatilidad, beta, correlación, ETF, retorno o riesgo.",
-            status="degraded",
-        )
-    topic = canonical_education_topic(decision.education_topic or query)
+    # Direct tool execution remains deterministic. The coordinator supplies the
+    # optional model only in its dedicated education branch.
+    from investiq.tutor import answer_from_knowledge
+
+    result = answer_from_knowledge(query, topic=decision.education_topic,
+                                   level=explanation_level, client=None)
     return HandlerResult(
-        definition, facts={"definition": definition}, sources=education_sources(topic),
-        protected_narration=EDUCATION_CATALOGUE[topic].protected_narration,
+        result.answer, facts=result.facts, sources=result.sources, status=result.status,
+        tools_used=result.tools_used,
     )
 
 
@@ -105,8 +103,21 @@ def _instrument_info(decision: RouterDecision) -> HandlerResult:
         source_id=f"catalogue:{item.symbol}", title=f"Catálogo local: {item.symbol} · {item.name}",
         url=f"local://catalogue/{item.symbol}", provider="Catálogo de instrumentos de InvestiQ",
     )
+    sources = [source]
+    tools = ["instrument_catalogue"]
+    document = None
+    for identity in (item.symbol, item.name):
+        candidate = get_library().get_by_topic(identity)
+        if candidate and any(plain(identity) == plain(alias)
+                             for alias in (candidate.title, *candidate.aliases)):
+            document = candidate
+            break
+    if document is not None:
+        answer += "\n\n" + document.summary
+        sources.extend(reference.to_reference() for reference in document.sources)
+        tools.append("knowledge_search")
     return HandlerResult(answer, facts={"symbol": item.symbol, "name": item.name, "kind": item.kind,
-                                        "sector": item.sector}, sources=[source], tools_used=["instrument_catalogue"])
+                                        "sector": item.sector}, sources=sources, tools_used=tools)
 
 
 def _recommend_volatility(session: Session, decision: RouterDecision) -> HandlerResult:
@@ -174,8 +185,76 @@ def _compare(session: Session, email: str, decision: RouterDecision, use_prefere
         return HandlerResult(str(error), sources=sources, status="degraded", tools_used=tools)
 
 
+def _explore(session: Session, decision: RouterDecision) -> HandlerResult:
+    from investiq.preferences import SECTOR_NAMES
+
+    if decision.exploration_horizon == "short":
+        document = get_library().get_by_topic("horizonte de inversión")
+        return HandlerResult(
+            "Para un dinero que necesitarías en menos de un año, esta exploración de acciones y ETF "
+            "no determina una opción que preserve tu capital o esté disponible sin pérdidas. "
+            "Podemos estudiar liquidez y horizonte antes de buscar candidatos.\n\n"
+            + (document.summary + " " + document.cautions if document else ""),
+            sources=[s.to_reference() for s in document.sources] if document else [], status="degraded")
+    required = (decision.exploration_kind, decision.exploration_horizon, decision.volatility_target)
+    if not all(required):
+        return HandlerResult("Necesito conocer tipo de instrumento, plazo y variación histórica deseada para explorar candidatos.", status="degraded")
+    try:
+        rows, run = exploration_candidates(session, decision)
+    except (RuntimeError, ValueError, KeyError, OSError, TypeError, AttributeError):
+        return HandlerResult(
+            "Todavía no tengo un modelo aprobado y características históricas coherentes para esa exploración. "
+            "Puedes seguir explorando conceptos mientras se preparan los datos y el modelo local.",
+            status="degraded", tools_used=["exploration_candidates"])
+    sources = [source for source in [local_model_source(session)] if source]
+    sources.extend(feature_sources(session, [row["symbol"] for row in rows]))
+    if not rows:
+        return HandlerResult("No hay candidatos del catálogo que cumplan todos esos criterios con el modelo disponible. "
+                             "Puedes cambiar el tipo, sector o variación histórica que quieres explorar.",
+                             sources=sources, status="degraded", tools_used=["exploration_candidates"])
+    kind = {"equity": "acciones", "etf": "ETF", "any": "acciones y ETF"}[decision.exploration_kind]
+    horizon = "más de cinco años" if decision.exploration_horizon == "long" else "entre uno y cinco años"
+    answer = (f"Candidatos para estudiar: {kind}; plazo que indicaste: {horizon}; "
+              f"variación histórica deseada: {decision.volatility_target}. "
+              "Es un criterio de exploración, no una evaluación completa de tu perfil financiero.\n\n")
+    if decision.reference_symbol:
+        answer += f"El clustering prioriza el mismo grupo y la cercanía a {decision.reference_symbol}.\n\n"
+    else:
+        answer += "Dentro de tus filtros, el modelo prioriza cercanía al centro de su clúster en el espacio de características entrenado.\n\n"
+    answer += "| Instrumento | Tipo | Volatilidad anualizada | Nivel | Beta | Sector | Grupo ML | Coincidencia |\n|---|---|---:|---|---:|---|---:|---:|\n"
+    answer += "\n".join(
+        f"| {row['symbol']} · {row['name']} | {'ETF' if row['kind'] == 'ETF' else 'Acción'} | "
+        f"{row['volatility']:.2%} | {row['volatility_bucket']} | {row['beta']:.2f} | "
+        f"{SECTOR_NAMES.get(row['sector'], row['sector'])} | {row['cluster_label']} | {row['coincidence']:.1f}/100 |"
+        for row in rows)
+    answer += (f"\n\nPeríodo histórico del modelo: {run.observation_start} a {run.observation_end}. "
+               f"Entrenamiento: {run.created_at.strftime('%Y-%m-%d %H:%M')} UTC. Universo entrenado: {run.universe_size} instrumentos. "
+               "Las fuentes de características muestran su fecha de cálculo.\n\n"
+               "La coincidencia es 100/(1 + distancia en el espacio entrenado), no una probabilidad ni una rentabilidad. "
+               "Los niveles de volatilidad son terciles del universo histórico, no perfiles personales. "
+               "El modelo agrupa comportamientos pasados; no identifica qué conviene comprar hoy ni garantiza resultados.")
+    return HandlerResult(answer, facts={"candidates": rows}, sources=sources, tools_used=["exploration_candidates"])
+
+
 def execute_query(session: Session, email: str, query: str, settings: Settings, decision: RouterDecision,
                   *, use_preferences: bool = True, explanation_level: str = "standard") -> HandlerResult:
+    if decision.intent == "sector_performance":
+        if decision.sector_market != "Estados Unidos":
+            return HandlerResult(sector_limitation(decision.sector_market), status="degraded")
+        from investiq.providers.sectors import SECTOR_LABELS, sector_snapshot, snapshot_source
+        rows, day, fetched, error = sector_snapshot(session, settings)
+        if not rows:
+            return HandlerResult(sector_limitation(decision.sector_market) + "\n\n" + (error or ""),
+                                 status="degraded", tools_used=["sector_snapshot"] if settings.has_fmp_key else [])
+        answer = (f"Sectores de NASDAQ, Estados Unidos · {day} (fecha de Nueva York). "
+                  "Ordenados por variación diaria media de FMP; esta bolsa no representa todo el país.\n\n"
+                  "| Sector | Variación diaria media |\n|---|---:|\n")
+        answer += "\n".join(f"| {SECTOR_LABELS[row['sector']]} | {row['change_pct']:+.2f}% |" for row in rows)
+        answer += (f"\n\nConsulta: {fetched.strftime('%Y-%m-%d %H:%M')} UTC. El proveedor informa fecha, no hora exacta del dato. "
+                   "El orden diario no predice rentabilidad futura.")
+        return HandlerResult(answer, sources=[snapshot_source(day, fetched)], tools_used=["sector_snapshot"])
+    if decision.intent == "explore":
+        return _explore(session, decision)
     if decision.intent == "explanation":
         return _explain(session, settings, decision)
     if decision.intent == "education":

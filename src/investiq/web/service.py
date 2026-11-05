@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import asdict
 import threading
+import re
 
 from sqlmodel import Session
 
@@ -64,8 +65,12 @@ class WebService:
             }
 
     def chat(self, browser: BrowserSession, payload: dict) -> dict:
-        if set(payload) != {"message"} or not isinstance(payload.get("message"), str):
+        if (set(payload) not in ({"message"}, {"message", "news_id"})
+                or not isinstance(payload.get("message"), str)):
             raise InvalidRequest("Envía un mensaje de texto para continuar.")
+        if "news_id" in payload and (not isinstance(payload["news_id"], str)
+                or not re.fullmatch(r"news:[a-z0-9:-]{1,94}", payload["news_id"])):
+            raise InvalidRequest("Elige una noticia del listado para continuar.")
         message = payload["message"].strip()
         if not message:
             raise InvalidRequest("Escribe lo que te gustaría preguntar.")
@@ -78,7 +83,8 @@ class WebService:
         with self._profile_lock, Session(self.engine) as db:
             # Preserve the prior temporary state if an unexpected provider/DB error escapes.
             state = self._state(db, browser).model_copy(deep=True)
-            response = answer_turn(db, LOCAL_USER_ID, message, self.settings, state=state)
+            selection = {"news_selection_id": payload["news_id"]} if "news_id" in payload else {}
+            response = answer_turn(db, LOCAL_USER_ID, message, self.settings, state=state, **selection)
             browser.state = state
             serialized = response.model_dump(mode="json")
             if response.clear_history:
@@ -88,6 +94,7 @@ class WebService:
             browser.messages.append({
                 "role": "assistant", "content": response.answer,
                 "sources": serialized["sources"], "status": response.status,
+                "actions": serialized["actions"],
             })
             del browser.messages[:-MAX_VISIBLE_MESSAGES]
             return {"response": serialized, "memory": self._memory(db)}

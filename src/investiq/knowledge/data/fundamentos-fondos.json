@@ -1,0 +1,534 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {
+      "id": "accion",
+      "title": "acción",
+      "category": "fundamentos",
+      "aliases": [
+        "acciones",
+        "stock",
+        "stocks",
+        "renta variable",
+        "participación empresarial"
+      ],
+      "questions": [
+        "¿Qué es una acción?",
+        "¿Qué compro cuando compro parte de una empresa?",
+        "¿Qué significa tener un pedacito de una empresa?",
+        "¿Qué significa ser dueño de una parte de una compañía?"
+      ],
+      "summary": "Una acción representa una participación en la propiedad de una empresa.",
+      "explanation": "Según la clase de acción, puede dar derechos económicos y de voto. Su valor puede cambiar y algunas empresas distribuyen dividendos.",
+      "example": "Imagina una empresa dividida en pequeñas participaciones: una acción representa una de ellas.",
+      "cautions": "Ser accionista no garantiza dividendos ni recuperar el capital invertido.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:stocks",
+          "title": "Stocks — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/investment-products/stocks",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "accion-comun-preferente",
+      "title": "acciones comunes y preferentes",
+      "category": "fundamentos",
+      "aliases": [
+        "acción ordinaria",
+        "acción preferente",
+        "derechos del accionista"
+      ],
+      "questions": [
+        "¿Todas las acciones tienen los mismos derechos?",
+        "¿Qué es una acción preferente?"
+      ],
+      "summary": "Las acciones comunes y preferentes pueden otorgar derechos diferentes.",
+      "explanation": "Las comunes suelen permitir votar; las preferentes suelen tener prioridad en dividendos y liquidación, según sus condiciones.",
+      "example": "Dos clases de participación en la misma empresa pueden tener derechos distintos.",
+      "cautions": "La prioridad de cobro no equivale a ausencia de riesgo ni garantiza un pago.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:stocks",
+          "title": "Stocks — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/investment-products/stocks",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "dividendos",
+      "title": "dividendos",
+      "category": "fundamentos",
+      "aliases": [
+        "dividendo",
+        "reparto de beneficios",
+        "distribución de utilidades"
+      ],
+      "questions": [
+        "¿Qué es un dividendo?",
+        "¿Cómo recibe dinero un accionista sin vender?"
+      ],
+      "summary": "Un dividendo es una parte del beneficio que una empresa distribuye a sus accionistas.",
+      "explanation": "No todas las empresas pagan dividendos. Una distribución no es lo mismo que la subida del precio de la acción.",
+      "example": "Una empresa puede repartir una parte de lo que gana o conservar recursos para su actividad.",
+      "cautions": "El pago futuro no debe darse por hecho: la política y la situación de la empresa pueden cambiar.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:dividend",
+          "title": "Dividend — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/dividend",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "capitalizacion",
+      "title": "capitalización bursátil",
+      "category": "analisis",
+      "aliases": [
+        "market cap",
+        "valor de mercado",
+        "tamaño bursátil"
+      ],
+      "questions": [
+        "¿Qué significa capitalización?",
+        "¿Una acción barata implica una empresa pequeña?"
+      ],
+      "summary": "La capitalización bursátil estima el valor de mercado del conjunto de acciones de una empresa.",
+      "explanation": "Se obtiene multiplicando el precio de una acción por las acciones en circulación; no equivale al efectivo que posee la empresa.",
+      "example": "Mirar solo el precio de una participación ignora cuántas participaciones existen.",
+      "cautions": "Capitalización y precio son datos de una fecha; esta explicación no proporciona valores actuales.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:market-cap",
+          "title": "Market Capitalization — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/market-capitalization",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "ipo",
+      "title": "oferta pública inicial",
+      "category": "mercados",
+      "aliases": [
+        "ipo",
+        "salida a bolsa",
+        "oferta inicial de acciones"
+      ],
+      "questions": [
+        "¿Qué es una IPO?",
+        "¿Cómo sale una empresa a bolsa?"
+      ],
+      "summary": "Una oferta pública inicial es, en general, la primera venta de acciones de una empresa al público.",
+      "explanation": "Permite que nuevos inversores accedan a sus acciones; sus documentos describen la oferta y sus riesgos.",
+      "example": "Una compañía puede pasar de propietarios privados a ofrecer participaciones al público.",
+      "cautions": "Participar en una salida a bolsa no garantiza ganancias ni acceso a la asignación de acciones.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:ipo",
+          "title": "Initial Public Offering — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/initial-public-offering-ipo",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "mercado-primario",
+      "title": "mercado primario",
+      "category": "mercados",
+      "aliases": [
+        "emisión de valores",
+        "nueva emisión"
+      ],
+      "questions": [
+        "¿Qué es el mercado primario?",
+        "¿Cuándo recibe dinero la empresa emisora?"
+      ],
+      "summary": "En el mercado primario se venden valores recién emitidos y el emisor recibe los recursos.",
+      "explanation": "Es la etapa de financiación mediante la emisión; se distingue del intercambio posterior entre inversores.",
+      "example": "Una empresa obtiene recursos cuando coloca una nueva emisión de acciones.",
+      "cautions": "Una nueva emisión también requiere revisar su documentación y riesgos.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:primary-market",
+          "title": "Primary Market — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/primary-market",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "mercado-secundario",
+      "title": "mercado secundario",
+      "category": "mercados",
+      "aliases": [
+        "reventa de acciones",
+        "negociación entre inversores"
+      ],
+      "questions": [
+        "¿Qué es el mercado secundario?",
+        "¿A quién pago al comprar una acción que ya cotiza?"
+      ],
+      "summary": "El mercado secundario permite negociar valores que ya fueron emitidos.",
+      "explanation": "Habitualmente una compra y una venta intercambian títulos existentes, en lugar de financiar una nueva emisión de la empresa.",
+      "example": "Una persona transmite una participación existente a otra mediante el mercado.",
+      "cautions": "La posibilidad de vender y el precio dependen de las condiciones de negociación.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:secondary-market",
+          "title": "Secondary Market — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/secondary-market",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "split",
+      "title": "desdoblamiento de acciones",
+      "category": "fundamentos",
+      "aliases": [
+        "stock split",
+        "split",
+        "división de acciones"
+      ],
+      "questions": [
+        "¿Qué es un split?",
+        "¿Un split me hace más rico?"
+      ],
+      "summary": "Un split aumenta el número de acciones sin cambiar por sí mismo la participación proporcional de los accionistas.",
+      "explanation": "La división ajusta la cantidad de títulos y su precio unitario de referencia; no crea riqueza por el mero reparto.",
+      "example": "Dividir una misma tarta en más porciones no aumenta la tarta total.",
+      "cautions": "El precio puede variar por el mercado además del ajuste mecánico del split.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:stock-split",
+          "title": "Stock Split — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/stock-split",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "etf",
+      "title": "etf",
+      "category": "fondos",
+      "aliases": [
+        "fondo cotizado",
+        "exchange traded fund",
+        "etfs",
+        "canasta de inversiones"
+      ],
+      "questions": [
+        "¿Qué es un ETF?",
+        "¿Cómo compro una canasta en bolsa?"
+      ],
+      "summary": "Un ETF es un fondo que se compra y vende en bolsa mediante participaciones.",
+      "explanation": "Puedes imaginarlo como una canasta de inversiones, aunque cada fondo tiene su propia composición, sus costos y sus riesgos.",
+      "example": "Una participación de un fondo permite observar el resultado de su cartera en lugar de una sola empresa.",
+      "cautions": "Un ETF no garantiza diversificación suficiente ni protección contra pérdidas.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:etf",
+          "title": "Exchange-Traded Fund — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/exchange-traded-fund-etf",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "fondo-indexado",
+      "title": "fondo indexado",
+      "category": "fondos",
+      "aliases": [
+        "index fund",
+        "fondo pasivo",
+        "replicar un índice"
+      ],
+      "questions": [
+        "¿Qué es un fondo indexado?",
+        "¿Un índice y un fondo son lo mismo?"
+      ],
+      "summary": "Un fondo indexado busca seguir el comportamiento de un índice antes de sus gastos.",
+      "explanation": "Puede usar los componentes del índice, una muestra u otras técnicas descritas en sus documentos.",
+      "example": "El índice sirve de referencia y el fondo trata de aproximarse a ese recorrido.",
+      "cautions": "Comisiones y diferencias de seguimiento hacen que el resultado no sea idéntico al índice.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:index-fund",
+          "title": "Index Fund — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/index-fund",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "fondo-mutuo",
+      "title": "fondo de inversión",
+      "category": "fondos",
+      "aliases": [
+        "fondo mutuo",
+        "mutual fund",
+        "fondos de inversión"
+      ],
+      "questions": [
+        "¿Qué es un fondo mutuo?",
+        "¿Quién administra un fondo de inversión?"
+      ],
+      "summary": "Un fondo reúne dinero de varias personas y lo invierte siguiendo una política común.",
+      "explanation": "Cada participación representa una parte de su cartera y de sus resultados. Sus objetivos y condiciones se describen en el folleto.",
+      "example": "Varias personas participan en una cartera administrada según reglas del fondo.",
+      "cautions": "Compartir una cartera no elimina el riesgo; importan sus inversiones y sus costes.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:mutual-funds",
+          "title": "Mutual Funds — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/investment-products/mutual-funds-and-exchange-traded-funds-etfs/mutual-funds",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "accion-vs-etf",
+      "title": "acción frente a ETF",
+      "category": "fondos",
+      "aliases": [
+        "diferencia entre acción y etf",
+        "acciones o fondos",
+        "etf vs acción"
+      ],
+      "questions": [
+        "¿Qué diferencia hay entre una acción y un ETF?",
+        "¿Un ETF es una empresa?"
+      ],
+      "summary": "Una acción representa participación en una empresa; una participación de ETF corresponde a un fondo con una cartera.",
+      "explanation": "La comparación requiere distinguir qué posee cada instrumento y de dónde proceden sus riesgos.",
+      "example": "Una participación empresarial concentra la exposición en esa empresa; la de un fondo depende de su cartera.",
+      "cautions": "Un fondo puede estar concentrado: tener varios activos no asegura una diversificación amplia.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:stocks",
+          "title": "Stocks — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/investment-products/stocks",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        },
+        {
+          "source_id": "inv:etf",
+          "title": "Exchange-Traded Fund — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/exchange-traded-fund-etf",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "etf-vs-fondo-mutuo",
+      "title": "ETF frente a fondo mutuo",
+      "category": "fondos",
+      "aliases": [
+        "etf vs fondo",
+        "diferencia ETF y fondo mutuo"
+      ],
+      "questions": [
+        "¿Qué diferencia hay entre ETF y fondo de inversión?",
+        "¿Cómo se negocian las participaciones de un fondo?"
+      ],
+      "summary": "Ambos agrupan inversiones, pero sus mecanismos de negociación pueden diferir.",
+      "explanation": "Las participaciones ETF se negocian en bolsa a precios de mercado; los fondos mutuos tradicionales suelen contratarse a su valor liquidativo calculado.",
+      "example": "Dos fondos con cartera parecida pueden tener distinta forma de compra y venta.",
+      "cautions": "La estructura no decide por sí sola el riesgo, los impuestos ni el coste total.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:fund-characteristics",
+          "title": "Characteristics of Mutual Funds and ETFs — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/characteristics-mutual-funds-exchange-traded-funds",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "valor-liquidativo",
+      "title": "valor liquidativo",
+      "category": "fondos",
+      "aliases": [
+        "nav",
+        "net asset value",
+        "valor de la participación"
+      ],
+      "questions": [
+        "¿Qué es el valor liquidativo?",
+        "¿Por qué el precio de un ETF puede diferir de su cartera?"
+      ],
+      "summary": "El valor liquidativo parte del valor de los activos del fondo menos sus obligaciones.",
+      "explanation": "El valor por participación divide ese patrimonio entre las participaciones existentes. No debe confundirse con cualquier precio negociado en bolsa.",
+      "example": "Una cartera se valora y se reparte contablemente entre sus participaciones.",
+      "cautions": "La fecha de valoración y las reglas del fondo importan; aquí no se calcula un NAV actual.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:nav",
+          "title": "Net Asset Value — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/net-asset-value",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "expense-ratio",
+      "title": "ratio de gastos",
+      "category": "costes",
+      "aliases": [
+        "expense ratio",
+        "ter",
+        "gastos de gestión",
+        "comisión anual del fondo"
+      ],
+      "questions": [
+        "¿Qué es el expense ratio?",
+        "¿Qué gastos tiene un ETF?"
+      ],
+      "summary": "El ratio de gastos expresa qué proporción de los activos del fondo se utiliza para sus gastos de funcionamiento.",
+      "explanation": "Puede incluir administración y otros gastos detallados en el folleto; no es necesariamente todo lo que paga quien invierte.",
+      "example": "Dos fondos con estrategia parecida pueden descontar gastos distintos de sus resultados.",
+      "cautions": "Para comparar costes también importan negociación, divisa y tarifas del intermediario.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:expense-ratio",
+          "title": "Expense Ratio — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/expense-ratio",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "etf-apalancado-inverso",
+      "title": "ETF apalancados e inversos",
+      "category": "fondos",
+      "aliases": [
+        "etf apalancado",
+        "etf inverso",
+        "leveraged etf",
+        "inverse etf"
+      ],
+      "questions": [
+        "¿Qué es un ETF inverso?",
+        "¿Qué significa que un ETF use apalancamiento?"
+      ],
+      "summary": "Estos ETF buscan multiplicar o invertir el comportamiento diario de una referencia, según su objetivo.",
+      "explanation": "El reajuste diario hace que el resultado de mantenerlos durante más tiempo pueda apartarse de esa relación diaria.",
+      "example": "Encadenar cambios diarios no equivale a multiplicar sin más el cambio de todo un período.",
+      "cautions": "El apalancamiento puede amplificar las pérdidas y estos productos pueden generar pérdidas importantes y rápidas. El reajuste diario puede hacer que el resultado de varios días se aparte del objetivo diario; no equivale a multiplicar el cambio total del índice.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:leveraged-inverse",
+          "title": "Leveraged and Inverse ETFs — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-alerts/sec",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "costes-fondos",
+      "title": "costes de un fondo",
+      "category": "costes",
+      "aliases": [
+        "comisiones de fondos",
+        "gastos del etf",
+        "coste total del fondo"
+      ],
+      "questions": [
+        "¿Qué costes descuentan los fondos?",
+        "¿Comisiones pequeñas importan?"
+      ],
+      "summary": "Los fondos trasladan a sus participantes gastos operativos y, en algunos casos, costes por operaciones específicas.",
+      "explanation": "El folleto recoge categorías y condiciones. Dos fondos con el mismo resultado bruto pueden dejar resultados netos diferentes por sus gastos.",
+      "example": "La diferencia entre lo que obtiene la cartera y lo que recibe el partícipe ayuda a pensar en los costes.",
+      "cautions": "Esta biblioteca no conserva tarifas vigentes ni sustituye el folleto actualizado.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:fund-fees",
+          "title": "Mutual Fund and ETF Fees and Expenses — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/mutual-fund-fees-and-expenses",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "gestion-activa-pasiva",
+      "title": "gestión activa y pasiva",
+      "category": "fondos",
+      "aliases": [
+        "gestión activa",
+        "gestión pasiva",
+        "inversión pasiva",
+        "inversión activa",
+        "fondos activos",
+        "fondos pasivos"
+      ],
+      "questions": [
+        "¿En qué se diferencia gestión activa y pasiva?",
+        "¿Un fondo indexado se gestiona de forma pasiva?"
+      ],
+      "summary": "La gestión activa elige inversiones buscando un objetivo propio; una estrategia indexada o pasiva busca seguir un índice.",
+      "explanation": "En un fondo indexado la selección y los pesos obedecen a la referencia que intenta reproducir, mientras un gestor activo toma decisiones para su estrategia. La estructura ETF por sí sola no implica gestión pasiva.",
+      "example": "Un fondo que sigue una referencia y otro que busca superarla tienen enfoques distintos, aunque ambos puedan invertir en acciones.",
+      "cautions": "Ningún enfoque garantiza superar al otro; compara objetivo, riesgos y costes en el folleto de cada fondo.",
+      "related_ids": [
+        "fondo-indexado",
+        "etf",
+        "expense-ratio"
+      ],
+      "sources": [
+        {
+          "source_id": "inv:index-fund",
+          "title": "Index Fund — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/index-fund",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        },
+        {
+          "source_id": "inv:etf",
+          "title": "Exchange-Traded Fund — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/exchange-traded-fund-etf",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    }
+  ]
+}

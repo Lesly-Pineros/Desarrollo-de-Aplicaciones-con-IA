@@ -6,8 +6,12 @@ from dataclasses import dataclass
 from investiq.dialogue.state import clear_pending, set_pending
 from investiq.domain import ConversationState, PreferenceInput, RouterDecision
 from investiq.instruments import mentioned_symbols
+from investiq.knowledge import get_library
 from investiq.language import canonical_education_topic, plain
+from investiq.learning import lesson_request
 from investiq.preferences import read_preference_change
+from investiq.sector_context import sector_market
+from investiq.news_context import news_decision
 
 
 @dataclass
@@ -16,6 +20,33 @@ class DialogueResolution:
     reply: str | None = None
     used_context: bool = False
     interrupted: bool = False
+
+
+def resolve_education_followup(query: str, base: RouterDecision,
+                               state: ConversationState) -> RouterDecision | None:
+    """Resolve short lessons and attributes without treating a new subject as old."""
+    previous = state.last_decision
+    if previous is None or mentioned_symbols(query):
+        return None
+    library = get_library()
+    if previous.intent == "instrument_info" and lesson_request(query):
+        document = library.get_by_topic(previous.symbol or "")
+        if document is not None and document.category == "instrumentos":
+            return RouterDecision(intent="education", education_topic=document.title)
+    if previous.intent != "education":
+        return None
+    text = plain(query)
+    topic = canonical_education_topic(query)
+    if lesson_request(query) and library.get_by_topic(previous.education_topic or "") is not None:
+        return previous.model_copy(deep=True)
+    document = library.get_by_topic(previous.education_topic or "")
+    broker_context = document is not None and document.category == "intermediarios"
+    broker_followup = bool(re.search(
+        r"\b(?:puedo (?:usar|utilizar|abrir|acceder)|disponib\w*|autorizad\w*|regulad\w*|"
+        r"cuanto (?:cobra\w*|cuesta)|tarifas?|comision\w*|mi pais|residencia|jurisdiccion)\b", text))
+    if broker_context and broker_followup and topic is None:
+        return previous.model_copy(deep=True)
+    return None
 
 
 def resume_pending(query: str, base: RouterDecision, state: ConversationState, *,
@@ -37,6 +68,29 @@ def resume_pending(query: str, base: RouterDecision, state: ConversationState, *
         return DialogueResolution()
     if educational_question:
         return DialogueResolution(decision=base, interrupted=True)
+    if state.pending_field == "news_scope":
+        if base.intent not in {"unknown", "education", "market_news"}:
+            clear_pending(state)
+            return DialogueResolution()
+        decision = news_decision(query, scope_reply=True)
+        if decision.needs_clarification:
+            return DialogueResolution(reply="¿Qué sector o país quieres consultar? Por ejemplo: tecnología, finanzas, energía, Colombia o Estados Unidos.", used_context=True)
+        previous = state.pending_decision
+        if previous:
+            decision = previous.model_copy(update={"news_sector": decision.news_sector or previous.news_sector,
+                "news_country": decision.news_country or previous.news_country, "needs_clarification": False})
+        clear_pending(state)
+        return DialogueResolution(decision=decision, used_context=True)
+    if state.pending_field == "sector_market":
+        market = sector_market(query)
+        if market:
+            clear_pending(state)
+            return DialogueResolution(decision=RouterDecision(
+                intent="sector_performance", sector_market=market), used_context=True)
+        if base.intent == "unknown":
+            return DialogueResolution(reply="¿Qué mercado quieres consultar: Estados Unidos, Colombia, España, Europa o el global?", used_context=True)
+        clear_pending(state)
+        return DialogueResolution()
     field = state.pending_field
     pending = state.pending_decision or RouterDecision()
     text = plain(query)
@@ -79,10 +133,11 @@ def resolve_followup(query: str, base: RouterDecision, state: ConversationState)
     text = plain(query)
     previous = state.last_decision
     mentioned = mentioned_symbols(query)
-    followup = bool(re.search(r"^(?:y\b|ahora\b|tambien\b|un ejemplo|dame un ejemplo|mas sencillo|mas facil|no entendi|explicalo|por que)", text))
+    lesson = resolve_education_followup(query, base, state)
+    if lesson is not None:
+        return DialogueResolution(decision=lesson, used_context=True)
+    followup = bool(re.search(r"^(?:y\b|ahora\b|tambien\b|un ejemplo|dame un ejemplo|otro ejemplo|mas sencillo|mas simple|mas facil|mas detalle|profundiza|no entendi|explicalo|por que)", text))
     if previous and followup:
-        if previous.intent == "education" and not mentioned and base.intent in {"unknown", "education"} and canonical_education_topic(query) is None:
-            return DialogueResolution(decision=previous.model_copy(deep=True), used_context=True)
         if len(mentioned) == 1 and base.intent == "unknown":
             if previous.intent == "instrument_info":
                 return DialogueResolution(decision=RouterDecision(intent="instrument_info", symbol=mentioned[0]),
@@ -100,6 +155,14 @@ def resolve_followup(query: str, base: RouterDecision, state: ConversationState)
 
 
 def clarification_for(decision: RouterDecision, preferences: PreferenceInput, state: ConversationState) -> str | None:
+    if decision.intent == "market_news" and decision.needs_clarification:
+        set_pending(state, "news_scope", decision)
+        return "¿Qué sector o país quieres consultar? Por ejemplo: tecnología, finanzas, energía, Colombia o Estados Unidos."
+    if decision.intent == "sector_performance" and decision.sector_market is None:
+        # The handler supplies both the question and the explicit data limit;
+        # it can also preserve an educational part of a combined message.
+        set_pending(state, "sector_market", decision)
+        return None
     if decision.intent == "recommend_volatility" and not decision.volatility_target:
         decision.volatility_target = preferences.volatility_target
         if not decision.volatility_target:

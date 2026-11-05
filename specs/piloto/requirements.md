@@ -65,7 +65,7 @@ La inclusión solo fija cobertura del producto y del pipeline; no constituye una
 **Criterios de aceptación:**
 
 1. Twelve Data es opcional; aplica TTL de 15 minutos y límites internos no mayores a 8 solicitudes/minuto y 800/día.
-2. Marketaux es opcional; aplica TTL configurable de 6–12 horas, respeta su retraso informado de hasta 24 horas y no consulta si falta su key.
+2. Marketaux es opcional; mantiene TTL de 6–12 horas por símbolo y quince minutos para el listado diario por filtros. Respeta fechas/retrasos informados y no consulta sin key. ADR-006 corrige la suposición histórica de 24 horas: el plan gratuito documentado anuncia acceso inmediato, con 100 peticiones/día y tres artículos/petición.
 3. Sin proveedor de cotización, se puede mostrar el último histórico yfinance disponible únicamente con fecha y aviso de que no es tiempo real; si no hay dato utilizable, se omite el cálculo.
 4. Timeout, cuota y respuestas inválidas no borran datos cacheados válidos; los tests simulan estos casos.
 
@@ -199,3 +199,4 @@ La inclusión solo fija cobertura del producto y del pipeline; no constituye una
 | 2026-11-04 | Guía de tono, narración factual validada, memoria resumida opcional y comprensión semántica con evidencia detalladas en specs/agente-amigable; NIM live pendiente. |
 | 2026-11-04 | Depuración de procedencia, beta pendiente, reemplazo de comparación y configuración compartida en specs/depuracion-agente. README raíz con comandos y estado de skill externa pendiente. |
 | 2026-11-04 | Agente modular: fachadas de diálogo/ejecución, componentes separados, aprendizaje sin mutar preferencias y un solo cliente por turno. Verificación offline detallada en specs/agente-modular. |
+| 2026-11-04 | ADR-006 revisa la suposición de retraso Marketaux; actualidad-mercados añade noticias diarias/snapshots y exploracion-guiada conecta criterios conversados con el clustering aprobado. |

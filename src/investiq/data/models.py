@@ -83,6 +83,13 @@ class NewsCacheEntry(SQLModel, table=True):
     expires_at: datetime = Field(index=True)
 
 
+class MarketContextCache(SQLModel, table=True):
+    cache_key: str = Field(primary_key=True)
+    payload_json: str
+    fetched_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    expires_at: datetime = Field(index=True)
+
+
 class FilingCacheEntry(SQLModel, table=True):
     symbol: str = Field(primary_key=True)
     filings_json: str

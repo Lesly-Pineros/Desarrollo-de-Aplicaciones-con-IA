@@ -1,0 +1,651 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {
+      "id": "instrumento-aapl",
+      "title": "Apple (AAPL)",
+      "category": "instrumentos",
+      "aliases": [
+        "Apple",
+        "AAPL",
+        "acciones de Apple"
+      ],
+      "questions": [
+        "¿Qué es AAPL?",
+        "¿Qué es Apple?",
+        "Cuéntame sobre AAPL"
+      ],
+      "summary": "AAPL identifica las acciones de Apple, una empresa tecnológica con productos y servicios propios.",
+      "explanation": "Su portal de relaciones con inversores publica informes financieros y documentos presentados a la SEC. Es una fuente para estudiar la empresa, separada de una cotización del día.",
+      "example": "Podemos empezar por distinguir los productos que conoces de los ingresos y riesgos que describe su informe anual.",
+      "cautions": "Reconocer una marca no permite concluir que sus acciones sean baratas o adecuadas para una persona.",
+      "related_ids": [
+        "accion",
+        "informe-anual"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:aapl",
+          "title": "Apple Investor Relations",
+          "url": "https://investor.apple.com/investor-relations/default.aspx",
+          "provider": "Apple",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-msft",
+      "title": "Microsoft (MSFT)",
+      "category": "instrumentos",
+      "aliases": [
+        "Microsoft",
+        "MSFT",
+        "acciones de Microsoft"
+      ],
+      "questions": [
+        "¿Qué es MSFT?",
+        "¿Qué es Microsoft?",
+        "Cuéntame sobre MSFT"
+      ],
+      "summary": "MSFT es el símbolo bursátil de Microsoft, empresa vinculada a software y servicios tecnológicos.",
+      "explanation": "Su web de inversores reúne resultados trimestrales e informes anuales; entre sus productos aparecen Windows, Microsoft 365 y Azure.",
+      "example": "Conocer un servicio puede ser el punto de partida para aprender a leer los segmentos e ingresos del negocio.",
+      "cautions": "La popularidad de un producto no sustituye el análisis financiero ni indica el precio actual de la acción.",
+      "related_ids": [
+        "accion",
+        "informe-anual"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:msft",
+          "title": "Microsoft Investor Relations",
+          "url": "https://www.microsoft.com/en-us/investor/default",
+          "provider": "Microsoft",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-nvda",
+      "title": "NVIDIA (NVDA)",
+      "category": "instrumentos",
+      "aliases": [
+        "NVIDIA",
+        "NVDA",
+        "acciones de Nvidia"
+      ],
+      "questions": [
+        "¿Qué es NVDA?",
+        "¿Qué es NVIDIA?",
+        "Cuéntame sobre NVDA"
+      ],
+      "summary": "NVDA identifica a NVIDIA, una empresa de computación acelerada cuya tecnología incluye GPU.",
+      "explanation": "La presentación corporativa de NVIDIA describe mercados como centros de datos, videojuegos, visualización profesional y automoción.",
+      "example": "En lugar de suponer que una tendencia asegura ganancias, podemos estudiar qué negocios expone la empresa en sus informes.",
+      "cautions": "Una descripción del negocio no permite anticipar ventas, beneficios ni rentabilidad de la acción.",
+      "related_ids": [
+        "accion",
+        "informe-anual"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:nvda",
+          "title": "NVIDIA Investor Relations",
+          "url": "https://investor.nvidia.com/home/default.aspx",
+          "provider": "NVIDIA",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-tsla",
+      "title": "Tesla (TSLA)",
+      "category": "instrumentos",
+      "aliases": [
+        "Tesla",
+        "TSLA",
+        "acciones de Tesla"
+      ],
+      "questions": [
+        "¿Qué es TSLA?",
+        "¿Qué es Tesla?",
+        "Cuéntame sobre TSLA"
+      ],
+      "summary": "TSLA identifica las acciones de Tesla; su portal de inversores ofrece resultados e informes empresariales.",
+      "explanation": "Tesla publica materiales trimestrales y datos de producción y entregas de vehículos. Estos documentos permiten estudiar qué informa la compañía y a qué periodo corresponde.",
+      "example": "Una cifra de entregas se puede comparar con su periodo anterior después de consultar ambos informes, sin confundirla con el beneficio.",
+      "cautions": "Esta ficha no conserva cifras actuales de entregas, resultados ni precio, ni predice cómo reaccionará la acción.",
+      "related_ids": [
+        "accion",
+        "informe-anual"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:tsla",
+          "title": "Tesla Investor Relations",
+          "url": "https://ir.tesla.com/",
+          "provider": "Tesla",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-amzn",
+      "title": "Amazon (AMZN)",
+      "category": "instrumentos",
+      "aliases": [
+        "Amazon",
+        "AMZN",
+        "acciones de Amazon"
+      ],
+      "questions": [
+        "¿Qué es AMZN?",
+        "¿Qué es Amazon?",
+        "Cuéntame sobre AMZN"
+      ],
+      "summary": "AMZN es el símbolo de Amazon.com; sus acciones representan participación en la empresa.",
+      "explanation": "El portal oficial de inversores reúne resultados, informes anuales y documentos regulatorios para conocer sus actividades y cuentas.",
+      "example": "Podemos abrir un informe anual para separar lo que vende una empresa de lo que finalmente gana.",
+      "cautions": "Comprar acciones de una empresa conocida sigue implicando exposición a su negocio; aquí no se ofrece una cotización actual.",
+      "related_ids": [
+        "accion",
+        "informe-anual"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:amzn",
+          "title": "Amazon.com Investor Relations",
+          "url": "https://ir.aboutamazon.com/overview/default.aspx",
+          "provider": "Amazon",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-googl",
+      "title": "Alphabet (GOOGL)",
+      "category": "instrumentos",
+      "aliases": [
+        "Alphabet",
+        "GOOGL",
+        "acciones de Google",
+        "acciones de Alphabet"
+      ],
+      "questions": [
+        "¿Qué es GOOGL?",
+        "¿Qué es Alphabet?",
+        "Cuéntame sobre GOOGL"
+      ],
+      "summary": "GOOGL identifica una clase de acciones de Alphabet, la compañía cuya información para inversores se publica en abc.xyz.",
+      "explanation": "Sus informes oficiales permiten estudiar los negocios del grupo, sus estados financieros y las características de sus clases de acciones.",
+      "example": "Antes de comparar dos símbolos de una misma compañía conviene leer qué derechos corresponde a cada clase.",
+      "cautions": "No deben confundirse clases de acciones ni dar por iguales sus derechos; la ficha no informa precios actuales.",
+      "related_ids": [
+        "accion",
+        "informe-anual"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:googl",
+          "title": "Alphabet Investor Relations",
+          "url": "https://abc.xyz/investor/",
+          "provider": "Alphabet",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-meta",
+      "title": "Meta Platforms (META)",
+      "category": "instrumentos",
+      "aliases": [
+        "Meta Platforms",
+        "META",
+        "acciones de Meta"
+      ],
+      "questions": [
+        "¿Qué es META?",
+        "¿Qué es Meta Platforms?",
+        "Cuéntame sobre META"
+      ],
+      "summary": "META identifica las acciones de Meta Platforms; la compañía dispone de un portal oficial para inversores.",
+      "explanation": "Allí se publican resultados financieros, documentos regulatorios, información de gobierno corporativo y recursos para accionistas.",
+      "example": "Para conocer una empresa podemos empezar por un informe y separar resultados reportados de expectativas de la dirección.",
+      "cautions": "Las expectativas empresariales no garantizan resultados futuros y esta ficha no atribuye un precio actual a META.",
+      "related_ids": [
+        "accion",
+        "informe-anual"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:meta",
+          "title": "Meta Investor Relations",
+          "url": "https://investor.atmeta.com/home/default.aspx",
+          "provider": "Meta Platforms",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-jpm",
+      "title": "JPMorgan Chase (JPM)",
+      "category": "instrumentos",
+      "aliases": [
+        "JPMorgan",
+        "JPMorgan Chase",
+        "JPM",
+        "acciones de JPMorgan"
+      ],
+      "questions": [
+        "¿Qué es JPM?",
+        "¿Qué es JPMorgan?",
+        "Cuéntame sobre JPM"
+      ],
+      "summary": "JPM identifica las acciones de JPMorgan Chase, cuya página de inversores reúne información financiera del grupo.",
+      "explanation": "Los informes anuales, resultados y documentos presentados a la SEC permiten examinar las cuentas de la empresa.",
+      "example": "Al estudiar una compañía del sector financiero podemos buscar sus explicaciones de riesgos en el informe anual, en vez de guiarnos solo por el nombre.",
+      "cautions": "Esta descripción educativa no mide la solvencia actual ni recomienda comprar sus acciones.",
+      "related_ids": [
+        "accion",
+        "informe-anual"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:jpm",
+          "title": "JPMorgan Chase Investor Relations",
+          "url": "https://www.jpmorganchase.com/ir",
+          "provider": "JPMorgan Chase",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-xom",
+      "title": "ExxonMobil (XOM)",
+      "category": "instrumentos",
+      "aliases": [
+        "ExxonMobil",
+        "XOM",
+        "acciones de Exxon"
+      ],
+      "questions": [
+        "¿Qué es XOM?",
+        "¿Qué es ExxonMobil?",
+        "Cuéntame sobre XOM"
+      ],
+      "summary": "XOM identifica las acciones de ExxonMobil y su portal oficial facilita informes y estados financieros.",
+      "explanation": "Su sección para inversores ofrece resultados, documentos regulatorios y materiales corporativos para estudiar la compañía.",
+      "example": "Un informe financiero permite diferenciar ingresos, costes y beneficio sin convertir la descripción empresarial en una predicción.",
+      "cautions": "Las condiciones del negocio y la cotización pueden cambiar; esta ficha no conserva datos de mercado actuales.",
+      "related_ids": [
+        "accion",
+        "informe-anual"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:xom",
+          "title": "ExxonMobil Investor Relations",
+          "url": "https://investor.exxonmobil.com/",
+          "provider": "ExxonMobil",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-jnj",
+      "title": "Johnson & Johnson (JNJ)",
+      "category": "instrumentos",
+      "aliases": [
+        "Johnson & Johnson",
+        "Johnson and Johnson",
+        "JNJ",
+        "acciones de Johnson"
+      ],
+      "questions": [
+        "¿Qué es JNJ?",
+        "¿Qué es Johnson & Johnson?",
+        "Cuéntame sobre JNJ"
+      ],
+      "summary": "JNJ identifica las acciones de Johnson & Johnson; su presentación corporativa describe actividades de medicina y tecnología médica.",
+      "explanation": "Su portal de inversores publica resultados y documentos que permiten estudiar las cuentas y riesgos de la compañía.",
+      "example": "Podemos usar un informe anual para aprender a distinguir la explicación del negocio de sus cifras financieras.",
+      "cautions": "Pertenecer a una actividad sanitaria no elimina el riesgo empresarial ni garantiza rendimientos.",
+      "related_ids": [
+        "accion",
+        "informe-anual"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:jnj",
+          "title": "Johnson & Johnson Investor Relations",
+          "url": "https://www.investor.jnj.com/overview/default.aspx",
+          "provider": "Johnson & Johnson",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-wmt",
+      "title": "Walmart (WMT)",
+      "category": "instrumentos",
+      "aliases": [
+        "Walmart",
+        "WMT",
+        "acciones de Walmart"
+      ],
+      "questions": [
+        "¿Qué es WMT?",
+        "¿Qué es Walmart?",
+        "Cuéntame sobre WMT"
+      ],
+      "summary": "WMT es el símbolo bursátil que la página oficial de inversores de Walmart utiliza para sus acciones.",
+      "explanation": "La web reúne informes financieros y presentaciones para accionistas con los que se puede estudiar la empresa.",
+      "example": "Conocer una tienda puede despertar una pregunta útil: cómo se convierte la actividad de una empresa en ingresos y beneficio.",
+      "cautions": "Conocer el comercio no demuestra que la valoración de su acción sea atractiva; no se conserva aquí un precio vigente.",
+      "related_ids": [
+        "accion",
+        "informe-anual"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:wmt",
+          "title": "Walmart Investor Relations",
+          "url": "https://stock.walmart.com/",
+          "provider": "Walmart",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-cost",
+      "title": "Costco (COST)",
+      "category": "instrumentos",
+      "aliases": [
+        "Costco",
+        "COST",
+        "acciones de Costco"
+      ],
+      "questions": [
+        "¿Qué es COST?",
+        "¿Qué es Costco?",
+        "Cuéntame sobre COST"
+      ],
+      "summary": "COST identifica las acciones de Costco, cuya presentación oficial describe almacenes de membresía y comercio electrónico.",
+      "explanation": "La sección de inversores publica resultados e informes que permiten estudiar ese modelo de negocio y sus cuentas.",
+      "example": "Podemos preguntar qué papel tienen las membresías y buscar la respuesta en los informes, sin inventar su peso actual.",
+      "cautions": "Describir un modelo de negocio no establece el valor de la acción ni asegura ganancias.",
+      "related_ids": [
+        "accion",
+        "informe-anual"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:cost",
+          "title": "Costco Investor Relations",
+          "url": "https://investor.costco.com/overview/default.aspx",
+          "provider": "Costco",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-avgo",
+      "title": "Broadcom (AVGO)",
+      "category": "instrumentos",
+      "aliases": [
+        "Broadcom",
+        "AVGO",
+        "acciones de Broadcom"
+      ],
+      "questions": [
+        "¿Qué es AVGO?",
+        "¿Qué es Broadcom?",
+        "Cuéntame sobre AVGO"
+      ],
+      "summary": "AVGO identifica las acciones de Broadcom y su centro de inversores reúne información financiera de la compañía.",
+      "explanation": "El sitio oficial publica resultados, presentaciones y documentos regulatorios para analizar las actividades y cuentas del grupo.",
+      "example": "Leer la descripción de los segmentos ayuda a separar los negocios de una empresa de las expectativas que alguien tenga sobre ellos.",
+      "cautions": "La ficha no sustituye los informes más recientes ni ofrece una valoración actual de la acción.",
+      "related_ids": [
+        "accion",
+        "informe-anual"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:avgo",
+          "title": "Broadcom Investor Center",
+          "url": "https://investors.broadcom.com/",
+          "provider": "Broadcom",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-brk-b",
+      "title": "Berkshire Hathaway clase B (BRK-B)",
+      "category": "instrumentos",
+      "aliases": [
+        "Berkshire Hathaway",
+        "Berkshire",
+        "BRK-B",
+        "BRK.B",
+        "acciones clase B de Berkshire"
+      ],
+      "questions": [
+        "¿Qué es BRK-B?",
+        "¿Qué es Berkshire Hathaway?",
+        "Cuéntame sobre BRK-B"
+      ],
+      "summary": "BRK-B se utiliza para identificar las acciones de clase B de Berkshire Hathaway.",
+      "explanation": "La web corporativa publica informes anuales e información sobre sus acciones comunes; sus distintas clases requieren revisar sus características.",
+      "example": "Antes de comparar BRK-B con otra clase de Berkshire, podemos consultar la información oficial de derechos y acciones.",
+      "cautions": "Una clase de acción no es un fondo cotizado; no se debe inferir el precio de una clase a partir del de otra.",
+      "related_ids": [
+        "accion",
+        "informe-anual"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:brk-b",
+          "title": "Berkshire Hathaway sitio corporativo",
+          "url": "https://www.berkshirehathaway.com/",
+          "provider": "Berkshire Hathaway",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-unh",
+      "title": "UnitedHealth Group (UNH)",
+      "category": "instrumentos",
+      "aliases": [
+        "UnitedHealth",
+        "UnitedHealth Group",
+        "UNH",
+        "acciones de UnitedHealth"
+      ],
+      "questions": [
+        "¿Qué es UNH?",
+        "¿Qué es UnitedHealth?",
+        "Cuéntame sobre UNH"
+      ],
+      "summary": "UNH es el símbolo de las acciones de UnitedHealth Group, compañía del ámbito de la salud y el bienestar.",
+      "explanation": "Su página de inversores publica resultados, informes financieros y documentos regulatorios con riesgos y explicaciones de la empresa.",
+      "example": "Podemos utilizar un informe para distinguir lo que ya ocurrió de las previsiones que presenta la dirección.",
+      "cautions": "La propia compañía advierte que sus declaraciones sobre el futuro tienen incertidumbre; aquí no se guarda una cotización vigente.",
+      "related_ids": [
+        "accion",
+        "informe-anual"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:unh",
+          "title": "UnitedHealth Group Investor Information",
+          "url": "https://www.unitedhealthgroup.com/investors.html",
+          "provider": "UnitedHealth Group",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-spy",
+      "title": "SPDR S&P 500 ETF Trust (SPY)",
+      "category": "instrumentos",
+      "aliases": [
+        "SPY",
+        "SPDR S&P 500 ETF Trust",
+        "ETF SPY"
+      ],
+      "questions": [
+        "¿Qué es SPY?",
+        "¿Qué es SPY?",
+        "Cuéntame sobre SPY"
+      ],
+      "summary": "SPY es un ETF de State Street que busca seguir el comportamiento del S&P 500 antes de gastos.",
+      "explanation": "El S&P 500 es el índice de referencia; SPY es un vehículo de inversión con participaciones, gastos y documentación propios.",
+      "example": "El índice es como la referencia de una ruta y el ETF es un vehículo que intenta seguirla: son cosas distintas.",
+      "cautions": "El resultado del ETF puede diferir del índice y no está garantizado; consulta el folleto y los gastos vigentes del emisor.",
+      "related_ids": [
+        "etf",
+        "folleto"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:spy",
+          "title": "SPY — State Street",
+          "url": "https://www.ssga.com/us/en/individual/etfs/state-street-spdr-sp-500-etf-trust-spy",
+          "provider": "State Street",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-qqq",
+      "title": "Invesco QQQ ETF (QQQ)",
+      "category": "instrumentos",
+      "aliases": [
+        "QQQ",
+        "Invesco QQQ",
+        "ETF QQQ"
+      ],
+      "questions": [
+        "¿Qué es QQQ?",
+        "¿Qué es QQQ?",
+        "Cuéntame sobre QQQ"
+      ],
+      "summary": "QQQ es el ETF de Invesco que sigue al índice Nasdaq-100.",
+      "explanation": "Permite estudiar la diferencia entre un fondo, su índice de referencia y las empresas incluidas. No equivale a comprar toda la bolsa Nasdaq.",
+      "example": "Puedes preguntar por el Nasdaq-100 como referencia y por QQQ como fondo que busca seguirla.",
+      "cautions": "La cartera, los gastos y las condiciones deben comprobarse en el emisor; no se supone que su historial se repetirá.",
+      "related_ids": [
+        "etf",
+        "folleto"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:qqq",
+          "title": "Invesco QQQ sitio oficial",
+          "url": "https://www.invesco.com/qqq-etf/en/home.html",
+          "provider": "Invesco",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-iwm",
+      "title": "iShares Russell 2000 ETF (IWM)",
+      "category": "instrumentos",
+      "aliases": [
+        "IWM",
+        "iShares Russell 2000 ETF",
+        "ETF IWM"
+      ],
+      "questions": [
+        "¿Qué es IWM?",
+        "¿Qué es IWM?",
+        "Cuéntame sobre IWM"
+      ],
+      "summary": "IWM es un ETF de iShares que busca seguir un índice de acciones estadounidenses de pequeña capitalización, el Russell 2000.",
+      "explanation": "Su objetivo permite distinguir la exposición a empresas pequeñas de la de un índice de grandes compañías.",
+      "example": "Comparar la referencia de IWM con la de SPY sirve para aprender qué significa el tamaño bursátil de las empresas.",
+      "cautions": "La pequeña capitalización no asegura una rentabilidad concreta; hay que revisar riesgos, gastos y cartera actual del fondo.",
+      "related_ids": [
+        "etf",
+        "folleto"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:iwm",
+          "title": "IWM — iShares",
+          "url": "https://www.ishares.com/us/products/239710/ishares-russell-2000-etf",
+          "provider": "BlackRock / iShares",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-xlk",
+      "title": "Technology Select Sector SPDR ETF (XLK)",
+      "category": "instrumentos",
+      "aliases": [
+        "XLK",
+        "Technology Select Sector SPDR",
+        "ETF XLK"
+      ],
+      "questions": [
+        "¿Qué es XLK?",
+        "¿Qué es XLK?",
+        "Cuéntame sobre XLK"
+      ],
+      "summary": "XLK es un ETF sectorial de State Street que busca seguir el Technology Select Sector Index antes de gastos.",
+      "explanation": "Su índice representa el sector tecnológico dentro del S&P 500; por eso no es la misma exposición que el conjunto del índice amplio.",
+      "example": "Comparar un fondo sectorial con uno amplio ayuda a entender que tener varias empresas puede seguir concentrando un mismo sector.",
+      "cautions": "La exposición sectorial tiene riesgos de concentración; la composición y los gastos deben consultarse en la ficha vigente.",
+      "related_ids": [
+        "etf",
+        "folleto"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:xlk",
+          "title": "XLK — State Street",
+          "url": "https://www.ssga.com/us/en/individual/etfs/state-street-technology-select-sector-spdr-etf-xlk",
+          "provider": "State Street",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "instrumento-xlf",
+      "title": "Financial Select Sector SPDR ETF (XLF)",
+      "category": "instrumentos",
+      "aliases": [
+        "XLF",
+        "Financial Select Sector SPDR",
+        "ETF XLF"
+      ],
+      "questions": [
+        "¿Qué es XLF?",
+        "¿Qué es XLF?",
+        "Cuéntame sobre XLF"
+      ],
+      "summary": "XLF es un ETF sectorial de State Street que busca seguir el Financial Select Sector Index antes de gastos.",
+      "explanation": "La referencia representa el sector financiero del S&P 500 e incluye actividades como bancos, seguros y servicios financieros.",
+      "example": "Podemos comparar su objetivo con el de XLK para entender qué cambia cuando se elige un sector diferente.",
+      "cautions": "Un fondo sectorial no reproduce toda la economía; su composición, gastos y riesgos requieren consultar la documentación actual.",
+      "related_ids": [
+        "etf",
+        "folleto"
+      ],
+      "sources": [
+        {
+          "source_id": "issuer:xlf",
+          "title": "XLF — State Street",
+          "url": "https://www.ssga.com/us/en/individual/etfs/state-street-financial-select-sector-spdr-etf-xlf",
+          "provider": "State Street",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    }
+  ]
+}

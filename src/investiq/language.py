@@ -55,49 +55,45 @@ def canonical_education_topic(query: str) -> str | None:
 
 
 def is_educational_question(query: str) -> bool:
-    topic = canonical_education_topic(query)
-    if topic is None:
-        return False
     text = plain(query)
-    if topic in {"etf", "S&P 500"}:
-        # In "qué es el ETF QQQ", ETF qualifies the named instrument. It is
-        # different from "qué es un ETF como QQQ", which asks for the concept.
-        from investiq.instruments import INSTRUMENT_BY_SYMBOL, mentioned_symbols
-        from investiq.education import is_education_subject
-
-        for symbol in mentioned_symbols(query):
-            item = INSTRUMENT_BY_SYMBOL[symbol]
-            symbol_subject = any(
-                is_education_subject(re.sub(r"\betf\s+$", "", text[:match.start()]))
-                for match in re.finditer(r"(?<!\w)\$?" + re.escape(symbol.casefold()) + r"(?!\w)", text)
-            )
-            name_subject = any(
-                is_education_subject(text[:match.start()])
-                for match in re.finditer(r"(?<!\w)" + re.escape(plain(item.name)) + r"(?!\w)", text)
-            )
-            if (item.kind == "ETF" or topic == "S&P 500") and (
-                symbol_subject or name_subject
-            ):
-                return False
+    learning_request = bool(re.search(
+        r"\b(?:aprender|entender|comprender|explicame|explica|que (?:es|son|significa)|"
+        r"como funciona\w*|para que sirve)\b", text))
+    if is_preference_command(query) or (
+        is_preference_declaration(query) and not learning_request and "?" not in query and "¿" not in query
+    ):
+        return False
+    topic = canonical_education_topic(query)
+    from investiq.instruments import INSTRUMENT_BY_SYMBOL, mentioned_symbols
     from investiq.education import concept_pattern, is_education_subject
+    from investiq.knowledge import get_library
 
-    term = concept_pattern(topic)
-    if any(is_education_subject(text[:match.start()])
-           for match in re.finditer(r"(?<!\w)" + term + r"(?!\w)", text)):
+    mentioned = mentioned_symbols(query)
+    # A named instrument as the explicit subject retains its catalogue route.
+    # Incidental symbols in "qué es la volatilidad de AAPL" do not override it.
+    for symbol in mentioned:
+        item = INSTRUMENT_BY_SYMBOL[symbol]
+        expressions = (r"\$?" + re.escape(symbol.casefold()), re.escape(plain(item.name)))
+        if any(re.fullmatch(r"(?:(?:y|ahora|tambien)\s+)?" + expression, text)
+               for expression in expressions):
+            return False
+        if any(is_education_subject(re.sub(r"\betf\s+$", "", text[:match.start()]))
+               for expression in expressions
+               for match in re.finditer(r"(?<!\w)" + expression + r"(?!\w)", text)):
+            return False
+    if topic and any(is_education_subject(text[:match.start()])
+                     for match in re.finditer(r"(?<!\w)" + concept_pattern(topic) + r"(?!\w)", text)):
         return True
-    # Concept questions take precedence over incidental references to price.
-    # A request such as "explica el movimiento del ETF" remains a market query.
-    return bool(re.search(
-        r"\b(?:que (?:es|significa)|define|definicion de)\b|"
-        r"\bexplica\w*\s+(?:(?:la|el|un|una|sobre)\s+)?" + term + r"\b|"
-        r"\b(?:aprender|entender|comprender|no entiendo|no comprendo)\s+"
-        r"(?:(?:mejor|bien|mas|un poco|algo)\s+)*"
-        r"(?:(?:sobre|acerca de|de|esto de)\s+)?"
-        r"(?:(?:la|el|un|una)\s+)?" + term + r"\b|"
-        r"\bcomo (?:funciona|se (?:calcula|mide|interpreta))\b|"
-        r"\b(?:por que|para que sirve)\s+(?:(?:la|el|un|una)\s+)?" + term + r"\b",
-        text,
-    ))
+    if re.search(r"\b(?:cotiza\w*|cotizacion|subio|bajo|movimiento|noticias|hoy|precio actual)\b", text):
+        return False
+    if mentioned and re.search(r"\b(?:precio|cuanto vale|cuanto cuesta)\b", text):
+        return False
+    if mentioned and re.search(r"\b(?:compara\w*|diferencias entre)\b", text):
+        return False
+    asking = bool("?" in query or "¿" in query or re.search(
+        r"\b(?:que|cuales?|como|por que|para que|explica\w*|define\w*|ensen\w*|"
+        r"aprender|entender|comprender|diferencia\w*|compar\w*|en que consiste)\b", text))
+    return asking and (topic is not None or bool(get_library().search(query, limit=1)))
 
 
 def is_preference_query(query: str) -> bool:

@@ -6,6 +6,8 @@ La web sirve HTML/CSS/JS y API en un proceso Python. `web/server.py` valida las 
 
 La fachada de conversación coordina comandos, preferencias y aclaraciones. Las consultas de dominio pasan a `orchestration.answer_query`, que delega en router, handlers, construcción de respuesta y registro. La [guía de arquitectura](architecture.md) explica estos límites y cómo ampliar el agente.
 
+Para educación, la orquestación consulta la biblioteca RAG de `knowledge/` y el profesor de `tutor/`. Hay 119 documentos con fuentes y fecha de revisión; los pasajes recuperados permiten generar una explicación estructurada con NVIDIA o responder localmente sin modelo. Biblioteca y memoria personal están separadas. Incluye fondos, criptoactivos e indicadores; no calcula indicadores en vivo ni consulta cotizaciones de criptomonedas. Las consultas de líderes sectoriales actuales piden mercado y explican que no hay un ranking actual verificado. Validación, cobertura y cómo añadir documentos en [knowledge.md](knowledge.md).
+
 ## Configuración y datos
 
 App y pipeline leen `DATABASE_URL` desde las variables de entorno y `.env`, con prioridad del entorno. SQLite usa por defecto `investiq.db` en la raíz cuando se utiliza el lanzador. Cada copia del repo mantiene su propia base, configuración y entorno Python.

@@ -38,7 +38,8 @@ def test_restart_restores_education_topic_for_an_example(memory_chat):
     response = turn(engine, settings, "Un ejemplo")
 
     assert response.intent == "education"
-    assert "beta" in response.answer.casefold()
+    from investiq.education import EDUCATION_CATALOGUE
+    assert EDUCATION_CATALOGUE["beta"].example in response.answer
     with Session(engine) as session:
         snapshot = load_memory(session, "local")
         assert snapshot.state.last_decision.education_topic == "beta"

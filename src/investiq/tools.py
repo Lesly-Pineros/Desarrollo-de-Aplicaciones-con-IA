@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import hashlib
 from pathlib import Path
 
 import pandas as pd
@@ -6,7 +7,7 @@ from sqlmodel import Session, select
 
 from investiq.data.models import InstrumentFeature, MLClusterRun, UserPreference
 from investiq.domain import FilingItem, NewsItem, PreferenceInput, SourceReference
-from investiq.education import EDUCATION_CATALOGUE
+from investiq.education import EDUCATION_CATALOGUE, DefinitionView
 from investiq.instruments import INSTRUMENT_BY_SYMBOL
 from investiq.ml.similarity import load_model_artifact, similar_instruments as find_similar
 from investiq.ml.volatility import assign_volatility_buckets
@@ -16,7 +17,7 @@ from investiq.providers.sec import sec_docs
 from investiq.settings import Settings
 
 # Public text view retained for callers such as the opt-in live verifier.
-GLOSSARY = {topic: entry.definition for topic, entry in EDUCATION_CATALOGUE.items()}
+GLOSSARY = DefinitionView()
 
 
 def normalize_symbol(value: str | None) -> str | None:
@@ -162,6 +163,38 @@ def similar_instruments(session: Session, reference: str, *, top_n: int = 5) -> 
         }
         for symbol, cluster, distance in found
     ]
+
+
+def exploration_candidates(session: Session, decision) -> tuple[list[dict], MLClusterRun]:
+    from investiq.ml.exploration import rank_candidates
+
+    artifact = _latest_artifact(session)
+    run = session.exec(select(MLClusterRun).where(MLClusterRun.passed_thresholds.is_(True))
+                       .order_by(MLClusterRun.created_at.desc())).first()
+    if (run is None or artifact.get("observation_start") != run.observation_start.isoformat()
+            or artifact.get("observation_end") != run.observation_end.isoformat()):
+        raise ValueError("El período del modelo y el registro local no coinciden.")
+    rows = session.exec(select(InstrumentFeature)).all()
+    numeric = {}
+    for feature in rows:
+        if feature.symbol not in artifact["symbols"]:
+            continue
+        if feature.calculated_at.replace(tzinfo=timezone.utc) > run.created_at.replace(tzinfo=timezone.utc):
+            raise ValueError("Las características cambiaron después de entrenar; vuelve a entrenar.")
+        row = {"volatility": feature.volatility, "beta": feature.beta,
+               "mean_peer_correlation": feature.mean_peer_correlation}
+        row.update({column: float(feature.sector == column.removeprefix("sector_"))
+                    for column in artifact["columns"] if column.startswith("sector_")})
+        numeric[feature.symbol] = row
+    frame = pd.DataFrame(numeric).T.reindex(columns=artifact["columns"]).sort_index()
+    fingerprint = artifact.get("feature_fingerprint")
+    if fingerprint:
+        actual = hashlib.sha256(frame.round(12).to_csv(float_format="%.12g").encode("utf-8")).hexdigest()
+        if actual != fingerprint:
+            raise ValueError("Las características no coinciden con la huella del entrenamiento.")
+    if artifact.get("run_id", run.run_id) != run.run_id or run.universe_size != len(frame):
+        raise ValueError("La ejecución no coincide con el artefacto o universo local.")
+    return rank_candidates(frame, artifact, decision), run
 
 
 def _preference_for_user(session: Session, email: str) -> PreferenceInput | None:

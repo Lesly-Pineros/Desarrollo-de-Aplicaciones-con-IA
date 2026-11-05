@@ -8,6 +8,7 @@ from sqlmodel import Session
 from investiq.dialogue.state import clear_pending, set_pending
 from investiq.domain import ConversationState, RouterDecision
 from investiq.language import plain
+from investiq.learning import lesson_request
 from investiq.memory import forget_memory, load_memory, set_memory_enabled
 from investiq.preferences import describe_preferences, get_preferences
 from investiq.settings import Settings
@@ -59,16 +60,22 @@ def smalltalk_reply(query: str, state: ConversationState) -> str | None:
         return "Hola. ¿Qué tienes en mente? Podemos empezar por una duda o por un instrumento que te interese."
     if re.fullmatch(r"(?:muchas )?gracias(?: por (?:todo|la ayuda))?|perfecto|genial|listo", text):
         return "Con gusto. Cuando quieras, seguimos explorando."
+    if (state.last_decision is not None and state.last_decision.intent in {"education", "instrument_info"}
+            and lesson_request(query)):
+        # 'Cómo funciona esto' refers to the active lesson when one exists.
+        # Without that context it can still explain the app's capabilities.
+        return None
     if text in {"ayuda", "para que sirves", "para que sirve esto", "para que sirve el agente",
                 "como funciona el agente", "como funciona esto", "en que me ayudas",
                 "en que puedes ayudarme", "en que me puedes ayudar"} or re.fullmatch(
         r"(?:y )?que (?:mas )?puedes hacer(?: por mi)?", text,
     ):
         return (
-            "Podemos entender un concepto, explorar una acción o ETF, comparar instrumentos "
-            "o encontrar otros parecidos a uno que ya conoces. Cuando consulte movimientos, "
+            "Podemos aprender sobre acciones, ETF, bolsas, brókers, órdenes, costes y riesgos, "
+            "explorar una empresa o comparar instrumentos. Cuando consulte movimientos, "
             "te mostraré los datos disponibles y sus fuentes.\n\n"
-            "Puedes empezar con «qué es AAPL» o «explícame la volatilidad». "
+            "Puedo explicarlo paso a paso o con un ejemplo. Puedes empezar con «qué es una acción» "
+            "o «qué brókers existen». "
             "Las preferencias me las puedes contar sobre la marcha."
         )
     if re.fullmatch(

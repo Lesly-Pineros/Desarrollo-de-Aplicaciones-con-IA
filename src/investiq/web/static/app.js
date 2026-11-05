@@ -72,6 +72,7 @@ function hideError() {
 function syncControls() {
   elements.send.disabled = !state.ready || state.busy || !elements.input.value.trim();
   elements.input.disabled = !state.ready;
+  for (const button of document.querySelectorAll('.branch-action, .response-action')) button.disabled = !state.ready || state.busy;
   elements.newChat.disabled = elements.mobileNewChat.disabled = !state.ready || state.busy;
   elements.memoryEnabled.disabled = elements.forgetMemory.disabled = !state.ready || state.busy;
   for (const button of document.querySelectorAll(".instrument-button, .suggestion")) button.disabled = !state.ready || state.busy;
@@ -236,6 +237,16 @@ function renderMessage(message) {
     const content = document.createElement("div"); content.className = "answer-content";
     const body = String(message.content || message.answer || "").replace(/\*{0,2}No es asesoría financiera\.\*{0,2}/gi, "").trim();
     renderMarkdown(content, body); article.append(content); appendSources(article, message.sources);
+    if (Array.isArray(message.actions) && message.actions.length) {
+      const actions = document.createElement('div'); actions.className = 'response-actions';
+      for (const action of message.actions.slice(0, 10)) {
+        if (typeof action.label !== 'string' || typeof action.prompt !== 'string') continue;
+        const button = document.createElement('button'); button.type = 'button'; button.className = 'response-action';
+        button.textContent = action.label; button.addEventListener('click', () => sendMessage(action.prompt, null, action.news_id));
+        actions.append(button);
+      }
+      article.append(actions);
+    }
     const disclaimer = document.createElement("p"); disclaimer.className = "response-footnote"; disclaimer.textContent = DISCLAIMER; article.append(disclaimer);
   }
   elements.messages.append(article);
@@ -249,7 +260,7 @@ function clearMessages() {
   elements.scroll.scrollTop = 0;
 }
 
-async function sendMessage(rawMessage, existingUser = null) {
+async function sendMessage(rawMessage, existingUser = null, newsId = null) {
   const message = rawMessage.trim();
   if (!state.ready || state.busy || !message) return;
   if (message.length > 2000) { showError("La pregunta puede tener hasta 2000 caracteres. Acórtala un poco para enviarla."); return; }
@@ -257,13 +268,13 @@ async function sendMessage(rawMessage, existingUser = null) {
   const userNode = existingUser && existingUser.isConnected ? existingUser : renderMessage({role: "user", content: message});
   elements.input.value = ""; resizeInput(); elements.loading.hidden = false; scrollToEnd();
   try {
-    const data = await request("/api/chat", {message});
+    const data = await request("/api/chat", {message, ...(newsId ? {news_id: newsId} : {})});
     if (!data.response || typeof data.response.answer !== "string") throw new Error("No pude leer la respuesta del agente. Vuelve a intentarlo.");
     if (data.response.clear_history) clearMessages();
-    renderMessage({role: "assistant", content: data.response.answer, sources: data.response.sources, status: data.response.status});
+    renderMessage({role: "assistant", content: data.response.answer, sources: data.response.sources, actions: data.response.actions, status: data.response.status});
     updateMemory(data.memory);
   } catch (error) {
-    showError(error.message, () => sendMessage(message, userNode));
+    showError(error.message, () => sendMessage(message, userNode, newsId));
   } finally {
     state.busy = false; elements.loading.hidden = true; syncControls(); scrollToEnd();
     if (!mobile.matches) elements.input.focus();
@@ -350,6 +361,7 @@ elements.forgetMemory.addEventListener("click", () => updateMemorySetting({forge
 elements.retry.addEventListener("click", () => { const action = state.retry; if (action) action(); });
 elements.dismissError.addEventListener("click", hideError);
 for (const button of document.querySelectorAll(".suggestion")) button.addEventListener("click", () => sendMessage(button.dataset.prompt));
+for (const button of document.querySelectorAll('.branch-action')) button.addEventListener('click', () => sendMessage(button.dataset.prompt));
 mobile.addEventListener("change", () => { closeSidebar(false); });
 document.addEventListener("keydown", (event) => {
   if (!mobile.matches || !elements.sidebar.classList.contains("open")) return;

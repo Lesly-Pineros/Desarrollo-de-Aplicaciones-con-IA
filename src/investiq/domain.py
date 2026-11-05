@@ -7,6 +7,9 @@ Intent = Literal[
     "explanation",
     "instrument_info",
     "education",
+    "sector_performance",
+    "market_news",
+    "explore",
     "recommend_volatility",
     "recommend_similar",
     "compare",
@@ -16,6 +19,8 @@ Intent = Literal[
 PendingField = Literal[
     "mode", "volatility", "reference", "comparison_symbols", "comparison_preference", "preference_beta",
     "education_topic",
+    "sector_market",
+    "news_scope", "explore_kind", "explore_horizon", "explore_volatility", "explore_reference", "explore_sector",
 ]
 
 
@@ -35,6 +40,14 @@ class RouterDecision(BaseModel):
     comparison_symbols: list[str] = Field(default_factory=list, max_length=4)
     volatility_target: Literal["baja", "media", "alta"] | None = None
     education_topic: str | None = None
+    sector_market: Literal["Estados Unidos", "Colombia", "España", "Europa", "global"] | None = None
+    news_sector: str | None = None
+    news_country: str | None = None
+    news_selection: str | None = None
+    exploration_kind: Literal["equity", "etf", "any"] | None = None
+    exploration_horizon: Literal["short", "medium", "long"] | None = None
+    exploration_sector: str | None = None
+    reference_skipped: bool = False
     needs_clarification: bool = False
 
 
@@ -63,6 +76,7 @@ class NewsItem(BaseModel):
     published_at: datetime | None = None
     delayed: bool = True
     source_id: str
+    language: str = "en"
 
 
 class NewsCollection(BaseModel):
@@ -90,6 +104,12 @@ class ResponseDiagnostics(BaseModel):
     ] | None = None
 
 
+class ResponseAction(BaseModel):
+    label: str = Field(max_length=100)
+    prompt: str = Field(max_length=200)
+    news_id: str | None = Field(default=None, max_length=100)
+
+
 class AssistantResponse(BaseModel):
     answer: str
     intent: Intent
@@ -100,6 +120,7 @@ class AssistantResponse(BaseModel):
     output_tokens: int | None = None
     diagnostics: ResponseDiagnostics = Field(default_factory=ResponseDiagnostics)
     clear_history: bool = False
+    actions: list[ResponseAction] = Field(default_factory=list, max_length=10)
 
 
 class PreferenceInput(BaseModel):
@@ -123,3 +144,4 @@ class ConversationState(BaseModel):
     preferences_offered: bool = False
     explanation_level: Literal["basic", "standard", "advanced"] = "standard"
     history: list[ConversationMessage] = Field(default_factory=list, max_length=8)
+    news_items: list[NewsItem] = Field(default_factory=list, max_length=3)

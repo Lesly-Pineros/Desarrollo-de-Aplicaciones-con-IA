@@ -1,0 +1,737 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {
+      "id": "brokers",
+      "title": "brókers",
+      "category": "intermediarios",
+      "aliases": [
+        "broker",
+        "brokers",
+        "bróker",
+        "corredor de bolsa",
+        "corredores",
+        "intermediario bursátil"
+      ],
+      "questions": [
+        "¿Qué brokers existen para invertir?",
+        "¿Qué es un broker?",
+        "¿Dónde se compran acciones?"
+      ],
+      "summary": "Un bróker es un intermediario que tramita operaciones con valores para sus clientes.",
+      "explanation": "Ejemplos documentados son Interactive Brokers, Charles Schwab y Fidelity. Sus productos, costes y admisión dependen de la entidad y del país; no son una clasificación ni una recomendación.",
+      "example": "El intermediario recibe la orden y la envía al sistema de negociación, mientras la inversión es el activo elegido.",
+      "cautions": "Antes de comparar opciones hace falta conocer el país y comprobar autorización, tarifas y condiciones actuales en las fuentes oficiales.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:brokers",
+          "title": "Brokers — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/getting-started/working-investment-professional/brokers",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        },
+        {
+          "source_id": "broker:ibkr",
+          "title": "Interactive Brokers — sitio oficial",
+          "url": "https://www.interactivebrokers.com/en/home.php",
+          "provider": "Interactive Brokers",
+          "reviewed_on": "2026-11-04"
+        },
+        {
+          "source_id": "broker:schwab",
+          "title": "Schwab brokerage account — sitio oficial",
+          "url": "https://www.schwab.com/brokerage",
+          "provider": "Charles Schwab",
+          "reviewed_on": "2026-11-04"
+        },
+        {
+          "source_id": "broker:fidelity",
+          "title": "Fidelity brokerage account — sitio oficial",
+          "url": "https://www.fidelity.com/investing/brokerage-account",
+          "provider": "Fidelity",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "comparar-brokers",
+      "title": "comparar brókers",
+      "category": "intermediarios",
+      "aliases": [
+        "elegir un broker",
+        "mejor broker",
+        "broker para mi país",
+        "bróker más barato"
+      ],
+      "questions": [
+        "¿Qué broker es mejor para mí?",
+        "¿Qué reviso antes de abrir una cuenta?"
+      ],
+      "summary": "La comparación de intermediarios depende del país, los servicios, los productos y el coste total.",
+      "explanation": "La autorización, la custodia, el acceso al mercado y las tarifas son criterios de revisión; una marca conocida no resuelve por sí sola la elección.",
+      "example": "Dos cuentas pueden cobrar de formas diferentes aunque ambas permitan negociar acciones.",
+      "cautions": "No hay aquí un ranking personal ni disponibilidad confirmada por país. ¿Desde qué país se abriría la cuenta?",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:select-professional",
+          "title": "How to Select an Investment Professional",
+          "url": "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/investor-0",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "interactive-brokers",
+      "title": "Interactive Brokers",
+      "category": "intermediarios",
+      "aliases": [
+        "ibkr",
+        "interactive broker"
+      ],
+      "questions": [
+        "¿Qué es Interactive Brokers?",
+        "¿Interactive Brokers es una acción o un intermediario?"
+      ],
+      "summary": "Interactive Brokers ofrece servicios de intermediación y plataformas para negociar instrumentos financieros.",
+      "explanation": "Es un ejemplo de proveedor: la entidad contratada, la elegibilidad y las condiciones deben revisarse en su documentación oficial.",
+      "example": "La plataforma de un intermediario es distinta de las acciones o fondos que permite negociar.",
+      "cautions": "No se afirman tarifas actuales ni que acepte a residentes de cualquier país; no constituye recomendación.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "broker:ibkr",
+          "title": "Interactive Brokers — sitio oficial",
+          "url": "https://www.interactivebrokers.com/en/home.php",
+          "provider": "Interactive Brokers",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "charles-schwab",
+      "title": "Charles Schwab",
+      "category": "intermediarios",
+      "aliases": [
+        "schwab",
+        "schwab broker"
+      ],
+      "questions": [
+        "¿Qué es Charles Schwab?",
+        "¿Schwab ofrece cuentas de inversión?"
+      ],
+      "summary": "Charles Schwab ofrece cuentas de intermediación y servicios de inversión descritos en su sitio oficial.",
+      "explanation": "La cuenta concreta y sus condiciones importan más que interpretar la marca como una categoría de inversión.",
+      "example": "Una cuenta es el medio para mantener y negociar activos; no es por sí misma la inversión.",
+      "cautions": "Disponibilidad, productos, protección y costes requieren comprobación actual según país y entidad.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "broker:schwab",
+          "title": "Schwab brokerage account — sitio oficial",
+          "url": "https://www.schwab.com/brokerage",
+          "provider": "Charles Schwab",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "fidelity",
+      "title": "Fidelity",
+      "category": "intermediarios",
+      "aliases": [
+        "fidelity investments",
+        "fidelity broker"
+      ],
+      "questions": [
+        "¿Qué es Fidelity?",
+        "¿Dónde encuentro información oficial de sus cuentas?"
+      ],
+      "summary": "Fidelity ofrece una cuenta de intermediación para negociar inversiones, descrita en su página oficial.",
+      "explanation": "Sus condiciones deben consultarse para el tipo de cuenta y jurisdicción correspondientes.",
+      "example": "Una empresa puede ofrecer tanto cuentas como productos; conviene distinguir el servicio contratado.",
+      "cautions": "No se garantiza admisión de clientes de un país ni se conserva una tabla de tarifas vigentes.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "broker:fidelity",
+          "title": "Fidelity brokerage account — sitio oficial",
+          "url": "https://www.fidelity.com/investing/brokerage-account",
+          "provider": "Fidelity",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "verificar-broker",
+      "title": "verificar un intermediario",
+      "category": "proteccion",
+      "aliases": [
+        "broker regulado",
+        "registro del broker",
+        "brokercheck",
+        "licencia de intermediario"
+      ],
+      "questions": [
+        "¿Cómo verifico un broker?",
+        "¿Cómo sé si un intermediario está registrado?"
+      ],
+      "summary": "La autorización y el historial de un intermediario deben comprobarse en registros oficiales.",
+      "explanation": "FINRA BrokerCheck permite consultar firmas y profesionales vinculados al mercado estadounidense; para otro país hay que acudir a su supervisor competente.",
+      "example": "Una web o un logotipo parecido al de una firma real no reemplaza la consulta del registro.",
+      "cautions": "Estar registrado no garantiza la rentabilidad de una inversión ni prueba por sí solo que una persona que contacta sea esa entidad.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "finra:brokercheck",
+          "title": "BrokerCheck — FINRA",
+          "url": "https://brokercheck.finra.org/",
+          "provider": "FINRA",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "cuenta-efectivo",
+      "title": "cuenta de efectivo",
+      "category": "operativa",
+      "aliases": [
+        "cash account",
+        "cuenta cash",
+        "operar sin préstamo"
+      ],
+      "questions": [
+        "¿Qué es una cuenta de efectivo?",
+        "¿Cómo difiere de una cuenta de margen?"
+      ],
+      "summary": "En una cuenta de efectivo, las compras se pagan con los recursos del inversor, sin un préstamo del intermediario para esa operación.",
+      "explanation": "Es importante identificar el tipo de cuenta contratado y sus condiciones.",
+      "example": "Usar recursos propios es diferente de pedir prestado para adquirir valores.",
+      "cautions": "No financiar una operación con margen no elimina las pérdidas posibles de la inversión.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:account-types",
+          "title": "Types of Brokerage Accounts",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/how-stock-markets-work/types-brokerage-accounts",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "margen",
+      "title": "cuenta de margen",
+      "category": "operativa",
+      "aliases": [
+        "margin account",
+        "apalancamiento",
+        "préstamo del broker",
+        "margin call"
+      ],
+      "questions": [
+        "¿Qué es invertir con margen?",
+        "¿Puedo perder más si uso dinero prestado?"
+      ],
+      "summary": "Una cuenta de margen permite financiar operaciones con un préstamo respaldado por valores de la cuenta.",
+      "explanation": "El préstamo tiene costes y puede provocar exigencias de garantía o ventas de activos si cae su valor.",
+      "example": "La inversión y la deuda son compromisos distintos: una caída no hace desaparecer la obligación del préstamo.",
+      "cautions": "El margen puede ampliar las pérdidas; la biblioteca no recomienda utilizarlo ni ofrece instrucciones de contratación.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:margin",
+          "title": "Understanding Margin Accounts",
+          "url": "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-29",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "custodia",
+      "title": "custodia de valores",
+      "category": "operativa",
+      "aliases": [
+        "dónde quedan mis acciones",
+        "street name",
+        "titularidad de valores",
+        "registro de acciones"
+      ],
+      "questions": [
+        "¿Dónde se guardan mis acciones?",
+        "¿Qué significa custodia?"
+      ],
+      "summary": "Los valores pueden mantenerse mediante registros directos o a través de un intermediario que registra la posición de su cliente.",
+      "explanation": "La forma de tenencia y los registros de propiedad deben distinguirse del precio del activo.",
+      "example": "El registro que acredita una posición no es lo mismo que una imagen mostrada en una aplicación.",
+      "cautions": "Las condiciones de custodia y transferencia dependen del intermediario, del valor y de la jurisdicción.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:holding",
+          "title": "Holding Your Securities",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/holding-your-securities",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "orden-mercado",
+      "title": "orden de mercado",
+      "category": "operativa",
+      "aliases": [
+        "market order",
+        "orden a mercado",
+        "ejecución inmediata"
+      ],
+      "questions": [
+        "¿Qué es una orden de mercado?",
+        "¿Siempre obtengo el último precio visto?"
+      ],
+      "summary": "Una orden de mercado busca ejecutar una compra o venta al precio disponible al negociarse.",
+      "explanation": "Prioriza la ejecución, pero no fija el precio final ni asegura recibir la última cotización observada.",
+      "example": "Ver un precio en una pantalla y ejecutar una operación son momentos distintos.",
+      "cautions": "La liquidez y los movimientos del mercado pueden afectar el precio de ejecución.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:market-order",
+          "title": "Market Order",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/market-order",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "orden-limite",
+      "title": "orden limitada",
+      "category": "operativa",
+      "aliases": [
+        "limit order",
+        "orden límite",
+        "orden con precio máximo",
+        "orden con precio mínimo"
+      ],
+      "questions": [
+        "¿Qué es una orden limitada?",
+        "¿Puedo fijar un límite al precio?"
+      ],
+      "summary": "Una orden limitada establece un precio límite o uno más favorable para una operación.",
+      "explanation": "En una compra limita lo máximo que se aceptaría pagar; en una venta, lo mínimo que se aceptaría recibir.",
+      "example": "Fijar una condición de precio es distinto de ordenar ejecutar a cualquier precio disponible.",
+      "cautions": "Que exista el límite no garantiza que la orden llegue a ejecutarse.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:limit-order",
+          "title": "Limit Orders",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/limit-orders",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        },
+        {
+          "source_id": "inv:orders",
+          "title": "Types of Orders",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/how-stock-markets-work/types-orders",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "orden-stop",
+      "title": "orden stop",
+      "category": "operativa",
+      "aliases": [
+        "stop loss",
+        "stop-loss",
+        "stop order",
+        "precio de activación"
+      ],
+      "questions": [
+        "¿Qué es un stop loss?",
+        "¿Un stop asegura vender exactamente al precio elegido?"
+      ],
+      "summary": "Una orden stop se activa al alcanzar un precio especificado y pasa a ser una orden de mercado.",
+      "explanation": "El precio de activación y el precio efectivo de ejecución pueden ser diferentes.",
+      "example": "Una señal que activa una orden no es una promesa sobre su precio final.",
+      "cautions": "Un movimiento rápido del mercado puede producir una ejecución distinta de la esperada.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:stop-order",
+          "title": "Stop Order",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/stop-order",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "spread",
+      "title": "diferencial de compra y venta",
+      "category": "operativa",
+      "aliases": [
+        "bid ask",
+        "bid-ask",
+        "spread",
+        "horquilla",
+        "precio comprador",
+        "precio vendedor"
+      ],
+      "questions": [
+        "¿Qué es el spread?",
+        "¿Por qué hay dos precios para una acción?"
+      ],
+      "summary": "El bid es el precio comprador y el ask es el precio vendedor ofrecido en un momento.",
+      "explanation": "La diferencia entre ambos se llama spread u horquilla. Es distinta de una comisión explícita del intermediario.",
+      "example": "Una pantalla puede mostrar a la vez una oferta de compra y una de venta, con valores diferentes.",
+      "cautions": "Las ofertas cambian y su tamaño importa; esta definición no proporciona precios actuales.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:bid-ask",
+          "title": "Bid Price/Ask Price",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/ask-price",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "comisiones",
+      "title": "comisiones y costes",
+      "category": "costes",
+      "aliases": [
+        "comisión",
+        "tarifas del broker",
+        "costos de invertir",
+        "sin comisiones",
+        "gastos de cuenta"
+      ],
+      "questions": [
+        "¿Invertir no tiene costes si no hay comisión?",
+        "¿Qué me puede cobrar un broker?"
+      ],
+      "summary": "Una comisión por operar es solo una de las posibles categorías de coste.",
+      "explanation": "Pueden existir costes de mantenimiento, transferencias, cambio de divisa u otros servicios; las condiciones están en el acuerdo y las tarifas del proveedor.",
+      "example": "Que una operación no tenga una comisión concreta no implica que todo el servicio sea gratuito.",
+      "cautions": "La biblioteca no conserva tarifas actuales; deben comprobarse las aplicables al país, cuenta y producto.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:investment-fees",
+          "title": "How Fees and Expenses Affect Your Investment Portfolio",
+          "url": "https://www.investor.gov/sites/default/files/ib_fees_expenses.pdf",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "fraude",
+      "title": "señales de fraude",
+      "category": "proteccion",
+      "aliases": [
+        "estafa",
+        "fraude de inversión",
+        "rentabilidad garantizada",
+        "ganancias seguras",
+        "presión para invertir"
+      ],
+      "questions": [
+        "¿Cómo reconozco una estafa de inversión?",
+        "¿Son fiables las ganancias altas garantizadas?"
+      ],
+      "summary": "Las promesas de ganancias extraordinarias sin riesgo y la presión para actuar enseguida son señales de alerta.",
+      "explanation": "Conviene contrastar identidad, registros e información del producto mediante fuentes independientes.",
+      "example": "Un anuncio llamativo no sustituye la documentación ni la comprobación del intermediario.",
+      "cautions": "Ninguna explicación educativa certifica la legitimidad de una oferta concreta ni garantiza recuperar dinero.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:fraud-red-flags",
+          "title": "Red Flags of Investment Fraud Checklist",
+          "url": "https://www.investor.gov/protect-your-investments/fraud/how-avoid-fraud/red-flags-investment-fraud-checklist",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "ponzi",
+      "title": "esquema Ponzi",
+      "category": "proteccion",
+      "aliases": [
+        "ponzi",
+        "pirámide financiera",
+        "pagos con nuevos aportes"
+      ],
+      "questions": [
+        "¿Qué es un esquema Ponzi?",
+        "¿Cómo pagan algunas estafas a los primeros participantes?"
+      ],
+      "summary": "Un esquema Ponzi paga a participantes anteriores con dinero aportado por nuevos participantes.",
+      "explanation": "Puede aparentar rentabilidad mientras depende de nuevas entradas de dinero, en lugar de resultados de inversiones reales.",
+      "example": "Recibir un pago no prueba por sí solo que la inversión anunciada exista o sea sostenible.",
+      "cautions": "La sospecha sobre un caso real requiere documentación y revisión por las autoridades competentes.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:ponzi",
+          "title": "Ponzi Scheme",
+          "url": "https://www.investor.gov/protect-your-investments/fraud/types-fraud/ponzi-scheme",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "estados-financieros",
+      "title": "estados financieros",
+      "category": "analisis",
+      "aliases": [
+        "balance",
+        "estado de resultados",
+        "cuentas anuales",
+        "informes contables"
+      ],
+      "questions": [
+        "¿Cómo empiezo a leer las cuentas de una empresa?",
+        "¿Qué muestran los estados financieros?"
+      ],
+      "summary": "Los estados financieros describen la situación y los resultados de una empresa.",
+      "explanation": "El balance muestra activos y obligaciones; resultados y flujos de efectivo describen aspectos distintos de un período.",
+      "example": "Una fotografía del patrimonio y una explicación de sus movimientos no cuentan lo mismo.",
+      "cautions": "Las cifras requieren fecha, notas y contexto; aquí no se evalúa una empresa concreta.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "sec:financial-statements",
+          "title": "Beginners Guide to Financial Statements",
+          "url": "https://www.sec.gov/investor/pubs/begfinstmtguide.htm",
+          "provider": "SEC",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "per",
+      "title": "relación precio-beneficio",
+      "category": "analisis",
+      "aliases": [
+        "p/e",
+        "pe ratio",
+        "per",
+        "price earnings ratio",
+        "múltiplo de beneficios"
+      ],
+      "questions": [
+        "¿Qué es el PER?",
+        "¿Una acción con PER bajo es automáticamente barata?"
+      ],
+      "summary": "El PER relaciona el precio por acción con el beneficio por acción utilizado.",
+      "explanation": "La interpretación depende del período, la definición de beneficio y las características del negocio.",
+      "example": "Relacionar un precio con un resultado contable ayuda a distinguirlo de mirar solo el precio.",
+      "cautions": "Un múltiplo aislado no decide el valor de una empresa ni justifica una compra.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "sec:financial-statements",
+          "title": "Beginners Guide to Financial Statements",
+          "url": "https://www.sec.gov/investor/pubs/begfinstmtguide.htm",
+          "provider": "SEC",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "eps",
+      "title": "beneficio por acción",
+      "category": "analisis",
+      "aliases": [
+        "eps",
+        "bpa",
+        "earnings per share",
+        "ganancia por acción"
+      ],
+      "questions": [
+        "¿Qué es EPS?",
+        "¿El beneficio de la empresa es el beneficio por acción?"
+      ],
+      "summary": "El beneficio por acción relaciona el beneficio de una compañía con sus acciones.",
+      "explanation": "Permite expresar un resultado empresarial por participación, según el método y período empleados.",
+      "example": "La ganancia total de una empresa y la ganancia atribuida a cada participación son medidas distintas.",
+      "cautions": "Debe revisarse qué definición y período se utilizan; no equivale al dividendo efectivamente pagado.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:eps",
+          "title": "Earnings Per Share",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/earnings-share",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "analisis-empresa",
+      "title": "análisis fundamental y técnico",
+      "category": "analisis",
+      "aliases": [
+        "análisis fundamental",
+        "análisis técnico",
+        "analisis tecnico",
+        "analisis fundamental",
+        "leer gráficos",
+        "indicadores técnicos y fundamentales",
+        "indicadores fundamentales y técnicos"
+      ],
+      "questions": [
+        "¿Qué diferencia hay entre análisis técnico y fundamental?",
+        "¿Cómo se estudia una acción?",
+        "¿Qué diferencia hay entre indicadores técnicos y fundamentales?"
+      ],
+      "summary": "El análisis fundamental estudia información económica, del sector y de la empresa; el técnico se centra en precios y volumen negociado.",
+      "explanation": "Son enfoques diferentes para estudiar una inversión; una observación o indicador aislado no establece certeza sobre el futuro.",
+      "example": "Leer las cuentas de un negocio es distinto de observar los movimientos de su gráfico.",
+      "cautions": "Esta introducción no valida una señal, estrategia ni predicción de precios.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "cfa:equity-valuation",
+          "title": "Equity Valuation: Concepts and Basic Tools",
+          "url": "https://www.cfainstitute.org/insights/professional-learning/refresher-readings/2026/equity-valuation-concepts-basic-tools",
+          "provider": "CFA Institute",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "edgar",
+      "title": "EDGAR",
+      "category": "analisis",
+      "aliases": [
+        "sec filings",
+        "documentos sec",
+        "informes oficiales de empresas"
+      ],
+      "questions": [
+        "¿Dónde encuentro informes de una empresa estadounidense?",
+        "¿Qué es EDGAR?"
+      ],
+      "summary": "EDGAR es el sistema de la SEC que permite consultar documentos públicos de empresas.",
+      "explanation": "Incluye documentos de registro, folletos e informes periódicos que ayudan a estudiar actividad y finanzas.",
+      "example": "Consultar el documento original permite distinguir información de la empresa y comentarios de terceros.",
+      "cautions": "Que un documento esté presentado no equivale a aprobación de una inversión ni verifica la actualidad de una cifra fuera de su fecha.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:edgar",
+          "title": "EDGAR — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/edgar",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "folleto",
+      "title": "folleto de un fondo",
+      "category": "analisis",
+      "aliases": [
+        "prospectus",
+        "prospecto",
+        "documentación del etf"
+      ],
+      "questions": [
+        "¿Qué debo leer para entender un ETF?",
+        "¿Dónde figuran objetivos y riesgos de un fondo?"
+      ],
+      "summary": "El folleto describe objetivos, estrategia, riesgos y gastos de un fondo.",
+      "explanation": "Permite contrastar qué intenta hacer el producto y bajo qué condiciones; el nombre comercial por sí solo no basta.",
+      "example": "Dos fondos con nombres parecidos pueden invertir de forma distinta al leer sus folletos.",
+      "cautions": "Debe consultarse la versión vigente y la clase concreta del producto.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:prospectus",
+          "title": "Prospectus — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/prospectus",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "informe-anual",
+      "title": "informe anual empresarial",
+      "category": "analisis",
+      "aliases": [
+        "10-k",
+        "10k",
+        "form 10-k",
+        "informe auditado"
+      ],
+      "questions": [
+        "¿Qué es un 10-K?",
+        "¿Dónde explica una empresa estadounidense su negocio y riesgos?"
+      ],
+      "summary": "El informe Form 10-K ofrece una visión amplia del negocio y la situación financiera de una empresa sujeta a esa presentación estadounidense.",
+      "explanation": "Incluye estados financieros auditados y debe leerse con sus notas y riesgos.",
+      "example": "Un informe empresarial completo aporta contexto que un titular resumido puede omitir.",
+      "cautions": "Los formularios exigidos dependen del emisor y la jurisdicción; un informe tiene una fecha concreta.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:10k",
+          "title": "Form 10-K — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/form-10-k",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "impuestos",
+      "title": "impuestos de inversión",
+      "category": "costes",
+      "aliases": [
+        "tributación",
+        "capital gains",
+        "retenciones",
+        "declarar dividendos",
+        "impuesto sobre acciones",
+        "impuestos",
+        "impuestos por invertir",
+        "pagar impuestos por invertir en bolsa"
+      ],
+      "questions": [
+        "¿Tengo que pagar impuestos por invertir?",
+        "¿Cómo tributan dividendos y ventas?",
+        "¿Cómo pago impuestos por invertir en bolsa?",
+        "¿Cómo declarar las ganancias de acciones o ETF?",
+        "¿De qué país son los impuestos de mis inversiones?"
+      ],
+      "summary": "Las operaciones y pagos de una inversión pueden tener consecuencias tributarias.",
+      "explanation": "La respuesta concreta depende de residencia fiscal, país, tipo de cuenta y producto; la fuente fiscal competente es distinta del supervisor del mercado.",
+      "example": "Una misma operación puede exigir revisar tanto el documento del intermediario como las reglas fiscales aplicables.",
+      "cautions": "Esta biblioteca no da tipos impositivos vigentes ni asesoría tributaria; hace falta consultar la autoridad fiscal del país.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:tax-questions",
+          "title": "Tax Questions — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/tax-questions",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    }
+  ]
+}

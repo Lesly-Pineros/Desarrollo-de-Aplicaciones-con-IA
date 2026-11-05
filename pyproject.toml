@@ -34,7 +34,7 @@ investiq-streamlit = "investiq.legacy_ui:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-investiq = ["prompts/*.md", "web/static/*.html", "web/static/*.css", "web/static/*.js", "web/static/fonts/*.ttf", "web/static/fonts/*-OFL.txt"]
+investiq = ["prompts/*.md", "knowledge/data/*.json", "web/static/*.html", "web/static/*.css", "web/static/*.js", "web/static/fonts/*.ttf", "web/static/fonts/*-OFL.txt"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests/unit"]

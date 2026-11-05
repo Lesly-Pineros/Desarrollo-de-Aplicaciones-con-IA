@@ -1,6 +1,6 @@
 # InvestiQ
 
-InvestiQ es una web educativa en español para entender conceptos financieros, consultar movimientos con sus fuentes y explorar similitudes o comparaciones entre 20 acciones y ETF. Abre directamente, sin registro ni contraseña. Las preferencias se conversan en el chat; el catálogo y la ayuda están a mano.
+InvestiQ es un profesor de educación financiera en una web en español: explica acciones, fondos, ETF, bolsas, brókers, criptoactivos e indicadores consultando una biblioteca local con fuentes. También permite consultar noticias del día, pedir resúmenes y explorar candidatos entre 20 acciones y ETF mediante criterios conversados y el modelo de clustering local. Abre directamente, sin registro ni contraseña. Las preferencias se conversan en el chat; el catálogo y la ayuda están a mano.
 
 **No es asesoría financiera.** Los precios y las métricas provienen de herramientas y datos verificables; el modelo redacta sobre esos resultados.
 
@@ -29,7 +29,10 @@ Edita `.env` en tu equipo:
 | `NVIDIA_MODEL` | Modelo solicitado al proveedor; debe estar disponible para tu cuenta. |
 | `SEC_USER_AGENT` | Nombre de la app y correo real de contacto para consultar SEC EDGAR. Sustituye el ejemplo. |
 | `DATABASE_URL` | Base local; por defecto `sqlite:///./investiq.db`. App y pipeline leen la misma configuración. |
-| `TWELVE_DATA_API_KEY`, `MARKETAUX_API_KEY` | Enriquecimiento opcional de cotizaciones y noticias. |
+| `TWELVE_DATA_API_KEY` | Enriquecimiento opcional de cotizaciones. |
+| `MARKETAUX_API_KEY` | Clave propia para noticias del día por país, sector o símbolo; sin ella se informa de la falta de fuente. |
+| `FMP_API_KEY` | Opcional para snapshots de once sectores de NASDAQ. Acceso dependiente del plan; no se contrata ninguno. |
+| `MARKET_TIMEZONE` | Zona IANA para «hoy» en noticias; por defecto `America/Bogota`. |
 | `CONVERSATION_MEMORY_DAYS` | Retención del contexto resumido, por defecto 90 días. |
 | `INVESTIQ_SHOW_DIAGNOSTICS` | `true` muestra categorías de diagnóstico para desarrollo. Por defecto `false`. |
 
@@ -58,7 +61,7 @@ Puedes empezar con «¿Qué es el sp500?», «¿Qué es AAPL?», «¿Qué es bet
 Para abrir sin llamadas al modelo ni enriquecimientos externos, aunque `.env` tenga claves:
 
 ```bash
-NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= SEC_USER_AGENT= bash run_web.sh
+NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= SEC_USER_AGENT= bash run_web.sh
 ```
 
 Sin Internet puedes aprender conceptos y definir símbolos del catálogo. Las consultas de mercado necesitan datos locales o acceso a sus fuentes; la app informa cuando no están disponibles. La web escucha únicamente en `127.0.0.1` o `localhost`: es un piloto local, no un servidor público.
@@ -66,6 +69,38 @@ Sin Internet puedes aprender conceptos y definir símbolos del catálogo. Las co
 La interfaz Streamlit anterior es una alternativa opcional. Para usarla expresamente, instala `.venv/bin/python -m pip install -e '.[legacy-ui]'` y ejecuta `bash run_streamlit.sh` o `investiq-streamlit`, en `http://localhost:8501`. Esa dirección corresponde al frontend anterior. Para abrir la nueva web, usa el puerto 8000. Actualiza el código también en el equipo donde la ejecutas; las copias no se sincronizan por sí solas.
 
 El cambio está en [ADR-004](decisions/ADR-004-web-local.md). Usar el frontend local no tiene una tarifa de framework; publicarlo en Internet y el consumo de proveedores son cuestiones separadas. No se ha iniciado el despliegue cloud.
+
+## Biblioteca educativa y RAG
+
+Puedes preguntar «¿qué es una acción?», «¿qué brókers existen?», «¿cómo funciona una orden límite?», «¿qué son los dividendos?» o «¿a qué se dedica Apple?». El agente recupera pasajes de documentos revisados y los utiliza para explicar con fuentes; admite ejemplos y distintos niveles de detalle. Si no encuentra respaldo suficiente, lo reconoce.
+
+La biblioteca contiene **119 documentos en 16 categorías**, con 113 referencias. Incluye fondos de inversión, Bitcoin, Ethereum, blockchain, wallets, stablecoins y staking; análisis fundamental y técnico, RSI, MACD, medias móviles, Bollinger, ATR, ADX, estocástico, OBV, CCI y VWAP. También cubre órdenes, derivados, tamaño de posición, drawdown y backtesting. Es una cobertura educativa ampliable, no una garantía de responder cualquier tema ni un generador de señales de compra o venta.
+
+La pregunta «¿qué es mejor para obtener mayores rentabilidades a largo plazo: un ETF o acciones individuales?» recibe una comparación de diversificación, concentración, costes y riesgo, sin prometer un ganador. «¿Qué sectores lideran hoy?» pide mercado y puede consultar un snapshot completo de once sectores de NASDAQ mediante FMP configurado. Declara bolsa, fecha y cobertura; sin acceso o datos válidos informa la limitación. La integración real de ese proveedor sigue pendiente. La biblioteca estática y los pocos ETF del catálogo no permiten afirmar líderes actuales. Si escribes ambas preguntas en un mensaje, atiende la comparación y conserva la aclaración del mercado.
+
+La búsqueda es local, por alias y similitud TF-IDF; no necesita descargar embeddings ni contratar una base vectorial. La redacción con NVIDIA necesita conexión. Sin modelo o ante una salida que no pase la validación, responde con explicaciones y ejemplos locales. Las fuentes citadas no eliminan por sí solas los errores del modelo.
+
+Puedes seguir una lección con «No entiendo», «¿Me lo explicas con un ejemplo?», «¿Cómo se interpreta?» o «¿Por qué importa?». Conserva el tema y sus fuentes, también tras restaurar la memoria; «Ahora explícame la inflación» inicia otro tema. Después de «¿Qué es AAPL?» puedes pedir un ejemplo o sus riesgos desde la ficha educativa, sin consultar precios. «Soy principiante» adapta las explicaciones: conserva la definición y añade el ejemplo revisado, sin guardar preferencias de inversión. Sin un tema previo, el profesor necesita que concretes el concepto.
+
+## Noticias y exploración guiada
+
+Los accesos **Noticias de hoy**, **Explorar acciones y ETF** y **Sectores de hoy** permanecen visibles junto al chat, también en móvil. Puedes preguntar «Últimas noticias del sector financiero en Colombia», «Noticias del sector tecnológico» o «Noticias de AAPL». Se muestran hasta tres titulares de hoy por recencia, con publicación y fuente. NVIDIA puede traducirlos y resumir el extracto al pulsar «Resumir noticia 2» o escribir «Resume la segunda». Sin modelo se conserva el original; sin extracto no se inventa un resumen. Los artículos no se guardan en la memoria personal.
+
+«¿Qué acción o ETF me recomiendas para invertir hoy?» pregunta tipo, plazo, variación histórica y referencia opcional dentro del chat. Usa el KMeans aprobado y características coherentes; presenta hasta tres candidatos para estudiar con volatilidad anualizada en porcentaje, beta, sector, grupo y fuentes del período histórico. La coincidencia del modelo no es rentabilidad ni probabilidad de ganar, y el tercil de volatilidad no constituye un perfil financiero completo. Los criterios no se guardan automáticamente como preferencias. Sin modelo/datos o coincidencias compatibles, se explica la limitación; el corto plazo no se resuelve presentando acciones o ETF como seguros.
+
+Configuración, cuotas, filtros y límites en [docs/market-branches.md](docs/market-branches.md). Marketaux anuncia actualmente 100 peticiones/día, tres artículos/petición y acceso inmediato en su plan gratuito; se corrigió la antigua suposición de 24 horas de retraso. Las pruebas usan fuentes/modelos simulados y KMeans real con datos sintéticos; no acreditan integración live. Se conserva Python plano y el mismo NVIDIA configurable; no se necesita LangGraph.
+
+Para revisar la biblioteca y comprobar la recuperación sin llamadas externas:
+
+```bash
+.venv/bin/python -m investiq.knowledge validate
+.venv/bin/python -m investiq.knowledge stats
+.venv/bin/python -m investiq.knowledge search 'qué brokers existen para invertir'
+.venv/bin/python -m investiq.knowledge search 'qué es una criptomoneda'
+.venv/bin/python -m investiq.knowledge search 'qué es el RSI'
+```
+
+Los JSON están en `src/investiq/knowledge/data/`. Puedes añadir contenido revisado sin programar otra respuesta. Formato, fuentes, biblioteca externa y actualización en [docs/knowledge.md](docs/knowledge.md). Los brókers se presentan como ejemplos, sin ranking ni recomendaciones personales; país, registro, condiciones y tarifas actuales requieren verificación.
 
 ## Cargar datos históricos y entrenar
 
@@ -88,10 +123,22 @@ Los manifiestos y modelos quedan en `ml/artifacts/`. La base contiene precios, f
 Este es el comando principal de regresión. Deshabilita las credenciales aunque tu `.env` tenga valores:
 
 ```bash
-NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= SEC_USER_AGENT= .venv/bin/python -m pytest -q
+NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= SEC_USER_AGENT= .venv/bin/python -m pytest -q
 ```
 
 El comando configurado en `pyproject.toml` recoge `tests/unit`. La suite unitaria también aísla las credenciales mediante un fixture compartido. Incluye lógica local, modelos simulados y la interfaz con SQLite temporal; un resultado en verde no acredita una integración en vivo.
+
+Para comprobar solo los nuevos temas, las dos preguntas propuestas y sus seguimientos:
+
+```bash
+NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= SEC_USER_AGENT= .venv/bin/python -m pytest -q tests/unit/test_trading_education.py
+```
+
+Para comprobar conversaciones completas con aclaraciones, interpretación, ejemplos, cambios de tema, nivel principiante y memoria restaurada:
+
+```bash
+NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= SEC_USER_AGENT= .venv/bin/python -m pytest -q tests/unit/test_teacher_continuity.py
+```
 
 Los tests de la interfaz Streamlit heredada se omiten cuando no está instalado su extra; las pruebas de memoria y de la web principal siguen ejecutándose. Solo para comprobar también esa alternativa, instala `.[dev,legacy-ui]`. La web principal no necesita ese extra.
 
@@ -107,7 +154,7 @@ Para comprobar las especificaciones SDD, el siguiente bucle omite las plantillas
 )
 ```
 
-Consulta el estado real y la trazabilidad en [PLAN.md](PLAN.md), [las tareas de la web](specs/web-conversacional/tasks.md) y [la ampliación educativa sobre índices](specs/educacion-indices/tasks.md). Los resultados offline y las integraciones en vivo se registran por separado.
+Consulta el estado real y la trazabilidad en [PLAN.md](PLAN.md), [las tareas del profesor RAG](specs/profesor-rag/tasks.md), [la ampliación de formación](specs/formacion-trading/tasks.md), [la continuidad del profesor](specs/continuidad-profesor/tasks.md) y [las tareas de la web](specs/web-conversacional/tasks.md). Los resultados offline y las integraciones en vivo se registran por separado.
 
 ## Verificar la web en Chrome
 
@@ -117,7 +164,7 @@ Esta comprobación opcional necesita Node 22 o superior y Chrome instalado. Son 
 node tools/check_web.mjs
 ```
 
-El script inicia su propio servidor y una base SQLite temporal, desactiva las credenciales, prueba la conversación y controles en Chrome headless y cierra los procesos al terminar. No debes arrancar la app primero. Necesita permiso para abrir puertos locales. Las capturas y el informe quedan en `.impeccable/review/`, excluida de Git. Si Chrome está en otra ubicación, indica su ejecutable con `CHROME_PATH=/ruta/a/chrome` antes del comando. No sustituye una prueba con el modelo real.
+El script inicia servidores y bases SQLite temporales, desactiva las credenciales y prueba la conversación y controles en Chrome headless. Las ramas nuevas usan noticias/snapshots sintéticos y un KMeans real entrenado sobre fixtures; no se utiliza la base ni los modelos del usuario. Cierra los procesos al terminar. No debes arrancar la app primero. Necesita permiso para abrir puertos locales. Las capturas y el informe quedan en `.impeccable/review/`, excluida de Git. Si Chrome está en otra ubicación, indica su ejecutable con `CHROME_PATH=/ruta/a/chrome` antes del comando. No sustituye una prueba con el modelo real.
 
 ## Comprobar NVIDIA en vivo
 
@@ -157,7 +204,7 @@ La [guía de arquitectura](docs/architecture.md) describe las responsabilidades,
 
 ## Desarrollar y ejecutar en dos copias
 
-Lleva al equipo de ejecución el código actualizado completo, incluidos `src/investiq/prompts/`, `src/investiq/web/static/` (con sus fuentes y licencias), `pyproject.toml`, `run_web.sh` y las herramientas. Prepara allí su entorno Python y su `.env`; las carpetas `.venv`, las claves y SQLite son locales. Las copias del repositorio no sincronizan conversaciones, preferencias o datos automáticamente.
+Lleva al equipo de ejecución el código actualizado completo, incluidos `src/investiq/prompts/`, `src/investiq/knowledge/data/`, `src/investiq/web/static/` (con sus fuentes y licencias), `pyproject.toml`, `run_web.sh` y las herramientas. Prepara allí su entorno Python y su `.env`; las carpetas `.venv`, las claves y SQLite son locales. Las copias del repositorio no sincronizan conversaciones, preferencias o datos automáticamente.
 
 Git excluye `.env`, `.venv` y la SQLite local predeterminada. Los artefactos de `ml/artifacts/` sí forman parte del repositorio. En una copia nueva, carga sus datos con `all`; si trasladarás una base existente, conserva una copia de respaldo y usa el mismo conjunto de base y artefactos.
 

@@ -109,8 +109,8 @@ def test_a_real_preference_declaration_still_changes_preferences(chat):
 def test_goal_word_does_not_call_financial_tools(chat, financial_calls, query):
     assert mentioned_symbols(query) == []
     response = ask(chat, query)
-    assert response.intent == "unknown"
-    assert not response.tools_used
+    assert response.intent in {"unknown", "education"}
+    assert set(response.tools_used).issubset({"knowledge_search"})
     assert not financial_calls
 
 

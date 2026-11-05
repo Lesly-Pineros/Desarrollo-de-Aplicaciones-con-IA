@@ -1,0 +1,767 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {
+      "id": "sp500",
+      "title": "S&P 500",
+      "category": "indices",
+      "aliases": [
+        "sp500",
+        "sp 500",
+        "s&p500",
+        "s&p 500",
+        "s & p 500",
+        "standard & poor’s 500",
+        "standard & poor's 500",
+        "standard and poor’s 500",
+        "standard and poor's 500",
+        "s & p500",
+        "standard & poors 500",
+        "standard and poors 500"
+      ],
+      "questions": [
+        "¿Qué es el SP500?",
+        "¿Qué representa el S&P 500?"
+      ],
+      "summary": "El S&P 500 es un índice bursátil: una referencia que resume cómo se mueven las acciones de 500 empresas líderes de Estados Unidos.",
+      "explanation": "Piensa en él como un termómetro de ese conjunto de grandes empresas, en lugar de mirar una sola.",
+      "example": "Imagina que quieres observar un conjunto de grandes empresas: el S&P 500 sirve de referencia para seguirlo.",
+      "cautions": "No es una predicción del futuro ni debe confundirse con un ETF que intenta seguirlo.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "spdj:sp-500",
+          "title": "S&P 500 — S&P Dow Jones Indices",
+          "url": "https://www.spglobal.com/spdji/en/indices/equity/sp-500/",
+          "provider": "S&P Dow Jones Indices",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "nasdaq100",
+      "title": "Nasdaq-100",
+      "category": "indices",
+      "aliases": [
+        "nasdaq 100",
+        "nasdaq100"
+      ],
+      "questions": [
+        "¿Qué es el Nasdaq-100?",
+        "¿Nasdaq y Nasdaq-100 son lo mismo?"
+      ],
+      "summary": "El Nasdaq-100 es un índice de grandes compañías no financieras cotizadas en Nasdaq.",
+      "explanation": "Es una referencia con una metodología de selección y ponderación; no representa automáticamente todas las compañías de la bolsa Nasdaq.",
+      "example": "Una bolsa puede tener muchas empresas cotizadas y un índice seleccionar solo un grupo de ellas.",
+      "cautions": "La composición y los pesos cambian; aquí no se conserva una lista actual de componentes.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "nasdaq:nasdaq-100",
+          "title": "Nasdaq-100 Index",
+          "url": "https://www.nasdaq.com/products/global-indexes/nasdaq-100",
+          "provider": "Nasdaq",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "dow-jones",
+      "title": "Dow Jones Industrial Average",
+      "category": "indices",
+      "aliases": [
+        "dow jones",
+        "djia",
+        "índice dow"
+      ],
+      "questions": [
+        "¿Qué es el Dow Jones?",
+        "¿En qué se diferencia del S&P 500?"
+      ],
+      "summary": "El Dow Jones Industrial Average resume un grupo de 30 grandes compañías estadounidenses.",
+      "explanation": "Su metodología pondera por precio y difiere de otros índices bursátiles.",
+      "example": "Dos índices pueden subir de forma distinta porque agrupan y ponderan empresas de maneras diferentes.",
+      "cautions": "Un índice no muestra por sí solo todas las acciones ni garantiza resultados futuros.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "spdj:dow-jones",
+          "title": "Dow Jones Industrial Average",
+          "url": "https://www.spglobal.com/spdji/en/indices/equity/dow-jones-industrial-average/",
+          "provider": "S&P Dow Jones Indices",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "indice-bursatil",
+      "title": "índice bursátil",
+      "category": "indices",
+      "aliases": [
+        "índice de bolsa",
+        "índices",
+        "benchmark",
+        "referencia bursátil"
+      ],
+      "questions": [
+        "¿Qué es un índice?",
+        "¿Para qué sirve un benchmark?"
+      ],
+      "summary": "Un índice bursátil resume el comportamiento de una selección de valores definida por una metodología.",
+      "explanation": "Puede servir como referencia de un mercado o sector. Un fondo indexado es un producto diferente que busca seguir esa referencia.",
+      "example": "Un termómetro resume una medición; el índice resume el movimiento de su conjunto de valores.",
+      "cautions": "La selección y las ponderaciones importan; ningún índice representa todas las inversiones.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:indices",
+          "title": "Market Indices — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/market-indices",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "bolsa-valores",
+      "title": "bolsa de valores",
+      "category": "mercados",
+      "aliases": [
+        "bolsa",
+        "mercado bursátil",
+        "mercado de valores",
+        "stock exchange"
+      ],
+      "questions": [
+        "¿Cómo funciona la bolsa?",
+        "¿Qué es una bolsa de valores?"
+      ],
+      "summary": "La bolsa forma parte de la infraestructura donde se negocian valores y participan compradores, vendedores e intermediarios.",
+      "explanation": "Conviene distinguir la empresa emisora, el intermediario que tramita órdenes y el mercado donde se negocian.",
+      "example": "Una empresa, un bróker y una bolsa cumplen papeles diferentes en una operación bursátil.",
+      "cautions": "La bolsa no promete ganancias y una definición general no establece horarios ni reglas actuales de cada mercado.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:markets",
+          "title": "How Stock Markets Work — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/how-stock-markets-work",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        },
+        {
+          "source_id": "nyse:markets",
+          "title": "Trading at NYSE",
+          "url": "https://www.nyse.com/trade",
+          "provider": "NYSE",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "volatilidad",
+      "title": "volatilidad",
+      "category": "riesgos",
+      "aliases": [
+        "volatilidad histórica",
+        "variación de rendimientos",
+        "altibajos del precio"
+      ],
+      "questions": [
+        "¿Qué es la volatilidad?",
+        "¿Por qué una inversión tiene tantos saltos?"
+      ],
+      "summary": "La volatilidad describe cuánto han variado los rendimientos de una inversión en un período.",
+      "explanation": "Piensa en un recorrido: cuantos más saltos tiene, mayor es su volatilidad histórica. Eso no permite saber qué pasará después.",
+      "example": "Imagina dos recorridos, uno suave y otro con muchos saltos: esa diferencia ayuda a visualizar la volatilidad.",
+      "cautions": "No equivale a una medida completa de todos los riesgos ni garantiza el comportamiento futuro.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "ibkr:volatility",
+          "title": "Volatility — IBKR Campus",
+          "url": "https://www.interactivebrokers.com/campus/glossary-terms/volatility/",
+          "provider": "Interactive Brokers",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "beta",
+      "title": "beta",
+      "category": "riesgos",
+      "aliases": [
+        "sensibilidad al mercado",
+        "beta histórica",
+        "movimientos frente al benchmark"
+      ],
+      "questions": [
+        "¿Qué es beta?",
+        "¿Cómo se relaciona una acción con el mercado de referencia?"
+      ],
+      "summary": "Beta compara los movimientos históricos de un instrumento con los de un mercado de referencia.",
+      "explanation": "Su interpretación depende del período y de la referencia elegidos; describe una relación histórica que puede cambiar.",
+      "example": "Piensa en una inversión y su mercado de referencia para comparar cómo se han acompañado.",
+      "cautions": "No es una promesa sobre el futuro ni sustituye las demás medidas de riesgo.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "ibkr:beta",
+          "title": "Beta — IBKR Campus",
+          "url": "https://www.interactivebrokers.com/campus/glossary-terms/beta/",
+          "provider": "Interactive Brokers",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "correlacion",
+      "title": "correlación",
+      "category": "riesgos",
+      "aliases": [
+        "correlacion",
+        "movimientos conjuntos",
+        "relación entre inversiones"
+      ],
+      "questions": [
+        "¿Qué es correlación?",
+        "¿Qué significa que dos inversiones se muevan juntas?"
+      ],
+      "summary": "La correlación describe la relación entre dos conjuntos de observaciones, como los rendimientos de dos inversiones.",
+      "explanation": "Una asociación observada puede ser positiva o negativa; no demuestra que una variable cause los cambios de la otra.",
+      "example": "Imagina dos personas caminando: sus pasos pueden acompañarse o separarse sin que una obligue a caminar a la otra.",
+      "cautions": "La relación observada no demuestra causalidad ni asegura que se mantenga.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "nist:association",
+          "title": "Scatter Plot: association and causality",
+          "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/scatterp.htm",
+          "provider": "NIST",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "riesgo",
+      "title": "riesgo",
+      "category": "riesgos",
+      "aliases": [
+        "riesgo financiero",
+        "posibilidad de pérdida",
+        "riesgos de invertir"
+      ],
+      "questions": [
+        "¿Puedo perder dinero en bolsa?",
+        "¿Qué es el riesgo al invertir?"
+      ],
+      "summary": "El riesgo es la incertidumbre sobre el resultado de una inversión, incluida la posibilidad de pérdida.",
+      "explanation": "Hay distintas formas de observarlo: una sola medida no cuenta toda la historia.",
+      "example": "Un resultado puede alejarse de lo esperado aunque se haya estudiado la inversión.",
+      "cautions": "Esperar más rentabilidad no garantiza recibirla ni elimina el riesgo.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:risk",
+          "title": "Risk — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/risk",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "liquidez",
+      "title": "liquidez",
+      "category": "riesgos",
+      "aliases": [
+        "liquidity",
+        "facilidad para vender",
+        "dinero disponible al vender"
+      ],
+      "questions": [
+        "¿Qué significa liquidez?",
+        "¿Siempre puedo vender cuando quiera?"
+      ],
+      "summary": "La liquidez describe la facilidad y rapidez con que puede negociarse una inversión sin afectar mucho su precio.",
+      "explanation": "Un activo con poca negociación puede ser difícil de vender en el momento o condiciones deseadas.",
+      "example": "Tener un comprador disponible no es igual a tener que esperar para encontrarlo.",
+      "cautions": "Liquidez no significa ausencia de pérdidas ni permite asegurar el precio de ejecución.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:liquidity",
+          "title": "Liquidity — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/liquidity-or-marketability",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "diversificacion",
+      "title": "diversificación",
+      "category": "riesgos",
+      "aliases": [
+        "diversificar",
+        "repartir inversiones",
+        "concentración de cartera"
+      ],
+      "questions": [
+        "¿Qué significa diversificar?",
+        "¿Por qué no concentrar todo en una empresa?",
+        "¿Por qué no poner todo el dinero en una sola empresa?",
+        "¿Qué significa no poner todos los huevos en la misma canasta?",
+        "¿Para qué repartir el dinero entre varias empresas?"
+      ],
+      "summary": "Diversificar consiste en repartir la exposición entre distintas inversiones.",
+      "explanation": "Busca reducir la dependencia de un solo resultado; no elimina las pérdidas posibles de la cartera.",
+      "example": "Repartir una tarea entre varias fuentes ayuda a imaginar una exposición menos concentrada.",
+      "cautions": "Varias participaciones pueden tener riesgos parecidos; contar instrumentos no basta para medir diversificación.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:diversification",
+          "title": "Diversification — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/diversification",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "horizonte",
+      "title": "horizonte de inversión",
+      "category": "planificacion",
+      "aliases": [
+        "horizonte temporal",
+        "plazo de inversión",
+        "largo plazo",
+        "corto plazo"
+      ],
+      "questions": [
+        "¿Qué es el horizonte temporal?",
+        "¿Por qué importa cuándo necesito el dinero?"
+      ],
+      "summary": "El horizonte de inversión es el tiempo previsto para alcanzar una meta o necesitar el dinero.",
+      "explanation": "Relacionar una inversión con ese plazo ayuda a entender qué fluctuaciones o dificultades de venta podrían importar.",
+      "example": "Una meta cercana y otra lejana plantean necesidades de tiempo distintas.",
+      "cautions": "Un plazo largo no garantiza ganancias; esta explicación no asigna un perfil personal.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:time-horizon",
+          "title": "Time Horizon — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/time-horizon",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "perfil-riesgo",
+      "title": "tolerancia al riesgo",
+      "category": "planificacion",
+      "aliases": [
+        "perfil de riesgo",
+        "capacidad de pérdida",
+        "aversión al riesgo"
+      ],
+      "questions": [
+        "¿Qué significa tolerancia al riesgo?",
+        "¿Todos soportamos las mismas pérdidas?"
+      ],
+      "summary": "La tolerancia al riesgo combina la disposición y la capacidad de asumir pérdidas.",
+      "explanation": "No debe deducirse solamente de una pregunta, de la edad o de la experiencia aparente de una persona.",
+      "example": "Entender un producto arriesgado no significa estar dispuesto a asumir sus pérdidas.",
+      "cautions": "El profesor no asigna automáticamente un perfil ni recomienda inversiones personalizadas.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:risk-tolerance",
+          "title": "Risk Tolerance — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/risk-tolerance",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "asignacion-activos",
+      "title": "asignación de activos",
+      "category": "planificacion",
+      "aliases": [
+        "asset allocation",
+        "distribución de cartera",
+        "clases de activos"
+      ],
+      "questions": [
+        "¿Qué es asignar activos?",
+        "¿Cómo se diferencia de elegir una acción?"
+      ],
+      "summary": "La asignación de activos distribuye una cartera entre categorías como acciones, bonos y efectivo.",
+      "explanation": "Es una decisión distinta de seleccionar títulos concretos dentro de cada categoría.",
+      "example": "Primero puede observarse la mezcla de categorías y después sus componentes.",
+      "cautions": "Esta definición no prescribe porcentajes ni una cartera adecuada para una persona.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:asset-allocation",
+          "title": "Asset Allocation — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/asset-allocation",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "retorno",
+      "title": "retorno",
+      "category": "planificacion",
+      "aliases": [
+        "rentabilidad",
+        "rendimiento",
+        "ganancia o pérdida",
+        "total return"
+      ],
+      "questions": [
+        "¿Qué es el retorno?",
+        "¿La rentabilidad incluye dividendos?"
+      ],
+      "summary": "El retorno expresa el resultado de una inversión durante un período, incluyendo cambios de valor e ingresos según la definición usada.",
+      "explanation": "Al comparar rendimientos hay que revisar el período y si se incluyen distribuciones como dividendos.",
+      "example": "Comparar el comienzo y el final de un recorrido ayuda a imaginar el cambio de valor de una inversión.",
+      "cautions": "Un resultado pasado no establece el resultado futuro; el retorno neto también depende de costes e impuestos.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "asic:return",
+          "title": "Return — Moneysmart",
+          "url": "https://moneysmart.gov.au/glossary/return",
+          "provider": "ASIC / Moneysmart",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "interes-compuesto",
+      "title": "interés compuesto",
+      "category": "planificacion",
+      "aliases": [
+        "interes compuesto",
+        "capitalización de intereses",
+        "ganancias reinvertidas"
+      ],
+      "questions": [
+        "¿Qué es el interés compuesto?",
+        "¿Qué pasa cuando reinvierto los intereses?"
+      ],
+      "summary": "El interés compuesto se calcula sobre el capital y sobre los intereses acumulados.",
+      "explanation": "La idea describe cómo los intereses que permanecen invertidos pueden incorporarse a la base de cálculos posteriores.",
+      "example": "Piensa en una bola que aumenta al incorporar lo que ya había acumulado.",
+      "cautions": "Una inversión de mercado no tiene por ello una tasa fija ni una ganancia garantizada.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:compound-interest",
+          "title": "Compound Interest — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/compound-interest",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "inflacion",
+      "title": "inflación",
+      "category": "riesgos",
+      "aliases": [
+        "inflacion",
+        "poder adquisitivo",
+        "subida general de precios"
+      ],
+      "questions": [
+        "¿Qué es inflación?",
+        "¿Por qué mi dinero puede comprar menos?"
+      ],
+      "summary": "La inflación mide el aumento de precios durante un período.",
+      "explanation": "Si los ingresos no crecen al mismo ritmo que los precios, su poder de compra puede disminuir.",
+      "example": "Una misma cantidad de dinero puede alcanzar para menos bienes cuando aumentan sus precios.",
+      "cautions": "Esta explicación no contiene una tasa actual ni garantiza qué inversión compensará la inflación.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "imf:inflation",
+          "title": "Inflation: Prices on the Rise",
+          "url": "https://www.imf.org/en/Publications/fandd/issues/Series/Back-to-Basics/Inflation",
+          "provider": "Fondo Monetario Internacional",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "riesgo-divisa",
+      "title": "riesgo de divisa",
+      "category": "riesgos",
+      "aliases": [
+        "tipo de cambio",
+        "dólar",
+        "dolar",
+        "moneda extranjera",
+        "riesgo cambiario"
+      ],
+      "questions": [
+        "¿Qué pasa si invierto en otra moneda?",
+        "¿Puede cambiar mi resultado al convertir a mi moneda?"
+      ],
+      "summary": "Los cambios del tipo de cambio pueden aumentar o reducir el resultado de una inversión internacional al expresarlo en otra moneda.",
+      "explanation": "El movimiento del activo y el de la divisa son efectos distintos que conviene separar al interpretar el resultado.",
+      "example": "Una inversión puede moverse de una manera y su moneda de otra.",
+      "cautions": "La moneda de cotización no resume por sí sola todas las exposiciones cambiarias del instrumento.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:international",
+          "title": "International Investing — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/investment-products/international-investing",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "bonos",
+      "title": "bonos",
+      "category": "productos",
+      "aliases": [
+        "bono",
+        "renta fija",
+        "título de deuda",
+        "deuda pública",
+        "deuda corporativa"
+      ],
+      "questions": [
+        "¿Qué es un bono?",
+        "¿Renta fija significa que no puedo perder?"
+      ],
+      "summary": "Un bono es un instrumento de deuda mediante el que un emisor obtiene dinero de inversores bajo unas condiciones.",
+      "explanation": "Puede establecer pagos y vencimiento, pero existen riesgos de impago, tipos de interés e inflación.",
+      "example": "Ser acreedor mediante un bono no es lo mismo que ser propietario mediante una acción.",
+      "cautions": "Renta fija no significa precio fijo ni ausencia de riesgo.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:bonds",
+          "title": "Bonds — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/investment-products/bonds-or-fixed-income-products/bonds",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "reits",
+      "title": "REIT",
+      "category": "productos",
+      "aliases": [
+        "reits",
+        "fondo inmobiliario",
+        "sociedad inmobiliaria cotizada"
+      ],
+      "questions": [
+        "¿Qué es un REIT?",
+        "¿Se puede tener exposición inmobiliaria mediante valores?"
+      ],
+      "summary": "Un REIT es una entidad vinculada a activos inmobiliarios que generan ingresos.",
+      "explanation": "Puede permitir exposición a inmuebles sin adquirir directamente un edificio. Existen REIT cotizados y no cotizados.",
+      "example": "Participar en una entidad propietaria de inmuebles difiere de comprar un inmueble directamente.",
+      "cautions": "La liquidez, los gastos y los riesgos dependen de su estructura; no todos cotizan en bolsa.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:reits",
+          "title": "REITs — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/investment-products/real-estate-investment-trusts-reits",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "opciones",
+      "title": "opciones financieras",
+      "category": "productos",
+      "aliases": [
+        "opción",
+        "option",
+        "call",
+        "put",
+        "derivados"
+      ],
+      "questions": [
+        "¿Qué es una opción?",
+        "¿Call y put son acciones?"
+      ],
+      "summary": "Una opción es un contrato que da a su comprador el derecho, sin obligación, de comprar o vender un valor bajo condiciones fijadas.",
+      "explanation": "Su precio, plazo y condiciones son distintos de poseer directamente la acción subyacente.",
+      "example": "Un derecho contractual para una operación futura no equivale a ser ya propietario del activo.",
+      "cautions": "Es un producto complejo: esta explicación no enseña una estrategia ni recomienda operar opciones.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:options",
+          "title": "Options — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/options",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "futuros",
+      "title": "contratos de futuros",
+      "category": "productos",
+      "aliases": [
+        "futuro",
+        "futures",
+        "contrato a futuro"
+      ],
+      "questions": [
+        "¿Qué es un futuro?",
+        "¿Qué se pacta en un contrato de futuros?"
+      ],
+      "summary": "Un futuro es un acuerdo para comprar o vender una cantidad especificada de un activo en una fecha futura y bajo un precio pactado.",
+      "explanation": "Conviene distinguir el contrato del activo al que se refiere.",
+      "example": "Pactar hoy condiciones para una entrega futura no es lo mismo que poseer ya el activo.",
+      "cautions": "Las condiciones y obligaciones requieren lectura específica; no se ofrecen instrucciones para operar.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:futures",
+          "title": "Futures contract — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/futures-contract",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "rentabilidad-pasada",
+      "title": "rendimientos históricos",
+      "category": "riesgos",
+      "aliases": [
+        "rendimientos pasados",
+        "rentabilidad pasada",
+        "histórico de resultados"
+      ],
+      "questions": [
+        "¿Lo que subió antes seguirá subiendo?",
+        "¿Sirve una gráfica histórica para asegurar el futuro?"
+      ],
+      "summary": "Los resultados históricos describen lo ocurrido; no garantizan lo que ocurrirá después.",
+      "explanation": "Pueden servir para estudiar una inversión, pero no eliminan la incertidumbre ni sus riesgos.",
+      "example": "Un recorrido ya completado no determina el próximo recorrido.",
+      "cautions": "El profesor no deduce previsiones o recomendaciones de compra a partir de resultados pasados.",
+      "related_ids": [],
+      "sources": [
+        {
+          "source_id": "inv:selecting",
+          "title": "The Basics of Selecting Investments",
+          "url": "https://syndication.finra.org/content/basics-selecting-investments",
+          "provider": "FINRA",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "nasdaq-bolsa",
+      "title": "Nasdaq: bolsa e índices",
+      "category": "mercados",
+      "aliases": [
+        "Nasdaq",
+        "bolsa Nasdaq",
+        "Nasdaq Composite",
+        "índice Nasdaq"
+      ],
+      "questions": [
+        "¿Qué es Nasdaq?",
+        "¿Nasdaq es una bolsa o un índice?",
+        "¿Nasdaq Composite y Nasdaq-100 son iguales?"
+      ],
+      "summary": "Nasdaq puede referirse a la bolsa Nasdaq; también aparece en los nombres de índices distintos, como Nasdaq Composite y Nasdaq-100.",
+      "explanation": "Un mercado organiza la negociación de valores; un índice resume un conjunto seleccionado. El Composite y el Nasdaq-100 no son el mismo índice: el segundo selecciona grandes empresas no financieras cotizadas en Nasdaq.",
+      "example": "Si alguien dice «subió el Nasdaq», conviene preguntar de qué índice habla; no está comprando o vendiendo la bolsa como si fuera una acción.",
+      "cautions": "No confundas el nombre de una bolsa, un índice y un ETF que busca seguir un índice.",
+      "related_ids": [
+        "nasdaq100",
+        "indice-bursatil",
+        "bolsa-valores"
+      ],
+      "sources": [
+        {
+          "source_id": "nasdaq:composite-vs-100",
+          "title": "Nasdaq Composite vs. Nasdaq-100: What Investors Should Know",
+          "url": "https://www.nasdaq.com/newsroom/nasdaq-composite-vs-nasdaq-100-what-investors-should-know",
+          "provider": "Nasdaq",
+          "reviewed_on": "2026-11-04"
+        },
+        {
+          "source_id": "inv:markets",
+          "title": "How Stock Markets Work — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/how-stock-markets-work",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "id": "empezar-invertir",
+      "title": "primeros pasos para entender la inversión",
+      "category": "planificacion",
+      "aliases": [
+        "empezar a invertir",
+        "cómo empezar",
+        "dinero para invertir",
+        "mínimo para invertir"
+      ],
+      "questions": [
+        "¿Cuánto dinero necesito para empezar a invertir?",
+        "¿Cómo empiezo a invertir en bolsa?",
+        "¿Qué necesito aprender antes de comprar una acción?"
+      ],
+      "summary": "Para estudiar cómo empezar conviene aclarar la meta, el tiempo disponible y los riesgos, además de cómo funciona una cuenta de inversión.",
+      "explanation": "Distingue el mínimo que puede exigir un intermediario de la cantidad que una persona decide destinar. Revisa condiciones de la cuenta, costes y riesgos del producto antes de interpretar una cifra aislada.",
+      "example": "Podemos comenzar con una pregunta: ¿qué quieres entender primero, cómo funciona una acción o cómo revisar una cuenta y sus costes?",
+      "cautions": "Esta biblioteca no fija un importe personal para invertir ni confirma requisitos actuales de una cuenta; país, entidad y producto requieren verificación.",
+      "related_ids": [
+        "horizonte",
+        "riesgo",
+        "brokers",
+        "comisiones"
+      ],
+      "sources": [
+        {
+          "source_id": "inv:time-horizon",
+          "title": "Time Horizon — Investor.gov",
+          "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/time-horizon",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        },
+        {
+          "source_id": "inv:select-professional",
+          "title": "How to Select an Investment Professional",
+          "url": "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/investor-0",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        },
+        {
+          "source_id": "inv:investment-fees",
+          "title": "How Fees and Expenses Affect Your Investment Portfolio",
+          "url": "https://www.investor.gov/sites/default/files/ib_fees_expenses.pdf",
+          "provider": "SEC / Investor.gov",
+          "reviewed_on": "2026-11-04"
+        }
+      ]
+    }
+  ]
+}

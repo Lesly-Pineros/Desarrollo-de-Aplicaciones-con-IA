@@ -7,3 +7,7 @@ REQ-002: función pura en `ml/exploration.py` transforma features con el scaler 
 REQ-003: handler determinista representa tabla y criterios, período, fecha de cálculo, fuentes locales y límite histórico. El nivel de volatilidad es una preferencia para explorar, no un diagnóstico de perfil. Plazo y tipo no alteran métricas. Narración opcional mantiene el bloque factual protegido existente. Errores no revelan rutas locales completas ni excepciones del proveedor.
 
 REQ-004: botón persistente en web envía la intención por el mismo chat. Sin formularios nuevos. Pruebas con KMeans real entrenado sobre datos sintéticos etiquetados como fixture, modelos aprobados/rechazados, criterios completos/incompletos, interrupción y regreso. ADR-001/003/004/005 conservadas; módulos Python y estado acotado bastan, por lo que LangGraph no aporta una necesidad actual.
+
+REQ-005: ajustar el texto de cada aclaración para ofrecer ejemplos de respuestas breves sin cambiar el contrato tipado ni persistir preferencias. El símbolo se mantiene opcional y la selección/cálculo de cifras sigue siendo determinista; solo la redacción final puede usar NVIDIA.
+
+REQ-006: el acceso y sugerencia «Recomendaciones guiadas» envían un prompt reconocido por `resolve_exploration`; reutilizan conversación, estado pendiente, modelo aprobado y representación de métricas. La navegación conserva accesos independientes a noticias y al snapshot sectorial NASDAQ; las sugerencias iniciales conducen a esos mismos tres modos.

@@ -9,7 +9,7 @@
 ## Evidencia ejecutada
 
 - Suite offline: `41 passed`; incluye golden locales y ciclo stdio simulado. No usa proveedores reales.
-- MCP SEC live: `1 passed`; `sec_filings(AAPL, limit=2)` consultó EDGAR real y devolvió enlaces SEC. La prueba heredada SEC live también pasó.
+- MCP SEC live: `1 passed`; `sec_filings(AAPL, limit=2)` consultó la fuente real y devolvió enlaces SEC. La prueba heredada SEC live también pasó.
 - Integración histórica yfinance live: `RUN_LIVE_INTEGRATION=1 .venv/bin/python -m pytest -q tests/integration/test_yfinance_live.py` → `1 passed`.
 - Validador: `Spec SDD válida: specs/fase4-hardening`.
 - Compilación estática: `python -m compileall -q src tests` completó sin errores.

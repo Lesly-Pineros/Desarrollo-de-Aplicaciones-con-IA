@@ -200,7 +200,7 @@ Todos los enlaces siguientes son HTTPS y su revisión corresponde al **2026-11-0
 | `inv:compound-interest` | [Compound Interest — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/glossary/compound-interest) |
 | `inv:diversification` | [Diversification — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/glossary/diversification) |
 | `inv:dividend` | [Dividend — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/glossary/dividend) |
-| `inv:edgar` | [EDGAR — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/glossary/edgar) |
+| `inv:informes-sec` | [Investor.gov: información sobre documentos públicos](https://www.investor.gov/introduction-investing/investing-basics/glossary/edgar) |
 | `inv:eps` | [Earnings Per Share](https://www.investor.gov/introduction-investing/investing-basics/glossary/earnings-share) |
 | `inv:etf` | [Exchange-Traded Fund — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/glossary/exchange-traded-fund-etf) |
 | `inv:expense-ratio` | [Expense Ratio — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/glossary/expense-ratio) |

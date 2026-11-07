@@ -14,10 +14,10 @@ from investiq.instruments import INSTRUMENT_BY_SYMBOL
 from investiq.providers.sec import sec_docs
 from investiq.settings import Settings
 
-SERVER_INFO = {"name": "investiq-sec-edgar", "version": "0.2.0"}
+SERVER_INFO = {"name": "investiq-sec-filings", "version": "0.2.0"}
 TOOL = {
     "name": "sec_filings",
-    "description": "Consulta filings verificables de SEC EDGAR para un símbolo cubierto.",
+    "description": "Consulta filings verificables de la SEC para un símbolo cubierto.",
     "inputSchema": {
         "type": "object",
         "properties": {
@@ -46,7 +46,7 @@ def _tool_result(arguments: Any, settings: Settings,
         with Session(engine) as session:
             filings, reason = fetch(session, symbol, settings, limit=limit)
     except Exception:
-        return {"isError": True, "content": [{"type": "text", "text": "No se pudo completar la consulta SEC EDGAR."}]}
+        return {"isError": True, "content": [{"type": "text", "text": "No se pudo completar la consulta de filings de la SEC."}]}
     payload = {
         "symbol": symbol,
         "filings": [item.model_dump(mode="json") if isinstance(item, FilingItem) else item for item in filings],

@@ -40,7 +40,7 @@ El score inicial de comparación normaliza solo criterios disponibles y usa peso
 
 - `market_quote(symbol, as_of) -> QuoteResult`: valor, variación, fecha, proveedor, stale/delay y `PriceCacheEntry`.
 - `news(symbol, query) -> list[NewsRef]`: titular, resumen/fuente original, publicación, retraso y `NewsCacheEntry`.
-- `sec_docs(symbol, form_types, limit) -> list[FilingRef]`: accession, formulario, fecha y enlace EDGAR.
+- `sec_docs(symbol, form_types, limit) -> list[FilingRef]`: accession, formulario, fecha y enlace al filing.
 - `instr_features(symbol) -> InstrumentFeatures`: retornos, volatilidad, correlación, beta, sector, fecha/horizonte y run del modelo.
 - `volatility_bucket(target) -> list[InstrumentFeatures]`: candidatos por tercil determinista.
 - `similar_instruments(ref, top_n) -> list[InstrumentFeatures]`: vecinos del clúster evaluado ordenados por distancia.
@@ -53,7 +53,7 @@ Los resultados de tools son modelos Pydantic y contienen identificadores/enlaces
 - ChatNVIDIA es obligatorio; `NVIDIA_API_KEY`, `NVIDIA_MODEL`, timeout y presupuesto máximo de tokens se configuran por entorno/secret manager.
 - Twelve Data es opcional para cotización; caché de 15 min; cuota limitada internamente a 8/min y 800/día. Fallback: último precio histórico yfinance, rotulado con su fecha; sin dato, no se calcula variación.
 - Marketaux es opcional para noticias; caché configurable 6–12 h por símbolo y quince minutos por día/filtros para titulares. Sin key se declara la falta de fuente. ADR-006 sustituye la antigua suposición de retraso fijo de 24 h por fechas y aviso de caché desactualizada, según documentación actual (100 peticiones/día, tres artículos/petición y acceso inmediato).
-- SEC EDGAR no requiere key. El cliente usa `User-Agent` identificable con contacto configurado (por ejemplo, `SEC_USER_AGENT`) y rate limit ≤10 req/s. Filing unavailable o CIK sin mapping se informa explícitamente.
+- La consulta de filings SEC no requiere key. El cliente usa `User-Agent` identificable con contacto configurado (por ejemplo, `SEC_USER_AGENT`) y rate limit ≤10 req/s. La falta de filings o de identificador para el símbolo se informa explícitamente.
 - Las cachés preservan último dato válido ante timeout/cuota y nunca lo presentan como actual si caducó.
 
 ## Determinista y LLM

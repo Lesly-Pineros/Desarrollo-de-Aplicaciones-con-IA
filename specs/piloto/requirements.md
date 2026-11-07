@@ -5,7 +5,7 @@
 - **Usuarios:** una persona usuaria en una instalación local; la app abre directamente sin login.
 - **Alcance:** 20 instrumentos cotizados en EE. UU.; UI Streamlit, orquestación Python simple, tools deterministas, ChatNVIDIA, fuentes citadas y persistencia local SQLite.
 - **Exclusiones:** asesoría o ejecución de operaciones, cartera/conexión a broker, cobertura de instrumentos fuera de la lista, multiusuario/roles, despliegue cloud, LangGraph/FastAPI, y dependencia obligatoria de Twelve Data o Marketaux.
-- **Datos y frescura:** yfinance para histórico batch de investigación; Twelve Data y Marketaux son opcionales; SEC EDGAR es la fuente oficial de filings. La respuesta expone fuente y fecha/hora de los datos.
+- **Datos y frescura:** yfinance para histórico batch de investigación; Twelve Data y Marketaux son opcionales; la SEC es la fuente oficial de filings. La respuesta expone fuente y fecha/hora de los datos.
 
 ## Universo aprobado del piloto
 
@@ -71,7 +71,7 @@ La inclusión solo fija cobertura del producto y del pipeline; no constituye una
 
 ### REQ-004 — Consultar filings oficiales SEC
 
-**EARS:** Cuando se soliciten documentos de una compañía cubierta, el sistema deberá buscar filings pertinentes en SEC EDGAR y devolver referencias verificables.
+**EARS:** Cuando se soliciten documentos de una compañía cubierta, el sistema deberá buscar filings pertinentes en la SEC y devolver referencias verificables.
 
 **Criterios de aceptación:**
 
@@ -193,7 +193,7 @@ La inclusión solo fija cobertura del producto y del pipeline; no constituye una
 |---|---|
 | 2026-11-01 | Spec inicial EARS, backlog de implementación y universo de 20 instrumentos aprobados para el piloto v0.1. |
 | 2026-11-01 | Fase 1 completada: universo cotejado con el catálogo de Fase 2 y trazabilidad REQ/TASK validada. |
-| 2026-11-01 | Implementación Fase 3: app local, auth, router/tools, trazabilidad y tests. La suite y smoke pasan; SEC EDGAR y yfinance se verificaron en vivo. ChatNVIDIA y demo end-to-end pendientes de rotar la clave y repetir el test. |
+| 2026-11-01 | Implementación Fase 3: app local, auth, router/tools, trazabilidad y tests. La suite y smoke pasan; filings SEC y yfinance se verificaron en vivo. ChatNVIDIA y demo end-to-end pendientes de rotar la clave y repetir el test. |
 | 2026-11-04 | Por solicitud del usuario, se elimina el login del piloto local; la app abre directamente y conserva preferencias/trazas bajo una identidad local anónima. |
 | 2026-11-04 | Conversación con contexto y preferencias por chat detalladas en specs/conversacion-preferencias; sidebar informativa y catálogo de símbolos. |
 | 2026-11-04 | Guía de tono, narración factual validada, memoria resumida opcional y comprensión semántica con evidencia detalladas en specs/agente-amigable; NIM live pendiente. |

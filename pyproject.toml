@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "investiq"
-version = "0.1.0"
+version = "0.2.0"
 description = "Agente educativo financiero con web local y herramientas verificables"
 requires-python = ">=3.11"
 dependencies = [
@@ -22,13 +22,11 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
-legacy-ui = ["streamlit>=1.40"]
 
 [project.scripts]
 investiq-data = "investiq.ml.pipeline:main"
 investiq-app = "investiq.web.server:main"
 investiq-web = "investiq.web.server:main"
-investiq-streamlit = "investiq.legacy_ui:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

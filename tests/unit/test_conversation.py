@@ -321,7 +321,7 @@ def test_pending_comparison_survives_serialization_and_an_educational_interrupti
     assert restored.pending_field is None
 
 
-def test_history_is_bounded_and_can_be_restored_between_streamlit_reruns(chat):
+def test_history_is_bounded_and_can_be_restored_between_requests(chat):
     for _ in range(7):
         ask(chat, "Hola")
 

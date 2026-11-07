@@ -73,22 +73,23 @@
       <button id="mobile-new-conversation" class="icon-button mobile-new" aria-label="Nueva conversación"><svg class="icon"><use href="#icon-plus"/></svg></button>
     </header>
 
-    <nav class="branch-navigation" aria-label="Consultas de mercado">
+    <nav class="branch-navigation" aria-label="Modos de exploración">
       <button id="open-news" class="branch-action" type="button" data-prompt="¿Cuáles son las últimas noticias del mercado hoy?">Noticias de hoy</button>
-      <button id="open-exploration" class="branch-action" type="button" data-prompt="Quiero una recomendación educativa para invertir">Explorar acciones y ETF</button>
-      <button id="open-sectors" class="branch-action" type="button" data-prompt="¿Qué sectores lideran hoy?">Sectores de hoy</button>
+      <button id="open-recommendations" class="branch-action" type="button" data-prompt="Quiero una recomendación guiada para invertir">Recomendaciones guiadas</button>
+      <button id="open-sectors" class="branch-action" type="button" data-prompt="¿Qué sectores lideran hoy en NASDAQ?">Sectores de hoy · NASDAQ</button>
     </nav>
 
     <div id="conversation-scroll" class="conversation-scroll">
       <section id="welcome" class="welcome" aria-labelledby="welcome-title">
         <div class="welcome-symbol" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M32 9v46M9 32h46M16 16l32 32M16 48l32-32"/></svg></div>
         <h1 id="welcome-title">Entender es un<br><em>buen comienzo.</em></h1>
-        <p class="welcome-copy">Hablemos de acciones, ETF y esas palabras<br class="desktop-break"> que parecen más complicadas de lo que son.</p>
+        <p class="welcome-copy">Hablemos de acciones, ETF y sus métricas.<br class="desktop-break"> Puedes consultar cualquier símbolo del catálogo.</p>
         <div class="starting-points" aria-label="Ideas para empezar">
-          <p>¿Por dónde empezamos?</p>
-          <button class="suggestion" data-prompt="Estoy empezando. ¿Qué es un ETF?" type="button"><span>Estoy empezando, ¿qué es un ETF?</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
-          <button class="suggestion" data-prompt="¿Qué es AAPL?" type="button"><span>Me gustaría conocer una acción</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
-          <button class="suggestion" data-prompt="¿Cómo puedo comparar dos instrumentos?" type="button"><span>Quiero aprender a comparar</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
+          <p>Elige por dónde empezar</p>
+          <button class="suggestion" data-prompt="Quiero una recomendación guiada para invertir" type="button"><span>Guiarme para explorar acciones y ETF</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
+          <button class="suggestion" data-prompt="¿Quieres conocer las métricas de una acción o ETF?" type="button"><span>¿Quieres conocer las métricas de una acción o ETF?</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
+          <button class="suggestion" data-prompt="¿Qué sectores lideran hoy en NASDAQ?" type="button"><span>Ver sectores de hoy en NASDAQ</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
+          <button class="suggestion" data-prompt="¿Cuáles son las últimas noticias del mercado hoy?" type="button"><span>Consultar noticias de hoy</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
         </div>
       </section>
       <section id="messages" class="messages" aria-label="Mensajes de la conversación" aria-live="polite" aria-relevant="additions" hidden></section>

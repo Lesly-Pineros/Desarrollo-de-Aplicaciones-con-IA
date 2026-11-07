@@ -6,7 +6,7 @@ El backlog está aprobado; las tareas se ejecutan después de esta fase y no imp
 |---|---|---|---|---|
 | TASK-001 | Sincronizar catálogo de 20 instrumentos y validar cobertura/normalización | REQ-002, REQ-006, REQ-007 | Catálogo comparte `INSTRUMENTS`; suite existente Fase 2 | Implementado; validación focal pendiente |
 | TASK-002 | Implementar `market_quote`, proveedor opcional, caché y fallback histórico | REQ-001, REQ-003 | `test_phase3_providers.py` prueba fallback histórico; Twelve Data live requiere key opcional | Implementado; local verificado |
-| TASK-003 | Implementar `news` Marketaux y `sec_docs` EDGAR con caché/rate limit | REQ-001, REQ-003, REQ-004 | `test_phase3_providers.py` no-red sin credenciales; prueba SEC EDGAR live pasa | Implementado; SEC live verificado |
+| TASK-003 | Implementar `news` Marketaux y `sec_docs` SEC con caché/rate limit | REQ-001, REQ-003, REQ-004 | `test_phase3_providers.py` no-red sin credenciales; prueba SEC live pasa | Implementado; SEC live verificado |
 | TASK-004 | Crear glosario determinista y nodo Educador | REQ-005, REQ-010 | Tests de respuesta educativa y golden de intención en `test_phase3_orchestration.py` | Implementado; offline verificado |
 | TASK-005 | Integrar `instr_features`, `volatility_bucket` y `similar_instruments` del artefacto Fase 2 | REQ-006, REQ-007 | Reutiliza herramientas/artefactos Fase 2; cobertura directa de rutas parcial | Implementado; validación parcial |
 | TASK-006 | Implementar preferencias conversacionales y score determinista opcional | REQ-008 | Tests de preferencias y comparación real en `test_conversation.py`; detalle en specs/conversacion-preferencias | Implementado; offline verificado |

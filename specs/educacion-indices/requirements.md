@@ -20,7 +20,7 @@
 
 **EARS:** Cuando se ejecute la entrada principal de la aplicación, el sistema deberá abrir el servidor de la web HTML/CSS/JS existente sin importar ni requerir Streamlit.
 
-**Criterios de aceptación:** `run_web.sh` e `investiq-app` apuntan al servidor web; Streamlit queda como extra opcional para la alternativa heredada; tests de esa alternativa se ejecutan solo si está instalada; README distingue instalación principal, extra legado y direcciones locales. Sin promesas de hosting gratuito ni despliegue en esta tarea.
+**Criterios de aceptación:** `run_web.sh`, `investiq-app` e `investiq-web` apuntan al servidor web; no se instala ni mantiene un frontend heredado. README documenta solo la instalación y dirección local vigentes. Sin promesas de hosting gratuito ni despliegue en esta tarea.
 
 ## Changelog
 

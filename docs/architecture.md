@@ -11,8 +11,6 @@ Los módulos de esta tabla están bajo `src/investiq/`.
 | `web/server.py` | HTTP local y API del mismo origen, validación y recursos estáticos permitidos. |
 | `web/service.py`, `web/sessions.py` | Adaptación al agente, controles de memoria y sesiones temporales acotadas. |
 | `web/static/` | Web HTML/CSS/JS, catálogo, chat y tipografías locales. |
-| `app.py` | Interfaz Streamlit heredada, disponible como alternativa local. |
-| `legacy_ui.py` | Entrada opcional que inicia la CLI Streamlit, sin importarla en la web principal. |
 | `conversation.py` · `answer_turn` | Fachada de cada turno: coordina controles, preferencias, aclaraciones y consulta de dominio. |
 | `dialogue/commands.py` | Comandos de memoria, nivel de explicación y controles conversacionales. |
 | `dialogue/state.py` | Actualización del contexto del turno y limpieza de la consulta pendiente. |
@@ -43,7 +41,7 @@ La biblioteca separa conceptos educativos de datos de mercado y de memoria perso
 
 ## Flujo de un turno
 
-1. La web envía el mensaje a su API local. El servicio obtiene una sesión de base propia y entrega el estado a `answer_turn`; Streamlit conserva su adaptador directo. Los controles de memoria y nivel se atienden antes de una consulta financiera.
+1. La web envía el mensaje a su API local. El servicio obtiene una sesión de base propia y entrega el estado a `answer_turn`. Los controles de memoria y nivel se atienden antes de una consulta financiera.
 2. El flujo de preferencias valida si el mensaje expresa un criterio de la persona. Una pregunta educativa, una cita o un texto de terceros conserva su procedencia. Una aclaración pendiente puede completarse con una respuesta corta; un cambio de tema actualiza el contexto.
 3. Cuando hace falta una consulta de dominio, `answer_query` obtiene la ruta. Para educación llama al tutor: este recupera pasajes y opcionalmente los entrega a `ChatNVIDIAClient.teach`; los handlers ejecutados directamente conservan la respuesta educativa determinista. Para mercado, las herramientas aportan datos y referencias y los cálculos permanecen deterministas.
 4. La generación educativa produce párrafos con evidencia literal y referencias a los pasajes suministrados. Se comprueban citas, spans, cifras, entidades y patrones de riesgo; la validación no garantiza verdad semántica. Sin evidencia se reconoce el límite; sin modelo o ante salida dudosa se usa una explicación local revisada. La narración de mercado conserva su bloque factual protegido y conectores controlados, sin adoptar el contrato educativo más flexible.
@@ -63,7 +61,7 @@ La web muestra accesos persistentes y botones para resumir noticias. `AssistantR
 
 | Información | Ubicación y uso |
 |---|---|
-| Historial literal visible | Sesión temporal del servidor web asociada a cookie; hasta 80 mensajes y dos horas de inactividad. La alternativa Streamlit conserva su propia sesión. |
+| Historial literal visible | Sesión temporal del servidor web asociada a cookie; hasta 80 mensajes y dos horas de inactividad. |
 | Tema, símbolos, campo pendiente y nivel | Recuerdo opcional estructurado en la base, sanitizado y con expiración configurable. |
 | Criterios de exploración y filtros de noticias | Valores canónicos de la consulta; no equivalen a preferencias financieras guardadas. |
 | Hasta tres noticias y sus selecciones | Estado temporal de la sesión; se excluyen de memoria persistente y RAG. |
@@ -91,6 +89,6 @@ Verifica el cambio en el componente que lo posee: rutas, resultados de handlers 
 
 El [README](../README.md#validar-sin-acceder-a-proveedores-reales) mantiene los comandos de regresión, validación SDD y diagnóstico. Los resultados vigentes están en [PLAN.md](../PLAN.md) y [specs/agente-modular/tasks.md](../specs/agente-modular/tasks.md).
 
-Las pruebas offline comprueban lógica local, proveedores simulados, servicio/API web y Streamlit mediante AppTest. La revisión en Chrome comprueba la web renderizada y sus interacciones con una base temporal. La integración con NVIDIA y la evaluación cualitativa del tono requieren el entorno conectado y su activación explícita. Un resultado offline no demuestra el comportamiento del modelo real. Las [skills de diseño](design-skills.md) ayudan a desarrollar y revisar estos componentes; no se cargan como dependencia del agente.
+Las pruebas offline comprueban lógica local, proveedores simulados y el servicio/API web. La revisión en Chrome comprueba la web renderizada y sus interacciones con una base temporal. La integración con NVIDIA y la evaluación cualitativa del tono requieren el entorno conectado y su activación explícita. Un resultado offline no demuestra el comportamiento del modelo real. Las [skills de diseño](design-skills.md) ayudan a desarrollar y revisar estos componentes; no se cargan como dependencia del agente.
 
 El frontend local sigue [ADR-004](../decisions/ADR-004-web-local.md). La API usa la biblioteca estándar en el mismo proceso Python. Las sesiones temporales se bloquean por conversación; la memoria y preferencias persistentes siguen compartidas por instalación. El servidor permite solo loopback y exige origen local en POST; no ofrece autenticación ni un servicio público.

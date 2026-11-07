@@ -19,7 +19,7 @@ Intent = Literal[
 PendingField = Literal[
     "mode", "volatility", "reference", "comparison_symbols", "comparison_preference", "preference_beta",
     "education_topic",
-    "sector_market",
+    "sector_market", "instrument_symbol",
     "news_scope", "explore_kind", "explore_horizon", "explore_volatility", "explore_reference", "explore_sector",
 ]
 

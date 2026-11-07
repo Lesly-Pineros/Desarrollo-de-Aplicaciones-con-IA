@@ -74,7 +74,7 @@ def _answer_turn(session: Session, email: str, query: str, settings: Settings,
 
     base = (RouterDecision(intent="market_news", news_selection=news_selection_id)
             if news_selection_id else fallback_route(query))
-    concept_question = base.intent not in {"sector_performance", "market_news", "explore"} and is_educational_question(query)
+    concept_question = base.intent not in {"sector_performance", "market_news", "explore", "instrument_info"} and is_educational_question(query)
     educational_question = concept_question or base.intent == "instrument_info"
     if concept_question:
         base = RouterDecision(intent="education", education_topic=query)

@@ -613,27 +613,27 @@
       ]
     },
     {
-      "id": "edgar",
-      "title": "EDGAR",
+      "id": "informes-sec",
+      "title": "Informes públicos de empresas",
       "category": "analisis",
       "aliases": [
-        "sec filings",
+        "filings de la SEC",
         "documentos sec",
         "informes oficiales de empresas"
       ],
       "questions": [
         "¿Dónde encuentro informes de una empresa estadounidense?",
-        "¿Qué es EDGAR?"
+        "¿Dónde consulto los informes públicos de una empresa?"
       ],
-      "summary": "EDGAR es el sistema de la SEC que permite consultar documentos públicos de empresas.",
+      "summary": "La SEC publica documentos regulatorios presentados por empresas estadounidenses.",
       "explanation": "Incluye documentos de registro, folletos e informes periódicos que ayudan a estudiar actividad y finanzas.",
       "example": "Consultar el documento original permite distinguir información de la empresa y comentarios de terceros.",
       "cautions": "Que un documento esté presentado no equivale a aprobación de una inversión ni verifica la actualidad de una cifra fuera de su fecha.",
       "related_ids": [],
       "sources": [
         {
-          "source_id": "inv:edgar",
-          "title": "EDGAR — Investor.gov",
+          "source_id": "inv:informes-sec",
+          "title": "Investor.gov: informes públicos de empresas",
           "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/edgar",
           "provider": "SEC / Investor.gov",
           "reviewed_on": "2026-11-04"

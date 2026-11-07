@@ -6,7 +6,7 @@ from sqlmodel import Session
 from investiq.conversation import answer_turn
 from investiq.data.database import create_db, make_engine
 from investiq.data.models import UserPreference
-from investiq.domain import ConversationState, Narration, RouterDecision
+from investiq.domain import ConversationState, Narration, QuoteResult, RouterDecision, SourceReference
 from investiq.memory import load_memory
 from investiq.responses import DISCLAIMER
 from investiq.routing import fallback_route, route_query
@@ -19,10 +19,17 @@ def chat(tmp_path, monkeypatch):
     settings = Settings(_env_file=None, nvidia_api_key=None, twelve_data_api_key=None,
                         marketaux_api_key=None, sec_user_agent="")
 
-    def unexpected_provider(*args, **kwargs):
-        pytest.fail("Definitions and capabilities must not request market data")
+    quote_source = SourceReference(source_id="quote:fixture", title="Cotización fixture",
+                                  url="local://quote-fixture", provider="fixture")
+    monkeypatch.setattr("investiq.handlers.market_quote_tool", lambda session, symbol, settings: QuoteResult(
+        symbol=symbol, price=100, change_abs=1, change_pct=1, provider="fixture", delayed=True,
+        source=quote_source,
+    ))
 
-    for tool in ("market_quote_tool", "news_tool", "sec_docs_tool"):
+    def unexpected_provider(*args, **kwargs):
+        pytest.fail("Catalog lookups must not request news or SEC data")
+
+    for tool in ("news_tool", "sec_docs_tool"):
         monkeypatch.setattr(f"investiq.handlers.{tool}", unexpected_provider)
     with Session(engine) as session:
         yield session, settings, ConversationState()
@@ -53,7 +60,7 @@ def test_screenshot_sequence_answers_each_question_instead_of_repeating_menu(cha
     assert instrument.intent == "instrument_info" and instrument.status == "ok"
     assert "Apple" in instrument.answer and "símbolo bursátil" in instrument.answer
     assert instrument.sources[0].url == "local://catalogue/AAPL"
-    assert instrument.tools_used == ["instrument_catalogue", "knowledge_search"]
+    assert instrument.tools_used == ["instrument_catalogue", "market_quote", "instr_features", "knowledge_search"]
 
     capabilities = ask(chat, "que mas puedes hacer")
     assert capabilities.intent == "unknown" and capabilities.status == "ok"
@@ -73,12 +80,13 @@ def test_screenshot_sequence_answers_each_question_instead_of_repeating_menu(cha
     ("¿Qué es Invesco QQQ ETF?", "QQQ", "Invesco QQQ ETF"),
     ("Defíneme AAPL", "AAPL", "Apple"),
 ])
-def test_instrument_definition_is_a_catalogue_lookup(chat, query, symbol, name):
+def test_instrument_definition_includes_available_metrics(chat, query, symbol, name):
     response = ask(chat, query)
     assert response.intent == "instrument_info"
     assert symbol in response.answer and name in response.answer
     assert response.sources[0].source_id == f"catalogue:{symbol}"
-    assert "precio" not in response.answer.casefold()
+    assert "cotización y métricas disponibles" in response.answer.casefold()
+    assert "métricas históricas: todavía no hay características locales calculadas" in response.answer.casefold()
 
 
 @pytest.mark.parametrize("query", [

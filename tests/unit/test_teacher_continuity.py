@@ -6,7 +6,7 @@ from sqlmodel import Session
 from investiq.conversation import answer_turn
 from investiq.data.database import create_db, make_engine
 from investiq.data.models import UserPreference
-from investiq.domain import ConversationState, RouterDecision
+from investiq.domain import ConversationState, QuoteResult, RouterDecision, SourceReference
 from investiq.knowledge import get_library
 from investiq.memory import load_memory
 from investiq.responses import DISCLAIMER
@@ -21,10 +21,16 @@ def classroom(tmp_path, monkeypatch):
     settings = Settings(_env_file=None, nvidia_api_key=None, twelve_data_api_key=None,
                         marketaux_api_key=None, sec_user_agent="")
 
+    monkeypatch.setattr("investiq.handlers.market_quote_tool", lambda session, symbol, settings: QuoteResult(
+        symbol=symbol, price=100, provider="fixture", delayed=True,
+        source=SourceReference(source_id=f"quote:{symbol}", title=f"Fixture {symbol}",
+                               url="local://fixture", provider="fixture"),
+    ))
+
     def blocked(*args, **kwargs):
         pytest.fail("Lessons must work without model construction or market services")
 
-    for tool in ("market_quote_tool", "news_tool", "sec_docs_tool"):
+    for tool in ("news_tool", "sec_docs_tool"):
         monkeypatch.setattr(f"investiq.handlers.{tool}", blocked)
     monkeypatch.setattr("investiq.conversation.ChatNVIDIAClient", blocked)
     with Session(engine) as session:

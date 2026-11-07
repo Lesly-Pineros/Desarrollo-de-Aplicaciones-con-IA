@@ -114,8 +114,8 @@ def test_indicator_example_keeps_its_topic_after_restoring_memory(classroom):
 def test_current_sector_question_asks_market_and_admits_missing_feed(classroom):
     response = ask(classroom, SECTORS)
     assert response.intent == "sector_performance" and response.status == "degraded"
-    assert "¿De qué mercado" in response.answer
-    assert "no tengo un ranking sectorial actual" in response.answer
+    assert "Estados Unidos/NASDAQ" in response.answer
+    assert "no tienen una fuente conectada" in response.answer
     assert not response.sources and not response.tools_used
     assert classroom[2].pending_field == "sector_market"
     restored = load_memory(classroom[0], "local").state
@@ -144,7 +144,7 @@ def test_combined_message_answers_comparison_and_preserves_market_question(class
     response = ask(classroom, LONG_TERM + SECTORS + "&#x20;")
     assert response.intent == "sector_performance" and response.status == "degraded"
     assert "no hay un ganador universal" in response.answer.casefold()
-    assert "¿De qué mercado" in response.answer
+    assert "Estados Unidos/NASDAQ" in response.answer
     assert response.sources and response.answer.count(DISCLAIMER) == 1
     assert classroom[2].pending_field == "sector_market"
     assert educational_part(LONG_TERM + SECTORS) == LONG_TERM

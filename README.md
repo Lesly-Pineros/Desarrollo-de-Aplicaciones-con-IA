@@ -27,7 +27,7 @@ Edita `.env` en tu equipo:
 |---|---|
 | `NVIDIA_API_KEY` | Activa clasificación y redacción con NVIDIA. Sin ella funciona el modo local disponible. |
 | `NVIDIA_MODEL` | Modelo solicitado al proveedor; debe estar disponible para tu cuenta. |
-| `SEC_USER_AGENT` | Nombre de la app y correo real de contacto para consultar SEC EDGAR. Sustituye el ejemplo. |
+| `SEC_USER_AGENT` | Nombre de la app y correo real de contacto para consultar filings de la SEC. Sustituye el ejemplo. |
 | `DATABASE_URL` | Base local; por defecto `sqlite:///./investiq.db`. App y pipeline leen la misma configuración. |
 | `TWELVE_DATA_API_KEY` | Enriquecimiento opcional de cotizaciones. |
 | `MARKETAUX_API_KEY` | Clave propia para noticias del día por país, sector o símbolo; sin ella se informa de la falta de fuente. |
@@ -46,7 +46,7 @@ bash run_web.sh
 
 Abre `http://127.0.0.1:8000`. Detén el proceso con `Ctrl+C`. La web y su API se sirven desde el mismo proceso Python; no necesitas Node, npm ni compilar el frontend. Las fuentes y los estilos están en el repositorio y funcionan sin CDN.
 
-Este es el **frontend gratuito principal**, hecho con HTML, CSS y JavaScript, sin dependencia de Streamlit. Tras instalar o actualizar el paquete, `investiq-app` e `investiq-web` también arrancan esta web. Si tenías una instalación anterior, actualiza sus entradas con `.venv/bin/python -m pip install -e '.[dev]'`; `bash run_web.sh` utiliza directamente el código de esta copia.
+Este es el **frontend gratuito principal**, hecho con HTML, CSS y JavaScript, servido desde Python. Tras instalar o actualizar el paquete, `investiq-app` e `investiq-web` también arrancan esta web. Si tenías una instalación anterior, actualiza sus entradas con `.venv/bin/python -m pip install -e '.[dev]'`; `bash run_web.sh` utiliza directamente el código de esta copia.
 
 El lanzador detecta su propia carpeta, entra en la raíz correcta y utiliza el Python local. Puedes llamarlo desde otra carpeta indicando la ruta al script. Para elegir otro intérprete o puerto:
 
@@ -66,9 +66,7 @@ NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= SEC_USER_AG
 
 Sin Internet puedes aprender conceptos y definir símbolos del catálogo. Las consultas de mercado necesitan datos locales o acceso a sus fuentes; la app informa cuando no están disponibles. La web escucha únicamente en `127.0.0.1` o `localhost`: es un piloto local, no un servidor público.
 
-La interfaz Streamlit anterior es una alternativa opcional. Para usarla expresamente, instala `.venv/bin/python -m pip install -e '.[legacy-ui]'` y ejecuta `bash run_streamlit.sh` o `investiq-streamlit`, en `http://localhost:8501`. Esa dirección corresponde al frontend anterior. Para abrir la nueva web, usa el puerto 8000. Actualiza el código también en el equipo donde la ejecutas; las copias no se sincronizan por sí solas.
-
-El cambio está en [ADR-004](decisions/ADR-004-web-local.md). Usar el frontend local no tiene una tarifa de framework; publicarlo en Internet y el consumo de proveedores son cuestiones separadas. No se ha iniciado el despliegue cloud.
+La aplicación local usa la web HTML/CSS/JS servida por Python; no mantiene una segunda interfaz frontend. Usar esta web local no tiene una tarifa de framework; publicarla en Internet y el consumo de proveedores son cuestiones separadas. No se ha iniciado el despliegue cloud.
 
 ## Biblioteca educativa y RAG
 
@@ -84,7 +82,9 @@ Puedes seguir una lección con «No entiendo», «¿Me lo explicas con un ejempl
 
 ## Noticias y exploración guiada
 
-Los accesos **Noticias de hoy**, **Explorar acciones y ETF** y **Sectores de hoy** permanecen visibles junto al chat, también en móvil. Puedes preguntar «Últimas noticias del sector financiero en Colombia», «Noticias del sector tecnológico» o «Noticias de AAPL». Se muestran hasta tres titulares de hoy por recencia, con publicación y fuente. NVIDIA puede traducirlos y resumir el extracto al pulsar «Resumir noticia 2» o escribir «Resume la segunda». Sin modelo se conserva el original; sin extracto no se inventa un resumen. Los artículos no se guardan en la memoria personal.
+Los accesos **Noticias de hoy**, **Recomendaciones guiadas** y **Sectores de hoy · NASDAQ** permanecen visibles junto al chat, también en móvil. Las sugerencias iniciales conducen a esos tres modos. Puedes preguntar «Últimas noticias del sector financiero en Colombia», «Noticias del sector tecnológico» o «Noticias de AAPL». Se muestran hasta tres titulares de hoy por recencia, con publicación y fuente. NVIDIA puede traducirlos y resumir el extracto al pulsar «Resumir noticia 2» o escribir «Resume la segunda». Sin modelo se conserva el original; sin extracto no se inventa un resumen. Los artículos no se guardan en la memoria personal.
+
+Para consultar una acción o ETF, el acceso inicial pregunta **«¿Quieres conocer las métricas de una acción o ETF?»** y luego solicita su símbolo. La ficha reúne cotización, variación, volatilidad anualizada, beta, correlación con instrumentos similares, sector y período de cálculo, con su fuente y fecha cuando están disponibles. La cobertura de mercado es de instrumentos estadounidenses. La cotización puede ser en tiempo real si Twelve Data y el plan de la cuenta lo permiten; si no, la app identifica el dato histórico o demorado. Las métricas calculadas usan precios históricos y no son valores en tiempo real ni predicen resultados. La cotización en tiempo real requiere `TWELVE_DATA_API_KEY` y acceso habilitado por el proveedor.
 
 «¿Qué acción o ETF me recomiendas para invertir hoy?» pregunta tipo, plazo, variación histórica y referencia opcional dentro del chat. Usa el KMeans aprobado y características coherentes; presenta hasta tres candidatos para estudiar con volatilidad anualizada en porcentaje, beta, sector, grupo y fuentes del período histórico. La coincidencia del modelo no es rentabilidad ni probabilidad de ganar, y el tercil de volatilidad no constituye un perfil financiero completo. Los criterios no se guardan automáticamente como preferencias. Sin modelo/datos o coincidencias compatibles, se explica la limitación; el corto plazo no se resuelve presentando acciones o ETF como seguros.
 
@@ -140,7 +140,7 @@ Para comprobar conversaciones completas con aclaraciones, interpretación, ejemp
 NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= SEC_USER_AGENT= .venv/bin/python -m pytest -q tests/unit/test_teacher_continuity.py
 ```
 
-Los tests de la interfaz Streamlit heredada se omiten cuando no está instalado su extra; las pruebas de memoria y de la web principal siguen ejecutándose. Solo para comprobar también esa alternativa, instala `.[dev,legacy-ui]`. La web principal no necesita ese extra.
+Las pruebas offline cubren la conversación, las tools, los proveedores simulados y la web local. Para ejecutarlas instala `.[dev]`; la integración real de proveedores requiere configuración aparte.
 
 Para comprobar las especificaciones SDD, el siguiente bucle omite las plantillas y se detiene si encuentra un error:
 
@@ -154,7 +154,7 @@ Para comprobar las especificaciones SDD, el siguiente bucle omite las plantillas
 )
 ```
 
-Consulta el estado real y la trazabilidad en [PLAN.md](PLAN.md), [las tareas del profesor RAG](specs/profesor-rag/tasks.md), [la ampliación de formación](specs/formacion-trading/tasks.md), [la continuidad del profesor](specs/continuidad-profesor/tasks.md) y [las tareas de la web](specs/web-conversacional/tasks.md). Los resultados offline y las integraciones en vivo se registran por separado.
+Consulta el estado vigente y el historial de cambios en [docs/progress.md](docs/progress.md). El alcance y las decisiones están en [PLAN.md](PLAN.md); la trazabilidad por feature está en las specs de [profesor RAG](specs/profesor-rag/tasks.md), [formación](specs/formacion-trading/tasks.md), [continuidad del profesor](specs/continuidad-profesor/tasks.md) y [web](specs/web-conversacional/tasks.md). Los resultados offline y las integraciones en vivo se registran por separado.
 
 ## Verificar la web en Chrome
 
@@ -208,7 +208,7 @@ Lleva al equipo de ejecución el código actualizado completo, incluidos `src/in
 
 Git excluye `.env`, `.venv` y la SQLite local predeterminada. Los artefactos de `ml/artifacts/` sí forman parte del repositorio. En una copia nueva, carga sus datos con `all`; si trasladarás una base existente, conserva una copia de respaldo y usa el mismo conjunto de base y artefactos.
 
-## Servidor MCP SEC EDGAR
+## Servidor MCP de filings SEC
 
 Desde la raíz, con `SEC_USER_AGENT` real configurado:
 

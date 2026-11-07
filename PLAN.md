@@ -4,7 +4,7 @@
 >
 > **No es asesoría financiera.** Todo output lleva disclaimer y trazabilidad de fuente.
 
-**Estado actual consolidado (2026-11-04):** profesor financiero con biblioteca RAG local de **119 documentos, 16 categorías, 113 referencias y 20 fichas**, memoria personal separada y continuidad educativa. La web HTML/CSS/JS (`bash run_web.sh`) ofrece accesos persistentes de noticias del día, exploración de acciones/ETF y sectores. Marketaux consulta hasta tres titulares por sector/país/símbolo y fecha; NVIDIA puede traducirlos y resumir su extracto, con original y fuentes. La exploración conversa tipo/plazo/variación/referencia y usa scaler/KMeans aprobado, filtros deterministas, huella de features y métricas históricas; no predice rentabilidad ni define un perfil financiero completo. FMP opcional permite un snapshot completo de once sectores de NASDAQ, con bolsa y fecha explícitas; sin acceso/datos se conserva el límite. Verificación vigente: **704 pruebas offline**, **93 comprobaciones Chrome**, **15 specs válidas**, biblioteca y wheel verificados. HTTP/NVIDIA simulados y KMeans real sobre fixtures sintéticos; cuatro integraciones existentes omitidas. **Marketaux, FMP y NVIDIA reales siguen pendientes**. Se conserva Python plano y el mismo NVIDIA configurable; no se necesita LangGraph. Guías: [README](README.md), [ramas de mercado](docs/market-branches.md), [actualidad](specs/actualidad-mercados/tasks.md), [exploración](specs/exploracion-guiada/tasks.md) y [ADR-006](decisions/ADR-006-actualidad-y-exploracion.md). Fase 5 sin iniciar.
+**Alcance vigente:** InvestiQ es una app educativa financiera en español. Su interfaz principal es una web local HTML/CSS/JS servida por Python; el motor conserva tools locales para educación, cotizaciones/métricas de símbolos, noticias, filings y exploración guiada. No se incluye Streamlit como código o dependencia activa. Twelve Data y otras fuentes externas son opcionales y su disponibilidad depende de claves, cuota y cobertura. El estado de implementación, cambios recientes y verificaciones se mantiene por separado en [docs/progress.md](docs/progress.md). Consulta también [README](README.md), [arquitectura](docs/architecture.md) y las specs enlazadas por cada feature. Fase 5 sin iniciar.
 
 ---
 
@@ -12,20 +12,20 @@
 
 | # | Decisión | Justificación | Revisión |
 |---|----------|---------------|----------|
-| D1 | **Web local HTML/CSS/JS + API mínima en el mismo proceso Python**, sobre la orquestación existente. Streamlit queda como alternativa heredada. Ver [ADR-004](decisions/ADR-004-web-local.md) | Rediseño solicitado; control de conversación y accesibilidad sin Node ni nuevo framework | Hosting de la nueva web se revisa en fase 5 |
+| D1 | **Web local HTML/CSS/JS + API mínima en el mismo proceso Python**, sobre la orquestación existente. Streamlit fue retirado como interfaz instalable; su antiguo plan cloud queda solo como registro histórico. Ver [ADR-004](decisions/ADR-004-web-local.md) | Rediseño solicitado; control de conversación y accesibilidad sin Node ni nuevo framework | Hosting de la web se revisa en fase 5 |
 | D2 | **Single-user local sin login**; la app abre directamente y guarda preferencias/trazas bajo una identidad local fija | Acceso simple para el piloto educativo local | Auth y multiusuario diferidos |
 | D3 | **Noticias del día con caché, fecha y aviso de desactualización** | Marketaux free documentado: 100 req/día, tres artículos/petición y acceso inmediato. ADR-006 corrige el supuesto de 24 h | Condiciones de cuenta y validación live pendientes |
 | D4 | **SQLite (local) → Postgres gestionado (Neon free) en nube** vía SQLAlchemy/SQLModel | SQLite no persiste en hosting efímero; capa portable desde el día 1 | — |
 | D5 | **yfinance solo ingesta batch para ML** (offline), nunca como fuente "oficial" en vivo | yfinance es "research/educational", no respaldado por Yahoo | — |
 | D6 | **LLM: ChatNVIDIA (NVIDIA NIM / API Catalog)**, modelo **configurable**. **Único proveedor LLM; claves de datos opcionales y propias** | Free tier amplio, tool-calling y structured output | Fallback / 2º proveedor en v0.2 |
-| D7 | **Nube pendiente**: ADR-002 prevé Streamlit Community Cloud + Neon para la alternativa Streamlit. La nueva web local requiere revisar hosting según ADR-004 | El rediseño local no equivale a desplegar ni validar compatibilidad cloud | Fase 5 sin iniciar; no se selecciona otro proveedor aquí |
+| D7 | **Nube pendiente**: ADR-002 conserva Streamlit Community Cloud + Neon como plan histórico. La web implementada requiere revisar hosting según ADR-004 | El rediseño local no equivale a desplegar ni validar compatibilidad cloud | Fase 5 sin iniciar; no se selecciona otro proveedor aquí |
 | D8 | Límites de free tier = **requisitos no funcionales** (caché, cuotas, degradación). **Clave LLM para generación**; Twelve Data/Marketaux/FMP son fuentes **opcionales** y degradables según acceso de cuenta | Twelve Data 8/min·800/día; Marketaux 100/día; SEC ≤10 req/s + User-Agent | — |
 | D9 | **v0.1: orquestación en Python plano** (router + tools como funciones puras + cliente ChatNVIDIA, **sin LangGraph/LangChain**). **LangGraph en v0.2** si el flujo lo justifica | Complejidad proporcional. Ver [ADR-001](decisions/ADR-001-orquestacion.md) | LangGraph en v0.2 |
-| D10 | **Columna vertebral sin key**: yfinance (histórico/ML) + SEC EDGAR (docs). Twelve Data/Marketaux **enriquecen** y degradan si no hay key/cuota | Garantiza app funcional con una sola key (LLM) | — |
+| D10 | **Columna vertebral sin key**: yfinance (histórico/ML) + filings de la SEC. Twelve Data/Marketaux **enriquecen** y degradan si no hay key/cuota | Garantiza app funcional con una sola key (LLM) | — |
 | D11 | **ML real (clustering multi-característica)** para "instrumentos similares a X"; **clasificación de volatilidad por umbrales deterministas** (sin ML). Ver [ADR-003](decisions/ADR-003-ml.md) | "Parecido" es multidimensional (justifica ML); "baja/media/alta volatilidad" es estadística simple (no requiere ML) | Features ajustables |
 | D12 | **Profesor RAG con documentos revisados locales y TF-IDF**, generación educativa con evidencias y fallback local. Ver [ADR-005](decisions/ADR-005-profesor-rag-local.md) | Ampliar conocimiento mediante documentos; sin servicios de búsqueda alojados ni descargar embeddings | Evaluación de recuperación/generación antes de introducir otra infraestructura |
 
-**Fuentes verificadas** (oct 2026): [ChatNVIDIA/LangChain](https://python.langchain.com/docs/integrations/chat/nvidia_ai_endpoints) · [Twelve Data planes](https://twelvedata.com/docs/) · [Marketaux límites](https://www.marketaux.com/) · [SEC EDGAR fair access](https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data) · [yfinance README](https://github.com/ranaroussi/yfinance/blob/main/README.md) · [Codex customization](https://developers.openai.com/codex/concepts/customization) · [Streamlit Community Cloud](https://docs.streamlit.io/deploy/streamlit-community-cloud) · [Neon free tier](https://neon.tech/). *Contenido reformulado por cumplimiento de licencias.*
+**Fuentes verificadas** (oct 2026): [ChatNVIDIA/LangChain](https://python.langchain.com/docs/integrations/chat/nvidia_ai_endpoints) · [Twelve Data planes](https://twelvedata.com/docs/) · [Marketaux límites](https://www.marketaux.com/) · [SEC: acceso a datos de filings](https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data) · [yfinance README](https://github.com/ranaroussi/yfinance/blob/main/README.md) · [Codex customization](https://developers.openai.com/codex/concepts/customization) · [Streamlit Community Cloud](https://docs.streamlit.io/deploy/streamlit-community-cloud) · [Neon free tier](https://neon.tech/). *Contenido reformulado por cumplimiento de licencias.*
 
 ---
 
@@ -49,7 +49,7 @@ requisitos (EARS + criterios aceptación) → diseño técnico → tareas → im
 ├── PLAN.md                        # Este documento (vivo)
 ├── docs/
 │   ├── decisions/ADR-*.md         # Decisiones (1 archivo breve c/u)
-│   ├── progress.md                # Estado actual + próximo paso (≤1 pág)
+│   ├── progress.md                # Estado vigente y registro cronológico de cambios
 │   └── agentic-matrix.md          # Matriz comparativa workflows/herramientas
 ├── specs/
 │   └── <feature>/
@@ -59,7 +59,7 @@ requisitos (EARS + criterios aceptación) → diseño técnico → tareas → im
 ├── .codex/
 │   ├── skills/sdd-feature/        # Skill: andamiar una feature SDD
 │   └── agents/dev-agent.md        # Subagente de desarrollo
-├── src/investiq/                  # Web Python local + alternativa Streamlit + agente y datos
+├── src/investiq/                  # Web Python local + agente, tools y datos
 ├── ml/                            # Pipeline ML offline + artefactos
 └── tests/                         # unit / integration (marcados, ver §9)
 ```
@@ -96,7 +96,7 @@ Ejes: **Codex (elegido)** vs. alternativas de orquestación/flujo (agentes de ID
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │  Web local (ES) — chat, catálogo y memoria                   │
-│  API mínima + servicio → answer_turn (alternativa Streamlit) │
+│  API mínima + servicio → answer_turn                         │
 └───────────────┬──────────────────────────────────────────────┘
                 │ (in-process, mismo proceso Python)
 ┌───────────────▼──────────────────────────────────────────────┐
@@ -111,7 +111,7 @@ Ejes: **Codex (elegido)** vs. alternativas de orquestación/flujo (agentes de ID
 │       texto externo tratado como DATO no confiable             │
 └───┬───────────────┬───────────────┬───────────────┬───────────┘
     │               │               │               │
- Twelve Data*    Marketaux*       SEC EDGAR      LLM (ChatNVIDIA)
+ Twelve Data*    Marketaux*       Filings SEC    LLM (ChatNVIDIA)
  (cotización)    (noticias+       (docs ofic.,   (NIM, configurable,
   *opcional       sentim.)         sin key)       ÚNICA key real)
     │             *opcional
@@ -151,7 +151,7 @@ Ejes: **Codex (elegido)** vs. alternativas de orquestación/flujo (agentes de ID
 | Fuente | Uso | Key | Determinista | Límite (free) → mitigación |
 |--------|-----|-----|:---:|-----|
 | **yfinance** | **Columna vertebral**: histórico para ML + precio de respaldo | No | ✅ | Offline/batch; no es fuente "oficial" en vivo |
-| **SEC EDGAR** | **Columna vertebral**: documentos oficiales (10-K/10-Q…) | No | ✅ | ≤10 req/s + **User-Agent con contacto** obligatorio |
+| **Filings SEC** | **Columna vertebral**: documentos oficiales (10-K/10-Q…) | No | ✅ | ≤10 req/s + **User-Agent con contacto** obligatorio |
 | **ChatNVIDIA (NIM)** | Redacción/enseñanza | **Sí (única)** | ✅ LLM | Modelo configurable + límite de tokens por request |
 | **Twelve Data** | *Enriquecimiento*: cotización en vivo | Opc. | ✅ | 8/min, 800/día → caché TTL + cuota + degradar a yfinance |
 | **Marketaux** | Noticias por símbolo, sector o país y día | Opc. | ✅ | 100/día, tres artículos; caché diaria 15 min y por símbolo 6–12 h; fechas y aviso si está vencida |
@@ -163,7 +163,7 @@ Ejes: **Codex (elegido)** vs. alternativas de orquestación/flujo (agentes de ID
 - Marketaux (si hay key): noticias **caché TTL 6–12 h** por símbolo y **15 min** para el listado diario por filtros. Las dos rutas comparten una cuota total de 100/día; superar filtros o frecuencia degrada sin excederla. FMP usa una cuota local independiente de 100/día y requiere acceso al endpoint.
 - SEC: filings cacheados tras primera descarga; refresco esporádico.
 
-**Caso MCP pertinente:** exponer **SEC EDGAR como servidor MCP** (consulta de filings) para que Codex (desarrollo) y/o el runtime consuman documentos oficiales de forma estandarizada, con rate-limit y User-Agent encapsulados. EDGAR es externo al workspace; estandarizarlo vía MCP evita duplicar lógica y da trazabilidad.
+**Caso MCP pertinente:** exponer la consulta de **filings SEC como servidor MCP** para que Codex (desarrollo) y/o el runtime consuman documentos oficiales de forma estandarizada, con límite de frecuencia y User-Agent encapsulados. El servicio es externo al workspace; estandarizarlo vía MCP evita duplicar lógica y da trazabilidad.
 
 ---
 
@@ -230,10 +230,10 @@ Nodos (idénticos en v0.1 y v0.2):
 Capa SQLModel (SQLite), ingesta **yfinance** batch (20 instrumentos), features (vol, corr, beta, sector), **clustering scikit-learn** + **umbrales de volatilidad**, eval ML (silhouette/ARI), artefactos versionados. **Hito:** `similar_instruments` y `volatility_bucket` reproducibles y evaluados.
 
 ### Fase 3 — App local full-stack v0.1 (Resultados 4, 7)
-**Web local** HTML/CSS/JS y API mínima en el mismo proceso Python, sobre orquestación en **Python plano** (router + tools como funciones puras), ChatNVIDIA configurable, sin login, caché/cuotas, trazabilidad, disclaimers y mitigación de prompt-injection. Streamlit queda como alternativa. Integraciones yfinance/SEC con verificaciones históricas; Twelve Data/Marketaux opcionales. **Arranque local:** `bash run_web.sh` (SQLite). **Hito v0.1:** demo end-to-end con fuentes citadas, **un solo proceso, sin framework de grafos**. La aceptación NIM real sigue pendiente; el rediseño no la acredita.
+**Web local** HTML/CSS/JS y API mínima en el mismo proceso Python, sobre orquestación en **Python plano** (router + tools como funciones puras), ChatNVIDIA configurable, sin login, caché/cuotas, trazabilidad, disclaimers y mitigación de prompt-injection. La interfaz Streamlit anterior fue retirada; ADR-002 conserva únicamente su plan histórico de hosting. Integraciones yfinance/SEC con verificaciones históricas; Twelve Data/Marketaux opcionales. **Arranque local:** `bash run_web.sh` (SQLite). **Hito v0.1:** demo end-to-end con fuentes citadas, **un solo proceso, sin framework de grafos**. La aceptación NIM real sigue pendiente; el rediseño no la acredita.
 
 ### Fase 4 — Hardening → v0.2 (evolución)
-Debugging guiado por eval, ampliar cobertura de tests, caso **MCP SEC EDGAR**, (opcional) **extraer FastAPI** como capa API, **commits trazables** por `TASK`. **Hito v0.2:** eval en verde + MCP operativo.
+Debugging guiado por eval, ampliar cobertura de tests, caso **MCP de filings SEC**, (opcional) **extraer FastAPI** como capa API, **commits trazables** por `TASK`. **Hito v0.2:** eval en verde + MCP operativo.
 
 ### Fase 5 — Despliegue en nube GRATIS (Resultado 9)
 
@@ -251,7 +251,7 @@ Escalar de 20 → 150+50 instrumentos; multiusuario + roles (RBAC); mayor capaci
 ---
 
 ## 11. Gestión de contexto (documentos vivos y breves)
-- `docs/progress.md` (≤1 pág): *estado actual* + *próximo paso* + *bloqueos*. Se actualiza cada sesión.
+- `docs/progress.md`: *estado actual*, verificaciones, pendientes y registro de actualizaciones. Se actualiza cuando cambie el estado del proyecto.
 - `decisions/ADR-*.md`: una decisión por archivo, formato corto (ADR-001 orquestación, ADR-002 despliegue, ADR-003 ML).
 - `specs/<feature>/*`: fuente de verdad del alcance; cambios → changelog en la spec.
 - Regla: el **próximo trabajo** se detalla; los **hitos lejanos** se describen solo lo necesario para orientar.
@@ -288,23 +288,5 @@ Escalar de 20 → 150+50 instrumentos; multiusuario + roles (RBAC); mayor capaci
 
 ---
 
-### Estado
-**Estado de ejecución (2026-11-01):** Fases 0–2 completas según verificaciones previas. Fase 3 implementada: Streamlit, auth Argon2, router Python, tools/proveedores, cachés/cuotas, trazas, disclaimer y guía local disponibles. Última suite válida sin usar la clave NVIDIA actual: 34 pruebas pasan; smoke Streamlit y validador SDD pasan; SEC EDGAR y yfinance se verificaron en vivo. La Fase 3 queda **pendiente de aceptación completa**: la clave NVIDIA debe rotarse tras quedar expuesta en un traceback y luego repetirse la integración ChatNVIDIA; el demo end-to-end con LLM también queda pendiente. Próximo paso: sustituir la clave en `.env` y ejecutar `tests/integration/test_phase3_live.py`.
-
-**Actualización (2026-11-03):** Auditoría: Fases 0–2 conservan entregables y verificaciones previas; la suite unitaria actual (incluidos casos de hardening) pasa. Fase 3 está implementada, pero no puede considerarse aceptada por completo hasta rotar la clave previamente expuesta y pasar ChatNVIDIA live + demo end-to-end. SEC EDGAR y yfinance live pasaron en esta auditoría. Fase 4 ejecutada: evaluación offline ampliada, MCP SEC stdio integrado y registrado en el ejemplo de Codex. Evidencia: 41 tests offline pasan; herramienta MCP consulta SEC EDGAR real y devuelve filings verificables; validadores SDD de fases 0, 1, 2 y 4 pasan. No se extrajo FastAPI porque es opcional en el plan. Próximo paso: completar la aceptación pendiente de Fase 3 con una clave NVIDIA rotada.
-
-**Actualización (2026-11-04):** Por solicitud del usuario se retiró el login single-user. La app abre directamente y usa una identidad local fija para preferencias y trazas; las credenciales de acceso y Argon2 dejan de ser parte del piloto. Verificación posterior al cambio pendiente.
-
-**Conversación (2026-11-04):** Preferencias opcionales recogidas por chat y contexto por sesión para completar consultas entre mensajes. La sidebar presenta ayuda y catálogo de símbolos consultables. Evidencia offline: 70 pruebas pasan, incluido smoke de Streamlit; specs piloto y conversacion-preferencias válidas. No se ejecutaron APIs reales en este cambio.
-
-**Agente amigable (2026-11-04):** Guía de tono cargada por el runtime, narración en las rutas factuales con resultados protegidos, propuestas semánticas de preferencias con evidencia y memoria resumida opcional visible/borrable. Se añaden ConversationMemory y ResponseTrace sin alterar destructivamente SQLite existente. Regresión offline: 189 pruebas pasan. NIM real sigue pendiente en el entorno conectado con clave rotada; `tools/verify_agent.py --live --key-rotated` produce un informe seguro. BMAD evaluado como apoyo selectivo de UX/revisión, sin instalación ni dependencia nueva.
-
-**Depuración y documentación (2026-11-04):** se unifican normalización y procedencia antes de ambos parsers; preguntas/citas ajenas no escriben preferencias. Una comparación completa sustituye la anterior y la aclaración de beta acepta un número breve incluso tras reiniciar. La prosa que acompaña datos de mercado se limita a conectores controlados. App y pipeline usan Settings/.env y el lanzador respeta INVESTIQ_PYTHON. README y guías actualizados, regresión 223 passed y 4 integraciones omitidas sin red; siete specs SDD válidas. La organización Agent Skills enlaza un ejemplo skill-creator cuya descarga fue rechazada antes de ejecutarse: no instalado ni utilizado. Se usó sdd-feature local y se reservó una exclusión exacta de Git para la instalación futura.
-
-**Modularización (2026-11-04):** conversation y orchestration son fachadas de coordinación; dialogue separa comandos, estado, preferencias y aclaraciones, mientras routing/handlers/responses/query_log poseen sus responsabilidades. Se quitaron imports privados usados por pruebas y se trasladaron los mocks a los módulos propietarios. La revisión independiente detectó aprendizaje confundido con preferencias, META ambiguo y creación duplicada del cliente; los tres casos tienen corrección y regresiones. Se protegen además errores al iniciar el SDK para evitar exponer credenciales. Resultado: 270 pruebas offline pasan, cuatro integraciones omitidas, ocho specs válidas y sdd-feature validada. Las skills disponibles sdd-feature/skill-creator guiaron el trabajo; investiq-agent-review no se creó porque se rechazó el permiso de escritura en .agents.
-
-**Web conversacional (2026-11-04):** por solicitud del usuario se sustituye la entrada local principal por HTML/CSS/JS servido desde Python (ADR-004). Las tres skills de diseño solicitadas se descargaron y leyeron; su CLI Impeccable no arrancó por permisos de caché y se siguió la alternativa de lectura directa, sin atribuirle checks. Backend, sesiones y frontend separados; fuentes tipográficas locales con licencia. AAPL se define desde catálogo y los conceptos usan glosario trazable. La revisión independiente corrigió contraste, texto secundario pequeño y restauración de contexto olvidado desde otras ventanas. Evidencia: 338 tests offline, 38 comprobaciones Chrome, nueve capturas válidas, nueve specs y wheel construido con los siete assets actuales. Cuatro pruebas live omitidas; NIM pendiente. README incorpora arranque y validación portable. Fase 5 no iniciada; hosting de la web se revisará allí.
-
-**Continuidad del profesor (2026-11-04):** se confirmaron primero los 584 tests y 60 checks de Chrome previos. Se corrigieron pérdidas de tema en «No entiendo», ejemplos conversacionales, interpretación e importancia, ayuda general que interrumpía una lección y temas incidentales guardados sin evidencia. Diálogo, búsqueda y respaldo comparten el reconocimiento acotado en learning.py; las fichas de instrumentos admiten seguimientos educativos. El modo principiante conserva definición y ejemplo, con prioridad a la explicación cuando se solicita. Evidencia actual: 627 pruebas offline (43 nuevas), 75 comprobaciones Chrome, 13 specs y biblioteca válida de 119 documentos/16 categorías/113 referencias. Cuatro integraciones omitidas y diagnóstico NVIDIA not_run; sin llamadas reales. Requisitos, diseño, trazabilidad y límites en [continuidad-profesor](specs/continuidad-profesor/tasks.md). Cambios previos conservados; fase 5 sin iniciar.
-
-**Actualidad y exploración guiada (2026-11-04):** noticias diarias por Marketaux con filtros, fechas y cuota compartida; traducción/resumen del extracto con un intento NVIDIA y selección por ID oculto. Se corrige el supuesto fijo de 24 horas conforme a documentación actual (ADR-006). La web ofrece accesos persistentes sin formularios. El flujo de candidatos pregunta criterios, utiliza distancias del clustering aprobado y muestra volatilidad anualizada, beta, sector, grupo, período y fuentes; valida datos/modelo y conserva las preferencias explícitas. El snapshot FMP opcional exige once sectores NASDAQ del mismo día/bolsa; no representa todo Estados Unidos ni se deriva de noticias o ETF. Evidencia: 704 pruebas offline (77 nuevas), 93 checks Chrome con fuentes/modelo sintéticos para las nuevas ramas, 15 specs y wheel verificados. Las regresiones conservaron la distinción entre texto citado y solicitudes, memoria y profesor. Mercado/NVIDIA reales pendientes; claves propias requeridas para fuentes externas, sin suscripciones contratadas. Se mantiene Python plano y NVIDIA configurable, fase 5 sin iniciar.
+### Seguimiento
+El estado detallado y el historial de actualizaciones se mantienen en [docs/progress.md](docs/progress.md).

@@ -28,6 +28,10 @@ def fallback_route(query: str) -> RouterDecision:
         market = sector_market(query)
         return RouterDecision(intent="sector_performance", sector_market=market,
                               needs_clarification=market is None)
+    if (re.search(r"\b(?:metricas?|indicadores?|valores)\b", normalized)
+            and (bool(covered) or re.search(r"\b(?:accion(?:es)?|etf|simbolo|ticker)\b", normalized))):
+        return RouterDecision(intent="instrument_info", symbol=covered[0] if len(covered) == 1 else None,
+                              needs_clarification=not bool(covered))
     if is_educational_question(query):
         return RouterDecision(intent="education", education_topic=query)
     if any(word in text for word in ("compara", "comparar", "comparación", "comparacion", "diferencias entre")):

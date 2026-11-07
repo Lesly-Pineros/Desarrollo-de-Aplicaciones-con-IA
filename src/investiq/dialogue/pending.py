@@ -66,6 +66,19 @@ def resume_pending(query: str, base: RouterDecision, state: ConversationState, *
             return DialogueResolution(decision=RouterDecision(intent="education", education_topic=query),
                                       used_context=True)
         return DialogueResolution()
+    if state.pending_field == "instrument_symbol":
+        symbols = mentioned_symbols(query)
+        if len(symbols) == 1:
+            clear_pending(state)
+            return DialogueResolution(decision=RouterDecision(intent="instrument_info", symbol=symbols[0]),
+                                      used_context=True)
+        if base.intent not in {"unknown", "instrument_info"}:
+            clear_pending(state)
+            return DialogueResolution()
+        return DialogueResolution(
+            reply="Dime un símbolo del catálogo, por ejemplo AAPL, MSFT, NVDA, SPY o QQQ. También puedes elegirlo en la lista de la izquierda.",
+            used_context=True,
+        )
     if educational_question:
         return DialogueResolution(decision=base, interrupted=True)
     if state.pending_field == "news_scope":
@@ -83,12 +96,14 @@ def resume_pending(query: str, base: RouterDecision, state: ConversationState, *
         return DialogueResolution(decision=decision, used_context=True)
     if state.pending_field == "sector_market":
         market = sector_market(query)
+        if market is None and re.search(r"\b(?:si|claro|dale|ok|okay|consultemos|vamos)\b", plain(query)):
+            market = "Estados Unidos"
         if market:
             clear_pending(state)
             return DialogueResolution(decision=RouterDecision(
                 intent="sector_performance", sector_market=market), used_context=True)
         if base.intent == "unknown":
-            return DialogueResolution(reply="¿Qué mercado quieres consultar: Estados Unidos, Colombia, España, Europa o el global?", used_context=True)
+            return DialogueResolution(reply="El ranking numérico disponible es de Estados Unidos/NASDAQ. ¿Quieres consultarlo? Responde «sí» o «NASDAQ».", used_context=True)
         clear_pending(state)
         return DialogueResolution()
     field = state.pending_field
@@ -155,6 +170,9 @@ def resolve_followup(query: str, base: RouterDecision, state: ConversationState)
 
 
 def clarification_for(decision: RouterDecision, preferences: PreferenceInput, state: ConversationState) -> str | None:
+    if decision.intent == "instrument_info" and not decision.symbol:
+        set_pending(state, "instrument_symbol", decision)
+        return "¿Qué símbolo quieres consultar? Puedes decir AAPL, MSFT, NVDA, SPY o QQQ, o elegirlo en la lista de la izquierda."
     if decision.intent == "market_news" and decision.needs_clarification:
         set_pending(state, "news_scope", decision)
         return "¿Qué sector o país quieres consultar? Por ejemplo: tecnología, finanzas, energía, Colombia o Estados Unidos."

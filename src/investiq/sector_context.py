@@ -10,7 +10,7 @@ import re
 from investiq.language import plain
 
 MARKETS = {
-    "Estados Unidos": ("estados unidos", "estadounidense", "eeuu", "ee.uu", "ee uu", "usa", "wall street", "s&p 500", "s&p500", "sp 500", "sp500"),
+    "Estados Unidos": ("estados unidos", "estadounidense", "eeuu", "ee.uu", "ee uu", "usa", "wall street", "nasdaq", "s&p 500", "s&p500", "sp 500", "sp500"),
     "Colombia": ("colombia", "colcap"),
     "España": ("espana", "ibex"),
     "Europa": ("europa", "europeo", "europea"),
@@ -58,14 +58,16 @@ def educational_part(query: str) -> str | None:
 def sector_limitation(market: str | None) -> str:
     if market is None:
         return (
-            "¿De qué mercado quieres hablar: Estados Unidos, Colombia, España, Europa o el global? "
-            "Para identificar qué sectores lideran hace falta comparar el mismo período y contar con "
-            "datos sectoriales completos, con fecha y hora. Aquí no tengo un ranking sectorial actual "
-            "verificado; no sería correcto deducirlo de la biblioteca educativa ni de unos pocos instrumentos."
+            "Por ahora puedes consultar el ranking numérico de Estados Unidos (NASDAQ): cubre once sectores "
+            "y muestra sus variaciones cuando FMP está configurado y el snapshot está disponible. "
+            "Colombia, España, Europa y el mercado global todavía no tienen una fuente conectada para ese ranking. "
+            "¿Quieres consultar Estados Unidos/NASDAQ? Responde «sí» o «NASDAQ»."
         )
     return (
         f"Para el mercado {market}, no tengo un ranking sectorial actual verificado con fecha y hora "
         "y cobertura suficiente. Por eso no puedo afirmar qué sectores lideran hoy ni dar porcentajes. "
-        "La comparación necesitaría una fuente actual de ese mercado y un período común. "
-        "Puedo explicarte cómo se mide el rendimiento de un sector y sus límites."
+        "El ranking disponible en esta app cubre únicamente los once sectores de NASDAQ, Estados Unidos, "
+        "y requiere una clave FMP con acceso al snapshot sectorial. Revisa FMP_API_KEY en .env y reinicia "
+        "la app; el acceso también depende del plan de FMP. Puedes pedirme que explique cómo se mide "
+        "el rendimiento sectorial y sus límites."
     )

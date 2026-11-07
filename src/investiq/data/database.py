@@ -51,9 +51,8 @@ def create_db(engine=None):
         ResponseTrace,
         UserPreference,
     )
-    # Streamlit may execute the app for multiple sessions at once. Serialize
-    # create_all so two threads cannot both observe a missing table and race
-    # to create it in SQLite.
+    # Serialize schema initialization so concurrent local requests cannot both
+    # observe a missing table and race to create it in SQLite.
     with _schema_init_lock:
         SQLModel.metadata.create_all(engine)
     return engine

@@ -1,6 +1,6 @@
 # Noticias, sectores y exploración educativa
 
-La web ofrece tres accesos persistentes: **Noticias de hoy**, **Explorar acciones y ETF** y **Sectores de hoy**. Todos usan el mismo chat; no hay formulario de perfil. Arranque: `bash run_web.sh`, en `http://127.0.0.1:8000`.
+La web ofrece tres accesos persistentes: **Noticias de hoy**, **Recomendaciones guiadas** y **Sectores de hoy · NASDAQ**. Las sugerencias iniciales llevan a esos mismos tres modos. Todos usan el mismo chat; no hay formulario de perfil. Arranque: `bash run_web.sh`, en `http://127.0.0.1:8000`.
 
 ## Configurar en cada equipo
 
@@ -29,17 +29,21 @@ Los tres artículos y sus selecciones viven temporalmente en la sesión del chat
 
 ## Sectores que lideran hoy
 
-La consulta pide mercado. Para Estados Unidos puede usar [FMP](https://site.financialmodelingprep.com/developer/docs/stable/sector-performance-snapshot) con `FMP_API_KEY`: compara los once sectores de **NASDAQ**, según la media diaria publicada por ese proveedor. La fecha corresponde a Nueva York. Se exige el mismo día y bolsa, once sectores únicos y porcentajes finitos; se ordenan por código, sin usar noticias ni ETF como sustitutos de cobertura completa.
+El botón **Sectores de hoy · NASDAQ** consulta directamente el único ranking numérico conectado: los once sectores de NASDAQ/Estados Unidos. Colombia, España, Europa y global todavía no tienen una fuente sectorial conectada. También puedes preguntar «¿Qué sectores lideran hoy en NASDAQ?» La app puede usar [FMP](https://site.financialmodelingprep.com/developer/docs/stable/sector-performance-snapshot) con `FMP_API_KEY`: compara los once sectores según la media diaria publicada por ese proveedor. La fecha corresponde a Nueva York. Se exige el mismo día y bolsa, once sectores únicos y porcentajes finitos; se ordenan por código, sin usar noticias ni ETF como sustitutos de cobertura completa.
 
-La respuesta indica bolsa, fecha, métrica y hora de consulta, separada de la fecha del proveedor. No atribuye una hora intradía que la respuesta no contiene. No representa todo Estados Unidos. Otros mercados, datos incompletos, falta de clave, cuota o falta de acceso conservan la explicación de límites. La caché dura quince minutos y la cuota local de FMP es de 100 consultas/día. Su disponibilidad real sigue pendiente de comprobación con una cuenta autorizada; no se presume acceso de pago ni se presenta un mock como un ranking en vivo.
+La respuesta indica bolsa, fecha, métrica y hora de consulta, separada de la fecha del proveedor. No atribuye una hora intradía que la respuesta no contiene. No representa todo Estados Unidos. Si faltan clave, cuota o acceso, la respuesta lo explica y señala `FMP_API_KEY` y la dependencia del plan. La caché dura quince minutos y la cuota local de FMP es de 100 consultas/día. Su disponibilidad real sigue pendiente de comprobación con una cuenta autorizada; no se presume acceso de pago ni se presenta un mock como un ranking en vivo.
 
-## Explorar acciones y ETF
+## Recomendaciones guiadas
 
-«¿Qué acción o ETF me recomiendas para invertir hoy?» inicia una exploración educativa. Se pregunta solo lo que falte: tipo, plazo de necesidad del dinero, variación histórica deseada y referencia opcional. Puedes incluir todo en un mensaje: «Explorar acciones a largo plazo, volatilidad baja, tecnología, referencia AAPL» o «Recomiéndame ETF a largo plazo con volatilidad alta sin referencia». Los criterios parametrizan esa consulta; no escriben preferencias financieras automáticamente. Puedes preguntar qué significa un concepto, retomar la pregunta pendiente o cancelar.
+El botón **Recomendaciones guiadas** inicia una exploración educativa. Se pregunta solo lo que falte, una pregunta por turno y con ejemplos fáciles: tipo («ETF»), plazo («1–5 años»), variación («baja») y referencia opcional («sin referencia»). Puedes incluir todo en un mensaje: «Explorar acciones a largo plazo, volatilidad baja, tecnología, referencia AAPL» o «Recomiéndame ETF a largo plazo con volatilidad alta sin referencia». Los criterios parametrizan esa consulta; no escriben preferencias financieras automáticamente. Puedes preguntar qué significa un concepto, retomar la pregunta pendiente o cancelar.
 
 El corto plazo no devuelve candidatos como una solución segura para dinero necesario pronto. Para otros plazos, se usa exclusivamente el modelo KMeans aprobado y su scaler, con features del mismo universo/período y comprobación de huella si está disponible. Primero se filtran tipo, tercil de volatilidad y sector; después se ordena por clúster/distancia a una referencia o por cercanía al centro del clúster. Se muestran hasta tres coincidencias, sin rellenar con instrumentos incompatibles.
 
 La tabla incluye tipo, volatilidad anualizada en porcentaje, tercil, beta, sector, grupo y coincidencia. El score deriva de distancia; no es rentabilidad ni probabilidad de ganar. El nivel de volatilidad no es un perfil financiero completo ni una garantía de protección. Las fechas y fuentes del modelo/features quedan visibles. NVIDIA puede acompañar el bloque factual protegido; no elige símbolos ni cambia métricas. La herramienta no decide qué conviene comprar hoy.
+
+## Consulta individual de un símbolo
+
+La sugerencia inicial pregunta «¿Quieres conocer las métricas de una acción o ETF?» y luego pide el símbolo. La ficha muestra su precio y variación reportados por Twelve Data si hay clave y datos disponibles, o el dato histórico de yfinance cuando existe. También muestra todas las características locales calculadas: volatilidad anualizada y su tercil, beta, correlación media con pares, sector y fecha de cálculo. Puedes consultar cualquier símbolo del catálogo. La cobertura corresponde a instrumentos de Estados Unidos. La cotización puede ser en tiempo real si Twelve Data y el plan de la cuenta lo permiten; de lo contrario aparece con su fecha y marcada como histórica o demorada. Volatilidad, beta y correlación se calculan sobre retornos históricos y no predicen resultados. Si faltan características o cotización se indica explícitamente. La consulta de movimientos además conserva las noticias y filings disponibles.
 
 Necesita base y artefactos coherentes del mismo equipo. Si ya tienes históricos locales, prepara el modelo sin descargar datos:
 

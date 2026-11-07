@@ -272,7 +272,7 @@ def source_references(quote, news_items: list[NewsItem], filings: list[FilingIte
             source_id=item.source_id,
             title=f"SEC {item.form} presentado {item.filing_date}",
             url=item.url,
-            provider="SEC EDGAR",
+            provider="SEC",
         )
         for item in filings
     )

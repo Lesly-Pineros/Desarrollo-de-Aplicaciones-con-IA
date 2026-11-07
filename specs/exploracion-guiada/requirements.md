@@ -27,7 +27,19 @@
 
 **EARS:** Cuando se entregue la rama, la web deberá ofrecer un acceso visible y el repositorio deberá verificar el flujo junto al profesor existente.
 
-**Criterios de aceptación:** acceso persistente «Explorar acciones y ETF», chat sin formularios, móvil/teclado; tests con artefacto KMeans entrenado con datos sintéticos offline y SQLite temporal, ausencia de modelo y memoria restaurada; Chrome sin proveedores, SDD, README y PLAN. Mantener rutas dinámicas, NVIDIA configurable y ADR-001/003/004. No migrar a LangGraph sin una necesidad demostrada.
+**Criterios de aceptación:** acceso persistente «Recomendaciones guiadas» inicia el flujo por chat, sin formulario; se puede usar en móvil y teclado. Las sugerencias iniciales conducen a modos reales de la app (recomendaciones, sectores NASDAQ y noticias). Flujo probado con artefacto KMeans de fixture sintético y SQLite temporal, ausencia de modelo y memoria restaurada; regresión web sin proveedores, SDD, README y PLAN. Mantener rutas dinámicas, NVIDIA configurable y ADR-001/003/004. No migrar a LangGraph sin necesidad demostrada.
+
+### REQ-005 — Preguntas fáciles de contestar
+
+**EARS:** Cuando falten criterios para explorar, el sistema deberá hacer una pregunta breve con respuestas de ejemplo fáciles de expresar.
+
+**Criterios de aceptación:** una pregunta por turno, opciones en lenguaje cotidiano y respuestas cortas (por ejemplo «ETF», «más de cinco años», «variación baja» y «sin referencia»); permitir saltar el símbolo de referencia y conservar la aclaración de que el plazo corto no se resuelve con acciones. Al finalizar debe mostrar candidatos con cifras históricas, período y fuentes conforme a REQ-002/003.
+
+### REQ-006 — Acceso guiado visible y sugerencias de modo
+
+**EARS:** Cuando el usuario active «Recomendaciones guiadas» o elija la sugerencia inicial correspondiente, el sistema deberá iniciar la exploración conversacional con preguntas fáciles de responder.
+
+**Criterios de aceptación:** el acceso y sugerencia usan el mismo flujo existente de recomendación educativa, hacen una pregunta a la vez y terminan en candidatos con métricas/fuentes cuando hay criterios y modelo disponibles. Las demás sugerencias llevan a noticias o ranking sectorial NASDAQ. No inicia una orden ni crea un perfil financiero.
 
 ## Changelog
 
@@ -35,3 +47,4 @@
 |---|---|
 | 2026-11-04 | Borrador previo para la exploración guiada solicitada y su conexión al clustering existente. |
 | 2026-11-04 | Flujo por chat, KMeans aprobado, huella de características, métricas/fuentes y frontend verificados dentro de 704 pruebas offline y 93 comprobaciones Chrome. |
+| 2026-11-07 | Se ofrece «Recomendaciones guiadas» y se alinean las sugerencias iniciales con modos disponibles; se conserva el acceso sectorial NASDAQ. |

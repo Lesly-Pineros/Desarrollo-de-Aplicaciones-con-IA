@@ -6,9 +6,11 @@
 
 ## Decisión
 
-La entrada principal local será una web HTML/CSS/JS servida junto a una API mínima por Python. La API adapta la fachada `answer_turn`; no duplica el router, las herramientas ni la memoria. Se usa la biblioteca estándar para evitar un nuevo runtime o una instalación npm. Streamlit queda disponible como alternativa heredada.
+La entrada principal local será una web HTML/CSS/JS servida junto a una API mínima por Python. La API adapta la fachada `answer_turn`; no duplica el router, las herramientas ni la memoria. Se usa la biblioteca estándar para evitar un nuevo runtime o una instalación npm. Streamlit quedó disponible inicialmente como alternativa heredada; su código y extra fueron retirados posteriormente.
 
-Actualización del mismo día: `investiq-app` e `investiq-web` arrancan la web; `run_web.sh` sigue siendo el comando recomendado para checkouts. Streamlit se instala solo con el extra `legacy-ui` y sus entradas explícitas son `investiq-streamlit` y `run_streamlit.sh`. No es una dependencia de la aplicación principal.
+Actualización del 2026-11-04: `investiq-app` e `investiq-web` arrancan la web; `run_web.sh` es el comando recomendado para checkouts. En esa revisión se conservó temporalmente la interfaz anterior como extra opcional.
+
+Revisión 2026-11-07: por solicitud del usuario se retiraron la app, launcher, extra, entry point y pruebas específicas de Streamlit. ADR-002 mantiene su contenido únicamente como plan histórico de despliegue; no existe una alternativa Streamlit instalable.
 
 ## Consecuencias
 

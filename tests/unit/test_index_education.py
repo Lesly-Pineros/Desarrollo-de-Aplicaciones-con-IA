@@ -6,7 +6,7 @@ from sqlmodel import Session
 from investiq.conversation import answer_turn
 from investiq.data.database import create_db, make_engine
 from investiq.data.models import UserPreference
-from investiq.domain import ConversationState, Narration, RouterDecision
+from investiq.domain import ConversationState, Narration, QuoteResult, RouterDecision, SourceReference
 from investiq.education import EDUCATION_CATALOGUE
 from investiq.language import canonical_education_topic, is_educational_question
 from investiq.memory import load_memory
@@ -24,10 +24,16 @@ def index_chat(tmp_path, monkeypatch):
     settings = Settings(_env_file=None, nvidia_api_key=None, twelve_data_api_key=None,
                         marketaux_api_key=None, sec_user_agent="")
 
-    def unexpected_provider(*args, **kwargs):
-        pytest.fail("An index definition must not request prices, news or filings")
+    monkeypatch.setattr("investiq.handlers.market_quote_tool", lambda session, symbol, settings: QuoteResult(
+        symbol=symbol, price=100, provider="fixture", delayed=True,
+        source=SourceReference(source_id=f"quote:{symbol}", title=f"Fixture {symbol}",
+                               url="local://fixture", provider="fixture"),
+    ))
 
-    for tool in ("market_quote_tool", "news_tool", "sec_docs_tool"):
+    def unexpected_provider(*args, **kwargs):
+        pytest.fail("An index definition must not request news or filings")
+
+    for tool in ("news_tool", "sec_docs_tool"):
         monkeypatch.setattr(f"investiq.handlers.{tool}", unexpected_provider)
     with Session(engine) as session:
         yield session, settings, ConversationState()

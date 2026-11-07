@@ -1,7 +1,7 @@
 # Requisitos — Fase 4: hardening y MCP SEC
 
 - **Estado:** Aprobado para ejecución por solicitud del usuario.
-- **Alcance:** fortalecer aceptación/evaluación de Fase 3 y exponer consultas SEC mediante un servidor MCP stdio reutilizando el cliente EDGAR existente.
+- **Alcance:** fortalecer aceptación/evaluación de Fase 3 y exponer consultas de filings de la SEC mediante un servidor MCP stdio reutilizando el cliente existente.
 - **Límites:** no extraer FastAPI (opcional en PLAN), no cambiar el motor Python plano y no declarar Fase 3 completamente aceptada mientras la integración ChatNVIDIA dependa de una clave pendiente de rotación.
 
 ### REQ-401 — Suite de evaluación del flujo y guardrails
@@ -13,7 +13,7 @@
 2. Una narración con cifras o citas desconocidas se rechaza; contenido externo se trata como dato.
 3. El reporte distingue verificación offline/mock de integración live.
 
-### REQ-402 — Servidor MCP SEC EDGAR
+### REQ-402 — Servidor MCP de filings SEC
 
 **EARS:** Cuando un cliente MCP solicite filings de un símbolo cubierto, el servidor deberá responder mediante la integración SEC existente y devolver formulario, fecha, URL y fuente verificables.
 

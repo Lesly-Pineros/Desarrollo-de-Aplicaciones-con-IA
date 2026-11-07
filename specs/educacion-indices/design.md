@@ -6,9 +6,7 @@ REQ-001 y REQ-002: catálogo educativo independiente con definición, ejemplo, a
 
 Los alias respetan límites de palabra; una consulta sobre el precio del índice no se transforma en una cotización del ETF SPY. Las preguntas sobre el ETF nombrado siguen el catálogo de instrumentos. La narración de la nueva definición mantiene el bloque factual protegido porque el nombre y contenido incorporan cifras; los conectores permitidos y citas siguen bajo validación determinista.
 
-REQ-003: `pyproject.toml` mueve Streamlit a un extra opcional y cambia `investiq-app` a la web. `investiq-web` y `run_web.sh` conservan sus interfaces; `investiq-streamlit`/`run_streamlit.sh` quedan como accesos explícitos a la alternativa heredada. Las pruebas puras de memoria siguen ejecutándose sin ese extra; solo AppTest se omite cuando falta Streamlit.
-
-El alias legado delega a `legacy_ui.py`, un adaptador pequeño a la CLI de Streamlit con importación diferida. Llamar directamente a `app.main` no inicia un servidor Streamlit; el adaptador evita ese modo de ejecución incompleto y explica cómo instalar el extra cuando falta.
+REQ-003: `pyproject.toml` expone una única interfaz: la web HTML/CSS/JS, mediante `investiq-app`, `investiq-web` y `run_web.sh`. El código, extra de dependencia y launcher de la interfaz anterior se retiraron; las pruebas cubren el servidor local.
 
 ## Decisiones y límites
 

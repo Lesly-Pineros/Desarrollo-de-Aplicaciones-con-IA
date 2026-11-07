@@ -81,7 +81,7 @@ def test_guided_conversation_restores_each_question_and_uses_real_model(explorat
     first = ask(exploration, "Quiero una recomendación educativa para invertir")
     assert "acciones, ETF o ambos" in first.answer
     second = ask(exploration, "ambos", restore=True)
-    assert "cuándo" in second.answer
+    assert "cuándo" in second.answer.casefold()
     third = ask(exploration, "largo plazo", restore=True)
     assert "baja, media o alta" in third.answer
     fourth = ask(exploration, "baja", restore=True)
@@ -151,7 +151,7 @@ def test_unknown_sector_is_clarified_instead_of_ignored(exploration):
     assert "no está en el catálogo" in first.answer
     assert load_memory(exploration[0], "learner").state.pending_field == "explore_sector"
     response = ask(exploration, "tecnología", restore=True)
-    assert "cuándo" in response.answer
+    assert "cuándo" in response.answer.casefold()
 
 
 def test_missing_model_is_honest_and_never_fabricates_percentages(exploration):

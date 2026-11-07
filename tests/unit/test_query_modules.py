@@ -136,7 +136,7 @@ def test_coordinator_resolves_explanation_symbols_before_executing_tools(local_q
                             decision=RouterDecision(intent="explanation", symbol=symbol))
 
     assert received == ["AAPL"]
-    assert response.tools_used == ["market_quote", "news", "sec_docs"]
+    assert response.tools_used == ["market_quote", "news", "sec_docs", "instr_features"]
     assert response.status == "degraded"
     assert "AAPL" in response.answer
 

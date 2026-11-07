@@ -6,6 +6,8 @@
 | TASK-002 | Selección con scaler/KMeans aprobado y filtros deterministas | REQ-002, REQ-003 | Modelo real entrenado sobre fixture sintético; distancias/orden, filtros, referencia y rechazo de datos/modelo inválidos | Completa offline |
 | TASK-003 | Handler con métricas, período, fuentes y narración protegida | REQ-001, REQ-002, REQ-003 | Ratios como porcentaje, período, fuentes, modelo ausente, corto plazo sin ranking y huella de features | Completa offline |
 | TASK-004 | Acceso web y documentación/verificación final | REQ-001, REQ-002, REQ-003, REQ-004 | 704 pruebas offline, 93 checks Chrome, quince specs, wheel, README/PLAN y diff --check | Completa local; NVIDIA real pendiente |
+| TASK-005 | Pulir aclaraciones para respuestas cortas y opcionales | REQ-001, REQ-003, REQ-005 | test_guided_exploration.py: respuestas breves/«sin referencia»; flujo completo conserva porcentajes y fuentes | Pendiente |
+| TASK-006 | Añadir acceso guiado y alinear sugerencias iniciales con modos disponibles | REQ-004, REQ-006 | validate_spec.py; inspección de navegación y prompts; check web verifica que cada sugerencia inicia su modo | Pendiente |
 
 ## Trazabilidad
 
@@ -15,6 +17,8 @@
 | REQ-002 | TASK-002, TASK-003, TASK-004 | Participación del modelo entrenado en candidatos |
 | REQ-003 | TASK-002, TASK-003, TASK-004 | Porcentajes, fechas y fuentes deterministas |
 | REQ-004 | TASK-001, TASK-004 | Web operativa y profesor sin regresiones |
+| REQ-005 | TASK-005 | Aclaraciones breves y flujo con cifras/fuentes |
+| REQ-006 | TASK-006 | Un acceso de navegación inicia el diálogo de exploración |
 
 ## Evidencia ejecutada — 2026-11-04
 

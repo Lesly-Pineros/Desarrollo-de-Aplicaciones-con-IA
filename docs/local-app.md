@@ -1,6 +1,6 @@
 # App local de InvestiQ
 
-La guía de instalación y los comandos de consola están en el [README principal](../README.md). El arranque recomendado es `bash run_web.sh`, en `http://127.0.0.1:8000`: resuelve la raíz dinámicamente y funciona en copias ubicadas en rutas distintas. No requiere Node, compilación, CDN ni Streamlit. `investiq-app` e `investiq-web` apuntan también a la web tras actualizar la instalación. Streamlit queda en el extra opcional `legacy-ui`, con sus entradas explícitas `run_streamlit.sh` e `investiq-streamlit`.
+La guía de instalación y los comandos de consola están en el [README principal](../README.md). El arranque recomendado es `bash run_web.sh`, en `http://127.0.0.1:8000`: resuelve la raíz dinámicamente y funciona en copias ubicadas en rutas distintas. No requiere Node, compilación, CDN ni un framework frontend. `investiq-app` e `investiq-web` apuntan también a la web tras actualizar la instalación.
 
 La web sirve HTML/CSS/JS y API en un proceso Python. `web/server.py` valida las peticiones y recursos permitidos, `web/service.py` adapta las operaciones a `conversation.answer_turn` y `web/sessions.py` mantiene el contexto temporal. Abre sin login; las preferencias se definen en el chat. El catálogo permite preguntar por un símbolo y la ayuda explica el propósito. En móvil se recogen en un explorador accesible. Véase [ADR-004](../decisions/ADR-004-web-local.md).
 
@@ -20,11 +20,11 @@ Las preferencias y el recuerdo persistente usan la identidad `local`, compartida
 
 «Nueva conversación» y «Olvidar contexto» vacían chat y recuerdo, conservando preferencias y elección de memoria. Se invalidan las copias antiguas de contexto para evitar que otra ventana restaure lo olvidado. Desactivar memoria elimina el resumen persistente; el chat abierto conserva su contexto temporal.
 
-`QueryLog` conserva metadatos, herramientas, fuentes y consumo disponible; no guarda texto de consulta ni credenciales. La purga aplica la retención al registrar respuestas. `ResponseTrace` guarda categorías seguras de ruta, narración y respaldo. La web no expone detalles internos de proveedores; `INVESTIQ_SHOW_DIAGNOSTICS=true` permite inspección en la alternativa Streamlit de desarrollo.
+`QueryLog` conserva metadatos, herramientas, fuentes y consumo disponible; no guarda texto de consulta ni credenciales. La purga aplica la retención al registrar respuestas. `ResponseTrace` guarda categorías seguras de ruta, narración y respaldo. La web no expone detalles internos de proveedores.
 
 ## Verificación local y en vivo
 
-Sin NVIDIA puedes aprender conceptos y definir símbolos desde el catálogo; consultar movimientos necesita datos locales o acceso a fuentes. La suite offline utiliza SQLite temporal y respuestas simuladas; no acredita proveedores reales. Cubre diálogo, guardrails, API HTTP local, sesiones y AppTest de Streamlit. La prueba de Chrome verifica interacciones y diseño con otra base temporal y sin proveedores financieros. Evidencia en [PLAN.md](../PLAN.md) y [las tareas de la web](../specs/web-conversacional/tasks.md).
+Sin NVIDIA puedes aprender conceptos y definir símbolos desde el catálogo; consultar movimientos necesita datos locales o acceso a fuentes. La suite offline utiliza SQLite temporal y respuestas simuladas; no acredita proveedores reales. Cubre diálogo, guardrails, API HTTP local y sesiones. La prueba de Chrome verifica interacciones y diseño con otra base temporal y sin proveedores financieros. Evidencia en [PLAN.md](../PLAN.md) y [las tareas de la web](../specs/web-conversacional/tasks.md).
 
 El diagnóstico `tools/verify_agent.py` requiere `--live --key-rotated` para llamar a NVIDIA, únicamente en el entorno autorizado con internet y después de reemplazar la clave expuesta. SEC requiere `SEC_USER_AGENT` con contacto real. Los comandos completos están en el README.
 

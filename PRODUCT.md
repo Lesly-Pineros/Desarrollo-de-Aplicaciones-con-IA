@@ -18,7 +18,7 @@ Piloto local de una persona. El desarrollo y la ejecución pueden ocurrir en equ
 
 Catálogo inicial de 20 instrumentos, explicaciones educativas, consultas de movimientos con fuentes, similitud mediante clustering y comparación con preferencias explícitas. Los datos financieros y cálculos son deterministas; la redacción opcional se valida. Memoria resumida opcional, historial literal temporal y controles para consultar u olvidar contexto. La identidad persistente es compartida por la instalación local.
 
-Los conceptos educativos pueden incluir índices fuera del catálogo negociable: S&P 500 se reconoce también como SP500 o SP 500 y se explica con fuente oficial, sin necesitar cotizaciones ni conexión para la definición. El frontend principal es gratuito y no requiere Streamlit; la interfaz anterior queda como extra opcional.
+Los conceptos educativos pueden incluir índices fuera del catálogo negociable: S&P 500 se reconoce también como SP500 o SP 500 y se explica con fuente oficial, sin necesitar cotizaciones ni conexión para la definición. La interfaz local vigente es la web HTML/CSS/JS servida desde Python.
 
 El profesor consulta una biblioteca local de 119 documentos sobre fundamentos, fondos, índices, bolsas, intermediarios, criptoactivos, indicadores, riesgos, operativa, costes, análisis, planificación y protección. La generación RAG utiliza pasajes recuperados con fuentes; existe respaldo local sin modelo. La biblioteca se amplía mediante documentos revisados y es independiente de la memoria personal. Los ejemplos de brókers no son recomendaciones ni confirman condiciones actuales por país.
 

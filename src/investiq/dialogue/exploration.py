@@ -12,10 +12,10 @@ from investiq.preferences import SECTORS
 
 EXPLORATION_FIELDS = {"explore_kind", "explore_horizon", "explore_volatility", "explore_reference", "explore_sector"}
 QUESTIONS = (
-    ("exploration_kind", "explore_kind", "¿Quieres explorar acciones, ETF o ambos?"),
-    ("exploration_horizon", "explore_horizon", "¿Para cuándo necesitarías ese dinero: menos de un año, entre uno y cinco años, o más de cinco años?"),
-    ("volatility_target", "explore_volatility", "¿Qué variación histórica te interesa explorar: baja, media o alta? Es un criterio de búsqueda, no un perfil financiero completo."),
-    ("reference_symbol", "explore_reference", "¿Hay un instrumento que quieras tomar como referencia? Puedes decir AAPL, SPY u otro del catálogo; también «sin referencia»."),
+    ("exploration_kind", "explore_kind", "¿Qué quieres explorar: acciones, ETF o ambos? Puedes responder solo «ETF», por ejemplo."),
+    ("exploration_horizon", "explore_horizon", "¿Cuándo podrías necesitar ese dinero: en menos de un año, en 1–5 años o después de 5 años?"),
+    ("volatility_target", "explore_volatility", "¿Qué variación histórica prefieres revisar: baja, media o alta? Es un filtro de búsqueda, no un perfil financiero."),
+    ("reference_symbol", "explore_reference", "¿Tienes un símbolo de referencia, como AAPL o SPY? También puedes responder «sin referencia»."),
 )
 
 
@@ -47,6 +47,10 @@ def criteria_patch(query, *, expected=None):
         if text in {"medio", "mediano", "intermedio"}:
             horizons.add("medium")
         if text in {"largo", "muchos anos"}:
+            horizons.add("long")
+        if re.fullmatch(r"(?:entre )?1\s*(?:a|y|[-–])\s*5 anos?", text):
+            horizons.add("medium")
+        if re.fullmatch(r"(?:mas de |despues de )?5 anos?", text):
             horizons.add("long")
         years = re.fullmatch(r"(\d{1,2}) anos", text)
         if years:

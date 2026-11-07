@@ -12,7 +12,7 @@ from investiq.language import plain
 from investiq.settings import Settings
 from investiq.sector_context import sector_limitation
 from investiq.tools import (
-    compare_instruments, feature_sources, local_model_source, market_quote_tool,
+    compare_instruments, feature_sources, instr_features, local_model_source, market_quote_tool,
     news_tool, normalize_symbol, sec_docs_tool, similar_instruments, source_references,
     volatility_bucket,
     exploration_candidates,
@@ -30,6 +30,52 @@ class HandlerResult:
     tools_used: list[str] = field(default_factory=list)
 
 
+def _symbol_feature_block(session: Session, symbol: str, quote=None) -> tuple[str, list[SourceReference], dict]:
+    """Render all precomputed single-instrument metrics without deriving new values."""
+    lines = ["**Cotización y métricas disponibles**"]
+    sources: list[SourceReference] = []
+    facts: dict = {}
+    if quote is not None and quote.price is not None:
+        freshness = "histórico/demorado" if quote.delayed else "del proveedor"
+        when = quote.as_of.isoformat() if quote.as_of else "fecha no disponible"
+        lines.append(f"- Precio: {quote.price:.2f} ({quote.provider or 'proveedor no indicado'}; {when}; {freshness}).")
+        if quote.change_abs is not None or quote.change_pct is not None:
+            absolute = f"{quote.change_abs:+.2f}" if quote.change_abs is not None else "no disponible"
+            percentage = f"{quote.change_pct:+.2f}%" if quote.change_pct is not None else "no disponible"
+            lines.append(f"- Variación reportada: {absolute} ({percentage}).")
+        facts.update(price=quote.price, change_abs=quote.change_abs, change_pct=quote.change_pct,
+                     quote_as_of=when, quote_provider=quote.provider, quote_delayed=quote.delayed)
+        if quote.source:
+            sources.append(quote.source)
+    else:
+        error = quote.error if quote is not None else None
+        lines.append(f"- Cotización: no disponible{(': ' + error) if error else ''}.")
+
+    feature = instr_features(session, symbol)
+    model_source = local_model_source(session)
+    if feature:
+        lines.append(f"- Volatilidad histórica anualizada: {feature['volatility']:.2%}.")
+        lines.append(f"- Tercil de volatilidad del universo: {feature['volatility_bucket']}.")
+        lines.append(f"- Beta: {feature['beta']:.2f}.")
+        lines.append(f"- Correlación media con pares del universo: {feature['mean_peer_correlation']:.2f}.")
+        lines.append(f"- Sector: {feature['sector']}.")
+        lines.append(f"- Características calculadas: {feature['calculated_at']}.")
+        facts["features"] = feature
+        sources.extend(feature_sources(session, [symbol]))
+        if model_source:
+            lines.append(f"- Período de referencia del modelo: {model_source.title}.")
+            sources.append(model_source)
+    else:
+        lines.append("- Métricas históricas: todavía no hay características locales calculadas para este símbolo.")
+    lines.append(
+        "Cobertura: instrumentos de los mercados de Estados Unidos. La cotización puede ser en tiempo real "
+        "si Twelve Data y el plan de la cuenta lo permiten; de lo contrario, se presenta con su fecha y como "
+        "histórica o demorada. "
+        "Volatilidad, beta y correlación son cálculos sobre retornos históricos y no predicen resultados futuros."
+    )
+    return "\n".join(lines), sources, facts
+
+
 def _explain(session: Session, settings: Settings, decision: RouterDecision) -> HandlerResult:
     symbol = normalize_symbol(decision.symbol)
     if not symbol:
@@ -40,15 +86,19 @@ def _explain(session: Session, settings: Settings, decision: RouterDecision) -> 
     quote = market_quote_tool(session, symbol, settings)
     news_result = news_tool(session, symbol, settings)
     filings, sec_reason = sec_docs_tool(session, symbol, settings)
+    metrics, metric_sources, metric_facts = _symbol_feature_block(session, symbol, quote)
     sources = source_references(quote, news_result.articles, filings)
+    sources.extend(source for source in metric_sources if source.source_id not in {item.source_id for item in sources})
     tools = ["market_quote", "news", "sec_docs"]
+    tools.append("instr_features")
     if quote.price is None:
-        return HandlerResult(f"No hay un precio verificable para {symbol}. {quote.error or ''}",
-                             sources=sources, status="degraded", tools_used=tools)
+        return HandlerResult(f"No hay un precio verificable para {symbol}. {quote.error or ''}\n\n{metrics}",
+                             facts={"symbol": symbol, **metric_facts}, sources=sources,
+                             status="degraded", tools_used=tools)
     when = quote.as_of.isoformat() if quote.as_of else "fecha no disponible"
     freshness = "dato histórico/demorado" if quote.delayed else "dato del proveedor"
     pct = f"{quote.change_pct:.2f}%" if quote.change_pct is not None else "variación no disponible"
-    answer = f"{symbol}: {pct} al {when} ({quote.provider}; {freshness})."
+    answer = f"{symbol}: {pct} al {when} ({quote.provider}; {freshness}).\n\n{metrics}"
     if news_result.articles:
         answer += " Noticias disponibles: " + "; ".join(article.title for article in news_result.articles[:2]) + "."
     else:
@@ -61,7 +111,7 @@ def _explain(session: Session, settings: Settings, decision: RouterDecision) -> 
         answer += f" Aviso: {quote.error}"
     return HandlerResult(
         answer,
-        facts={"symbol": symbol, "price": quote.price, "change_pct": quote.change_pct,
+        facts={"symbol": symbol, "price": quote.price, "change_pct": quote.change_pct, **metric_facts,
                "news_titles": [article.title for article in news_result.articles[:2]],
                "filings": [filing.source_id for filing in filings]},
         sources=sources, status="ok" if sources else "degraded", tools_used=tools,
@@ -81,7 +131,7 @@ def _educate(query: str, decision: RouterDecision, explanation_level: str) -> Ha
     )
 
 
-def _instrument_info(decision: RouterDecision) -> HandlerResult:
+def _instrument_info(session: Session, settings: Settings, decision: RouterDecision) -> HandlerResult:
     symbol = normalize_symbol(decision.symbol)
     item = INSTRUMENT_BY_SYMBOL.get(symbol)
     if item is None:
@@ -105,6 +155,11 @@ def _instrument_info(decision: RouterDecision) -> HandlerResult:
     )
     sources = [source]
     tools = ["instrument_catalogue"]
+    quote = market_quote_tool(session, item.symbol, settings)
+    metric_block, metric_sources, metric_facts = _symbol_feature_block(session, item.symbol, quote)
+    answer += "\n\n" + metric_block
+    sources.extend(metric_sources)
+    tools.extend(["market_quote", "instr_features"])
     document = None
     for identity in (item.symbol, item.name):
         candidate = get_library().get_by_topic(identity)
@@ -117,7 +172,7 @@ def _instrument_info(decision: RouterDecision) -> HandlerResult:
         sources.extend(reference.to_reference() for reference in document.sources)
         tools.append("knowledge_search")
     return HandlerResult(answer, facts={"symbol": item.symbol, "name": item.name, "kind": item.kind,
-                                        "sector": item.sector}, sources=sources, tools_used=tools)
+                                        "sector": item.sector, **metric_facts}, sources=sources, tools_used=tools)
 
 
 def _recommend_volatility(session: Session, decision: RouterDecision) -> HandlerResult:
@@ -260,7 +315,7 @@ def execute_query(session: Session, email: str, query: str, settings: Settings, 
     if decision.intent == "education":
         return _educate(query, decision, explanation_level)
     if decision.intent == "instrument_info":
-        return _instrument_info(decision)
+        return _instrument_info(session, settings, decision)
     if decision.intent == "recommend_volatility":
         return _recommend_volatility(session, decision)
     if decision.intent == "recommend_similar":

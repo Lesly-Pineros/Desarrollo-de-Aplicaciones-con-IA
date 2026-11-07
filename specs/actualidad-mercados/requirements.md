@@ -29,6 +29,12 @@
 
 **Criterios de aceptación:** acciones de noticias y sectores disponibles en escritorio/móvil; resumen por botón y por conversación; campos recibidos nunca se insertan como HTML; fechas/fuentes/disclaimer en respuestas. Secretos solo en variables de entorno; URLs de proveedor fijas y sin descargar páginas arbitrarias.
 
+### REQ-006 — Acceso directo al ranking sectorial
+
+**EARS:** Cuando el usuario pregunte por líderes sectoriales actuales, el sistema deberá explicar qué mercados tienen cobertura disponible y permitir continuar con uno compatible.
+
+**Criterios de aceptación:** el acceso persistente y las consultas escritas identifican Estados Unidos/NASDAQ como el único mercado con ranking sectorial numérico conectado. La web declara que Colombia, España, Europa y global todavía no tienen cobertura numérica actual. El acceso consulta NASDAQ y presenta once variaciones porcentuales, fecha, fuente y límites cuando FMP dispone de datos completos. Sin clave, acceso o datos válidos, presenta el motivo conocido y cómo habilitar/consultar la función. No inventa cifras.
+
 ### REQ-005 — Evidencia y operación
 
 **EARS:** Cuando se entregue la capacidad, el repositorio deberá documentar configuración, cuotas, cobertura y verificaciones reales frente a simuladas.
@@ -41,3 +47,6 @@
 |---|---|
 | 2026-11-04 | Borrador previo: noticias diarias, resumen seleccionado, sector por fuente y frontend solicitados. |
 | 2026-11-04 | Implementación local, selección por ID oculto, controles de traducción y separación de texto citado. Regresión final: 704 pruebas offline, 93 checks Chrome y quince specs válidas. |
+| 2026-11-07 | Borrador de pulido: respuestas cortas para la exploración y recorrido explícito del acceso «Sectores de hoy», con degradación visible cuando FMP no está disponible. |
+| 2026-11-07 | El acceso de sectores ahora explica cobertura disponible y ofrece continuar con NASDAQ; los demás mercados se identifican como no conectados para ranking numérico. |
+| 2026-11-07 | Se conserva el acceso directo «Sectores de hoy · NASDAQ» junto a los modos de noticias y recomendaciones guiadas. |

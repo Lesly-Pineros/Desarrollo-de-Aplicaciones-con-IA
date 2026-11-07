@@ -88,13 +88,13 @@ def sec_docs(
     if not settings.sec_user_agent.strip() or not re.search(r"[^\s@]+@[^\s@]+\.[^\s@]+", settings.sec_user_agent):
         if cache:
             return _decode_cache(cache, delayed=True), "SEC_USER_AGENT con contacto es obligatorio; se muestra caché histórica."
-        return [], "Configura SEC_USER_AGENT con nombre y contacto antes de consultar SEC EDGAR."
+        return [], "Configura SEC_USER_AGENT con nombre y contacto antes de consultar filings de la SEC."
 
     try:
         ticker_map = _company_map(settings, http_get)
         cik = ticker_map.get(symbol)
         if not cik:
-            return [], "SEC EDGAR no tiene un CIK asociado a este símbolo."
+            return [], "La SEC no tiene un identificador asociado a este símbolo."
         submission = _fetch_json(SEC_SUBMISSIONS_URL.format(cik=cik), settings, http_get)
         recent = submission.get("filings", {}).get("recent", {})
         forms = recent.get("form", [])
@@ -127,8 +127,8 @@ def sec_docs(
             )
         )
         session.commit()
-        return filings, None if filings else "SEC EDGAR no devolvió filings recientes de los formularios permitidos."
+        return filings, None if filings else "La SEC no devolvió filings recientes de los formularios permitidos."
     except (requests.RequestException, ValueError, KeyError, TypeError, AttributeError):
         if cache:
-            return _decode_cache(cache, delayed=True), "SEC EDGAR no respondió; se muestra la caché histórica."
-        return [], "No se pudo validar la respuesta de SEC EDGAR."
+            return _decode_cache(cache, delayed=True), "La SEC no respondió; se muestra la caché histórica."
+        return [], "No se pudo validar la respuesta de la SEC."

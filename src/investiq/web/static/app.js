@@ -260,6 +260,12 @@ function clearMessages() {
   elements.scroll.scrollTop = 0;
 }
 
+function prefillMessage(prompt) {
+  if (!state.ready || state.busy) return;
+  elements.input.value = prompt;
+  resizeInput(); syncControls(); elements.input.focus();
+}
+
 async function sendMessage(rawMessage, existingUser = null, newsId = null) {
   const message = rawMessage.trim();
   if (!state.ready || state.busy || !message) return;
@@ -275,6 +281,22 @@ async function sendMessage(rawMessage, existingUser = null, newsId = null) {
     updateMemory(data.memory);
   } catch (error) {
     showError(error.message, () => sendMessage(message, userNode, newsId));
+  } finally {
+    state.busy = false; elements.loading.hidden = true; syncControls(); scrollToEnd();
+    if (!mobile.matches) elements.input.focus();
+  }
+}
+
+async function startRecommendations() {
+  if (!state.ready || state.busy) return;
+  hideError(); state.busy = true; syncControls(); elements.loading.hidden = false; scrollToEnd();
+  try {
+    const data = await request("/api/chat", {action: "start_recommendations"});
+    if (!data.response || typeof data.response.answer !== "string") throw new Error("No pude iniciar la recomendación guiada. Vuelve a intentarlo.");
+    renderMessage({role: "assistant", content: data.response.answer, sources: data.response.sources, actions: data.response.actions, status: data.response.status});
+    updateMemory(data.memory);
+  } catch (error) {
+    showError(error.message, startRecommendations);
   } finally {
     state.busy = false; elements.loading.hidden = true; syncControls(); scrollToEnd();
     if (!mobile.matches) elements.input.focus();
@@ -360,8 +382,15 @@ elements.memoryEnabled.addEventListener("change", () => updateMemorySetting({ena
 elements.forgetMemory.addEventListener("click", () => updateMemorySetting({forget: true}));
 elements.retry.addEventListener("click", () => { const action = state.retry; if (action) action(); });
 elements.dismissError.addEventListener("click", hideError);
-for (const button of document.querySelectorAll(".suggestion")) button.addEventListener("click", () => sendMessage(button.dataset.prompt));
-for (const button of document.querySelectorAll('.branch-action')) button.addEventListener('click', () => sendMessage(button.dataset.prompt));
+for (const button of document.querySelectorAll(".suggestion")) button.addEventListener("click", () => {
+  if (button.dataset.prefill) prefillMessage(button.dataset.prefill);
+  else if (button.dataset.action === "start-recommendations") startRecommendations();
+  else sendMessage(button.dataset.prompt);
+});
+for (const button of document.querySelectorAll('.branch-action')) button.addEventListener('click', () => {
+  if (button.dataset.action === "start-recommendations") startRecommendations();
+  else sendMessage(button.dataset.prompt);
+});
 mobile.addEventListener("change", () => { closeSidebar(false); });
 document.addEventListener("keydown", (event) => {
   if (!mobile.matches || !elements.sidebar.classList.contains("open")) return;

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import re
 from time import perf_counter
 from typing import Callable
@@ -19,6 +20,7 @@ _FAILURE_CATEGORIES = {
     "timeout", "structured-output", "provider-unavailable", "bad-request",
     "request-too-large", "invalid-request", "provider-error",
 }
+logger = logging.getLogger("investiq.verify_agent")
 
 
 def _settings():
@@ -140,6 +142,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--key-rotated", action="store_true", help="Confirma que se sustituyó la clave previamente expuesta.")
     args = parser.parse_args(argv)
     try:
+        if args.live:
+            from investiq.logging_config import configure_logging
+            from investiq.settings import get_settings
+
+            settings = get_settings()
+            configure_logging(settings.log_level)
+            logger.info("diagnostic.start live=true key_rotation_confirmed=%s", args.key_rotated)
         report = verify_agent(live=args.live, key_rotated=args.key_rotated)
     except Exception:
         # A broken local import or unexpected diagnostic bug still must not emit
@@ -147,6 +156,8 @@ def main(argv: list[str] | None = None) -> int:
         report = {"status": "failed", "reason": "internal-error", "stages": [],
                   "turns_completed": 0, "latency_ms": 0.0, "scope": "educational-dialogue"}
     print(json.dumps(report, ensure_ascii=False))
+    if args.live:
+        logger.info("diagnostic.done status=%s reason=%s", report["status"], report["reason"])
     return 1 if report["status"] == "failed" else 0
 
 

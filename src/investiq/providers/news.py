@@ -1,6 +1,7 @@
 import hashlib
 import json
 from datetime import datetime, timedelta, timezone
+import logging
 
 import requests
 from pydantic import ValidationError
@@ -11,8 +12,10 @@ from investiq.domain import NewsCollection, NewsItem
 from investiq.instruments import INSTRUMENT_BY_SYMBOL
 from investiq.limits import QuotaExceeded, reserve_daily_request
 from investiq.settings import Settings
+from investiq.logging_config import log_stage
 
 MARKETAUX_NEWS_URL = "https://api.marketaux.com/v1/news/all"
+logger = logging.getLogger(__name__)
 
 
 def _aware(value: datetime) -> datetime:
@@ -54,27 +57,31 @@ def news(
     now = datetime.now(timezone.utc)
     cached = session.get(NewsCacheEntry, symbol)
     if cached and _aware(cached.expires_at) > now:
+        logger.info("provider.news.cache_hit provider=marketaux")
         return _decode(cached)
     if not settings.has_marketaux_key:
+        logger.info("provider.news.skipped provider=marketaux reason=no_key")
         if cached:
             return _decode(cached, delayed=True)
         return NewsCollection(available=False, reason="Marketaux no está configurado; no se consultaron noticias.")
 
     try:
         reserve_daily_request(session, "marketaux", 100)
-        response = http_get(
-            MARKETAUX_NEWS_URL,
-            params={
-                "symbols": symbol,
-                "filter_entities": "true",
-                "language": "en",
-                "limit": 3,
-                "api_token": settings.marketaux_api_key.strip(),
-            },
-            timeout=settings.http_timeout_seconds,
-        )
-        response.raise_for_status()
-        payload = response.json()
+        with log_stage(logger, "provider.news.request", failure_level=logging.WARNING,
+                       provider="marketaux"):
+            response = http_get(
+                MARKETAUX_NEWS_URL,
+                params={
+                    "symbols": symbol,
+                    "filter_entities": "true",
+                    "language": "en",
+                    "limit": 3,
+                    "api_token": settings.marketaux_api_key.strip(),
+                },
+                timeout=settings.http_timeout_seconds,
+            )
+            response.raise_for_status()
+            payload = response.json()
         articles = []
         for item in payload.get("data", []):
             title = str(item.get("title") or "").strip()
@@ -102,11 +109,14 @@ def news(
             )
         )
         session.commit()
+        logger.info("provider.news.done provider=marketaux outcome=success")
         return NewsCollection(articles=articles, available=bool(articles), reason=None if articles else "Marketaux no devolvió noticias pertinentes.")
     except QuotaExceeded:
         reason = "Se alcanzó la cuota diaria de noticias."
+        logger.warning("provider.news.fallback provider=marketaux reason=quota")
     except (requests.RequestException, ValueError, TypeError, AttributeError):
         reason = "No se pudieron validar noticias nuevas de Marketaux."
+        logger.warning("provider.news.fallback provider=marketaux reason=provider_or_payload_error")
 
     if cached:
         result = _decode(cached, delayed=True)

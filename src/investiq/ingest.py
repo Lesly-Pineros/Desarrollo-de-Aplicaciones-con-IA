@@ -1,12 +1,16 @@
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from datetime import date
+import logging
 
 import pandas as pd
 from sqlmodel import Session
 
 from investiq.data.database import save_price_bars, seed_instruments
 from investiq.instruments import INSTRUMENTS
+from investiq.logging_config import log_stage
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -58,9 +62,13 @@ def ingest_history(
     seed_instruments(session)
     errors: dict[str, str] = {}
     downloaded: dict[str, int] = {}
+    logger.info("provider.yfinance.start instruments=%d", len(symbols))
     try:
-        data = downloader(symbols, period)
+        with log_stage(logger, "provider.yfinance.download", failure_level=logging.WARNING,
+                       period="configured"):
+            data = downloader(symbols, period)
     except Exception as exc:  # the provider may fail as a whole; existing rows remain intact
+        logger.warning("provider.yfinance.failed error_type=%s", type(exc).__name__)
         return IngestResult({}, {symbol: f"batch download failed: {exc}" for symbol in symbols})
 
     for symbol in symbols:
@@ -78,4 +86,6 @@ def ingest_history(
             errors[symbol] = "no valid prices returned"
             continue
         downloaded[symbol] = save_price_bars(session, symbol, values)
+    logger.info("provider.yfinance.done downloaded=%d unavailable=%d",
+                len(downloaded), len(errors))
     return IngestResult(downloaded, errors)

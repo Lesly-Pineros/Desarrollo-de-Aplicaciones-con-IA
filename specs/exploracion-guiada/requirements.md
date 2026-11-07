@@ -7,9 +7,9 @@
 
 ### REQ-001 — Criterios en conversación
 
-**EARS:** Cuando se pida recomendar una acción o ETF para invertir hoy, el sistema deberá preguntar solo los criterios que falten para una exploración educativa.
+**EARS:** Cuando se pida explorar acciones o ETF, el sistema deberá aprovechar todos los criterios explícitos del mensaje y, si faltan criterios necesarios, pedirlos juntos en una sola aclaración natural.
 
-**Criterios de aceptación:** tipo (acciones/ETF/ambos), plazo de necesidad del dinero, variación histórica deseada y referencia opcional; sector cuando se declare. Aceptar varios criterios en un mensaje, respuestas cortas, correcciones, interrupción educativa y cancelación. Una pregunta por turno; sin formularios ni guardar automáticamente preferencias financieras. Reconocer que un objetivo de usar el dinero hoy/corto plazo no se resuelve presentando acciones como seguras.
+**Criterios de aceptación:** tipo (acciones/ETF/ambos), plazo y variación histórica deseada; sector cuando se declare. La referencia es opcional y no bloquea la búsqueda. Aceptar criterios expresados juntos y en lenguaje cotidiano, respuestas cortas, correcciones, interrupción educativa y cancelación. No repetir criterios ya entendidos ni convertir cualquier negación en rechazo. Sin formularios ni guardar automáticamente preferencias financieras. Reconocer que un objetivo de usar el dinero hoy/corto plazo no se resuelve presentando acciones como seguras.
 
 ### REQ-002 — Candidatos desde ML real local
 
@@ -33,13 +33,25 @@
 
 **EARS:** Cuando falten criterios para explorar, el sistema deberá hacer una pregunta breve con respuestas de ejemplo fáciles de expresar.
 
-**Criterios de aceptación:** una pregunta por turno, opciones en lenguaje cotidiano y respuestas cortas (por ejemplo «ETF», «más de cinco años», «variación baja» y «sin referencia»); permitir saltar el símbolo de referencia y conservar la aclaración de que el plazo corto no se resuelve con acciones. Al finalizar debe mostrar candidatos con cifras históricas, período y fuentes conforme a REQ-002/003.
+**Criterios de aceptación:** una sola intervención natural reúne únicamente los criterios obligatorios que falten; evita listas de campos o preguntas encadenadas. La referencia puede omitirse sin confirmación. Las frases «no soy de tomar riesgos» y similares pueden mapearse al filtro histórico de variación baja solo para esa búsqueda, aclarando que no es un perfil ni protección de capital. Al finalizar muestra candidatos con cifras históricas, período y fuentes conforme a REQ-002/003.
 
 ### REQ-006 — Acceso guiado visible y sugerencias de modo
 
 **EARS:** Cuando el usuario active «Recomendaciones guiadas» o elija la sugerencia inicial correspondiente, el sistema deberá iniciar la exploración conversacional con preguntas fáciles de responder.
 
-**Criterios de aceptación:** el acceso y sugerencia usan el mismo flujo existente de recomendación educativa, hacen una pregunta a la vez y terminan en candidatos con métricas/fuentes cuando hay criterios y modelo disponibles. Las demás sugerencias llevan a noticias o ranking sectorial NASDAQ. No inicia una orden ni crea un perfil financiero.
+**Criterios de aceptación:** el acceso y sugerencia inician la conversación sin simular un mensaje de usuario. El asistente pregunta en una sola intervención natural por los criterios necesarios, y termina en candidatos con métricas/fuentes cuando hay criterios y modelo disponibles. Las demás sugerencias llevan a noticias o ranking sectorial NASDAQ. No inicia una orden ni crea un perfil financiero.
+
+### REQ-007 — Inicio del modo sin mensaje prefabricado
+
+**EARS:** Cuando la persona active «Recomendaciones guiadas», la interfaz deberá iniciar el modo de recomendación sin mostrar ni enviar una frase como si la hubiera escrito la persona.
+
+**Criterios de aceptación:** aparece una única intervención del asistente que invita a compartir criterios faltantes en lenguaje natural. Si hay modelo configurado, la redacción se adapta a los criterios pendientes; sin modelo, se usa una alternativa local clara. La conversación conserva el estado para interpretar la respuesta.
+
+### REQ-008 — Transparencia sobre criterios no usados
+
+**EARS:** Cuando la persona incluya un monto disponible, el sistema deberá aclarar que ese monto no se utiliza para ordenar candidatos mientras el modelo no tenga un criterio presupuestal.
+
+**Criterios de aceptación:** no se inventa un ajuste al presupuesto; los candidatos se describen como instrumentos para estudiar y no como una recomendación personalizada de compra.
 
 ## Changelog
 
@@ -48,3 +60,4 @@
 | 2026-11-04 | Borrador previo para la exploración guiada solicitada y su conexión al clustering existente. |
 | 2026-11-04 | Flujo por chat, KMeans aprobado, huella de características, métricas/fuentes y frontend verificados dentro de 704 pruebas offline y 93 comprobaciones Chrome. |
 | 2026-11-07 | Se ofrece «Recomendaciones guiadas» y se alinean las sugerencias iniciales con modos disponibles; se conserva el acceso sectorial NASDAQ. |
+| 2026-11-07 | Se corrige la aclaración repetida por negaciones; se agrupan criterios faltantes, la referencia queda opcional y el botón deja de enviar un mensaje prefabricado. |

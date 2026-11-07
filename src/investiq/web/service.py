@@ -3,20 +3,24 @@
 from __future__ import annotations
 
 from dataclasses import asdict
+import logging
 import threading
 import re
+from time import perf_counter
 
 from sqlmodel import Session
 
-from investiq.conversation import answer_turn
+from investiq.conversation import answer_turn, start_guided_exploration
 from investiq.domain import ConversationState
 from investiq.instruments import INSTRUMENTS
+from investiq.logging_config import log_stage
 from investiq.memory import forget_memory, load_memory, set_memory_enabled
 from investiq.settings import Settings
 from investiq.web.sessions import BrowserSession
 
 LOCAL_USER_ID = "local"
 MAX_VISIBLE_MESSAGES = 80
+logger = logging.getLogger(__name__)
 
 
 class InvalidRequest(ValueError):
@@ -55,7 +59,7 @@ class WebService:
         browser.messages.clear()
 
     def bootstrap(self, browser: BrowserSession) -> dict:
-        with self._profile_lock, Session(self.engine) as db:
+        with log_stage(logger, "service.bootstrap"), self._profile_lock, Session(self.engine) as db:
             self._state(db, browser)
             return {
                 "instruments": [asdict(item) for item in INSTRUMENTS],
@@ -65,6 +69,28 @@ class WebService:
             }
 
     def chat(self, browser: BrowserSession, payload: dict) -> dict:
+        if payload == {"action": "start_recommendations"}:
+            started = perf_counter()
+            logger.info("chat.start_recommendations mode=%s",
+                        "configured" if self.settings.has_nvidia_key else "local")
+            with self._profile_lock, Session(self.engine) as db:
+                with log_stage(logger, "service.restore_state"):
+                    state = self._state(db, browser).model_copy(deep=True)
+                with log_stage(logger, "service.dialogue"):
+                    response = start_guided_exploration(db, LOCAL_USER_ID, self.settings, state=state)
+                browser.state = state
+                serialized = response.model_dump(mode="json")
+                browser.messages.append({
+                    "role": "assistant", "content": response.answer,
+                    "sources": serialized["sources"], "status": response.status,
+                    "actions": serialized["actions"],
+                })
+                del browser.messages[:-MAX_VISIBLE_MESSAGES]
+                logger.info("chat.done intent=%s status=%s duration_ms=%d tools=%s",
+                            response.intent, response.status,
+                            round((perf_counter() - started) * 1000),
+                            ",".join(response.tools_used) or "none")
+                return {"response": serialized, "memory": self._memory(db)}
         if (set(payload) not in ({"message"}, {"message", "news_id"})
                 or not isinstance(payload.get("message"), str)):
             raise InvalidRequest("Envía un mensaje de texto para continuar.")
@@ -80,13 +106,18 @@ class WebService:
             raise InvalidRequest("No pude leer algunos caracteres. Vuelve a escribir el mensaje.") from None
         if len(payload["message"]) > 2000:
             raise InvalidRequest("Tu mensaje es muy largo. Puedes dividirlo en mensajes de hasta 2000 caracteres.")
+        started = perf_counter()
+        logger.info("chat.start mode=%s", "configured" if self.settings.has_nvidia_key else "local")
         with self._profile_lock, Session(self.engine) as db:
             # Preserve the prior temporary state if an unexpected provider/DB error escapes.
-            state = self._state(db, browser).model_copy(deep=True)
+            with log_stage(logger, "service.restore_state"):
+                state = self._state(db, browser).model_copy(deep=True)
             selection = {"news_selection_id": payload["news_id"]} if "news_id" in payload else {}
-            response = answer_turn(db, LOCAL_USER_ID, message, self.settings, state=state, **selection)
+            with log_stage(logger, "service.dialogue"):
+                response = answer_turn(db, LOCAL_USER_ID, message, self.settings, state=state, **selection)
             browser.state = state
-            serialized = response.model_dump(mode="json")
+            with log_stage(logger, "service.persist_response"):
+                serialized = response.model_dump(mode="json")
             if response.clear_history:
                 self._context_cleared(browser)
             else:
@@ -97,6 +128,10 @@ class WebService:
                 "actions": serialized["actions"],
             })
             del browser.messages[:-MAX_VISIBLE_MESSAGES]
+            logger.info("chat.done intent=%s status=%s duration_ms=%d tools=%s",
+                        response.intent, response.status,
+                        round((perf_counter() - started) * 1000),
+                        ",".join(response.tools_used) or "none")
             return {"response": serialized, "memory": self._memory(db)}
 
     def reset(self, browser: BrowserSession, payload: dict) -> dict:

@@ -3,14 +3,13 @@
 from investiq.domain import AssistantResponse, ConversationMessage, ConversationState, PendingField, RouterDecision
 
 
-def remember_turn(state: ConversationState, query: str, response: AssistantResponse,
+def remember_turn(state: ConversationState, query: str | None, response: AssistantResponse,
                   decision: RouterDecision | None = None) -> AssistantResponse:
     if decision is not None:
         state.last_decision = decision.model_copy(deep=True)
-    state.history = (state.history + [
-        ConversationMessage(role="user", content=query[:1200]),
-        ConversationMessage(role="assistant", content=response.answer[:1200]),
-    ])[-8:]
+    messages = ([ConversationMessage(role="user", content=query[:1200])] if query is not None else [])
+    messages.append(ConversationMessage(role="assistant", content=response.answer[:1200]))
+    state.history = (state.history + messages)[-8:]
     return response
 
 

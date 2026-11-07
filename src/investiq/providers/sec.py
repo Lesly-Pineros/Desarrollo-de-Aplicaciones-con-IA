@@ -1,4 +1,5 @@
 import json
+import logging
 import re
 import threading
 from datetime import datetime, timedelta, timezone
@@ -13,12 +14,14 @@ from investiq.domain import FilingItem
 from investiq.instruments import INSTRUMENT_BY_SYMBOL
 from investiq.limits import provider_rate_limiter
 from investiq.settings import Settings
+from investiq.logging_config import log_stage
 
 SEC_TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
 SEC_SUBMISSIONS_URL = "https://data.sec.gov/submissions/CIK{cik}.json"
 SEC_ARCHIVES_URL = "https://www.sec.gov/Archives/edgar/data"
 _ticker_map: dict[str, str] | None = None
 _ticker_map_lock = threading.Lock()
+logger = logging.getLogger(__name__)
 
 
 def _aware(value: datetime) -> datetime:
@@ -84,18 +87,26 @@ def sec_docs(
     cache = session.get(FilingCacheEntry, symbol)
     now = datetime.now(timezone.utc)
     if cache and _aware(cache.expires_at) > now:
+        logger.info("provider.filings.cache_hit provider=sec")
         return _decode_cache(cache), None
     if not settings.sec_user_agent.strip() or not re.search(r"[^\s@]+@[^\s@]+\.[^\s@]+", settings.sec_user_agent):
         if cache:
+            logger.warning("provider.filings.fallback provider=sec reason=missing_contact cache=stale")
             return _decode_cache(cache, delayed=True), "SEC_USER_AGENT con contacto es obligatorio; se muestra caché histórica."
+        logger.warning("provider.filings.skipped provider=sec reason=missing_contact")
         return [], "Configura SEC_USER_AGENT con nombre y contacto antes de consultar filings de la SEC."
 
     try:
-        ticker_map = _company_map(settings, http_get)
+        with log_stage(logger, "provider.filings.company_map", failure_level=logging.WARNING,
+                       provider="sec"):
+            ticker_map = _company_map(settings, http_get)
         cik = ticker_map.get(symbol)
         if not cik:
+            logger.warning("provider.filings.unavailable provider=sec reason=symbol_mapping_missing")
             return [], "La SEC no tiene un identificador asociado a este símbolo."
-        submission = _fetch_json(SEC_SUBMISSIONS_URL.format(cik=cik), settings, http_get)
+        with log_stage(logger, "provider.filings.submissions", failure_level=logging.WARNING,
+                       provider="sec"):
+            submission = _fetch_json(SEC_SUBMISSIONS_URL.format(cik=cik), settings, http_get)
         recent = submission.get("filings", {}).get("recent", {})
         forms = recent.get("form", [])
         dates = recent.get("filingDate", [])
@@ -127,8 +138,11 @@ def sec_docs(
             )
         )
         session.commit()
+        logger.info("provider.filings.done provider=sec outcome=success")
         return filings, None if filings else "La SEC no devolvió filings recientes de los formularios permitidos."
     except (requests.RequestException, ValueError, KeyError, TypeError, AttributeError):
         if cache:
+            logger.warning("provider.filings.fallback provider=sec reason=provider_or_payload_error cache=stale")
             return _decode_cache(cache, delayed=True), "La SEC no respondió; se muestra la caché histórica."
+        logger.warning("provider.filings.unavailable provider=sec reason=provider_or_payload_error")
         return [], "No se pudo validar la respuesta de la SEC."

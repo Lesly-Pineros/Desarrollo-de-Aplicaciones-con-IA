@@ -6,8 +6,9 @@
 | TASK-002 | Selección con scaler/KMeans aprobado y filtros deterministas | REQ-002, REQ-003 | Modelo real entrenado sobre fixture sintético; distancias/orden, filtros, referencia y rechazo de datos/modelo inválidos | Completa offline |
 | TASK-003 | Handler con métricas, período, fuentes y narración protegida | REQ-001, REQ-002, REQ-003 | Ratios como porcentaje, período, fuentes, modelo ausente, corto plazo sin ranking y huella de features | Completa offline |
 | TASK-004 | Acceso web y documentación/verificación final | REQ-001, REQ-002, REQ-003, REQ-004 | 704 pruebas offline, 93 checks Chrome, quince specs, wheel, README/PLAN y diff --check | Completa local; NVIDIA real pendiente |
-| TASK-005 | Pulir aclaraciones para respuestas cortas y opcionales | REQ-001, REQ-003, REQ-005 | test_guided_exploration.py: respuestas breves/«sin referencia»; flujo completo conserva porcentajes y fuentes | Pendiente |
-| TASK-006 | Añadir acceso guiado y alinear sugerencias iniciales con modos disponibles | REQ-004, REQ-006 | validate_spec.py; inspección de navegación y prompts; check web verifica que cada sugerencia inicia su modo | Pendiente |
+| TASK-005 | Agrupar en una intervención natural los criterios obligatorios que faltan y aceptar criterios cotidianos | REQ-001, REQ-003, REQ-005 | inspección de criterios parciales/completos; negación de riesgo; referencia opcional y monto no utilizado | Implementada; checks estáticos pasan, suite no ejecutada |
+| TASK-006 | Iniciar la recomendación desde un evento de modo sin mensaje prefabricado del usuario | REQ-004, REQ-006, REQ-007 | inspección manual de botón, respuesta solo del asistente, estado pendiente y continuación libre | Implementada; checks estáticos pasan, suite no ejecutada |
+| TASK-007 | Aclarar que un monto mencionado no afecta el orden del modelo | REQ-003, REQ-008 | inspección de respuesta con y sin mención de monto, sin afectar filtros ni cifras | Implementada; checks estáticos pasan, suite no ejecutada |
 
 ## Trazabilidad
 
@@ -19,6 +20,8 @@
 | REQ-004 | TASK-001, TASK-004 | Web operativa y profesor sin regresiones |
 | REQ-005 | TASK-005 | Aclaraciones breves y flujo con cifras/fuentes |
 | REQ-006 | TASK-006 | Un acceso de navegación inicia el diálogo de exploración |
+| REQ-007 | TASK-006 | No aparece una burbuja prefabricada de usuario; asistente inicia en un turno |
+| REQ-008 | TASK-007 | La respuesta aclara que no usa presupuesto sin inventar filtros |
 
 ## Evidencia ejecutada — 2026-11-04
 

@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     query_log_retention_days: int = Field(default=90, ge=1, le=3650)
     conversation_memory_days: int = Field(default=90, ge=1, le=365)
     show_diagnostics: bool = Field(default=False, validation_alias="INVESTIQ_SHOW_DIAGNOSTICS")
+    log_level: str = Field(default="INFO", validation_alias="INVESTIQ_LOG_LEVEL")
 
     @property
     def has_nvidia_key(self) -> bool:
@@ -57,6 +58,16 @@ class Settings(BaseSettings):
         except (ZoneInfoNotFoundError, ValueError):
             raise ValueError("MARKET_TIMEZONE debe ser una zona IANA válida") from None
         return value
+
+    @field_validator("log_level")
+    @classmethod
+    def valid_log_level(cls, value):
+        import logging
+
+        level = value.upper().strip()
+        if level not in {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}:
+            raise ValueError("INVESTIQ_LOG_LEVEL debe ser DEBUG, INFO, WARNING, ERROR o CRITICAL")
+        return level
 
 
 def get_settings() -> Settings:

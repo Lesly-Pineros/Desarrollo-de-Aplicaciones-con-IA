@@ -36,6 +36,12 @@
 
 **Criterios de aceptación:** la descripción indica que la cobertura corresponde a instrumentos de Estados Unidos. Distingue la cotización del proveedor (que puede ser en tiempo real si Twelve Data y el plan lo permiten) de volatilidad, beta y correlación calculadas sobre retornos históricos. Si se usa yfinance histórico o caché vencida, se etiqueta como histórica/demorada. No promete cotización en tiempo real no verificada.
 
+### REQ-006 — Preparar el mensaje desde el acceso directo
+
+**EARS:** Cuando la persona seleccione la sugerencia de métricas, la interfaz deberá colocar en el campo de escritura un mensaje listo para completar con el símbolo, sin enviarlo al agente.
+
+**Criterios de aceptación:** el texto inicial es «Dame las métricas de la acción o ETF: »; el campo recibe el foco para que la persona agregue el símbolo y lo envíe cuando quiera. No se inicia una petición al chat al seleccionar la sugerencia.
+
 ## Changelog
 
 | Fecha | Cambio |
@@ -43,3 +49,4 @@
 | 2026-11-07 | Borrador inicial para mostrar cotizaciones y todos los campos históricos existentes al consultar símbolos individuales. |
 | 2026-11-07 | Se añade una sugerencia inicial de métricas por símbolo y resolución determinista de esa pregunta. |
 | 2026-11-07 | La sugerencia inicia aclaración de símbolo y la respuesta explica cobertura estadounidense y frescura de cada grupo de valores. |
+| 2026-11-07 | El acceso directo de métricas prepara el mensaje en el campo de escritura sin enviarlo; la persona agrega el símbolo. |

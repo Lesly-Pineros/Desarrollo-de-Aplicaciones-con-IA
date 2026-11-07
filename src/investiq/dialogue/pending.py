@@ -20,6 +20,7 @@ class DialogueResolution:
     reply: str | None = None
     used_context: bool = False
     interrupted: bool = False
+    clarification_fields: tuple[str, ...] = ()
 
 
 def resolve_education_followup(query: str, base: RouterDecision,

@@ -75,7 +75,7 @@
 
     <nav class="branch-navigation" aria-label="Modos de exploración">
       <button id="open-news" class="branch-action" type="button" data-prompt="¿Cuáles son las últimas noticias del mercado hoy?">Noticias de hoy</button>
-      <button id="open-recommendations" class="branch-action" type="button" data-prompt="Quiero una recomendación guiada para invertir">Recomendaciones guiadas</button>
+      <button id="open-recommendations" class="branch-action" type="button" data-action="start-recommendations">Recomendaciones guiadas</button>
       <button id="open-sectors" class="branch-action" type="button" data-prompt="¿Qué sectores lideran hoy en NASDAQ?">Sectores de hoy · NASDAQ</button>
     </nav>
 
@@ -86,8 +86,8 @@
         <p class="welcome-copy">Hablemos de acciones, ETF y sus métricas.<br class="desktop-break"> Puedes consultar cualquier símbolo del catálogo.</p>
         <div class="starting-points" aria-label="Ideas para empezar">
           <p>Elige por dónde empezar</p>
-          <button class="suggestion" data-prompt="Quiero una recomendación guiada para invertir" type="button"><span>Guiarme para explorar acciones y ETF</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
-          <button class="suggestion" data-prompt="¿Quieres conocer las métricas de una acción o ETF?" type="button"><span>¿Quieres conocer las métricas de una acción o ETF?</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
+          <button class="suggestion" data-action="start-recommendations" type="button"><span>Guiarme para explorar acciones y ETF</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
+          <button class="suggestion" data-prefill="Dame las métricas de la acción o ETF: " type="button"><span>¿Quieres conocer las métricas de una acción o ETF?</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
           <button class="suggestion" data-prompt="¿Qué sectores lideran hoy en NASDAQ?" type="button"><span>Ver sectores de hoy en NASDAQ</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
           <button class="suggestion" data-prompt="¿Cuáles son las últimas noticias del mercado hoy?" type="button"><span>Consultar noticias de hoy</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
         </div>

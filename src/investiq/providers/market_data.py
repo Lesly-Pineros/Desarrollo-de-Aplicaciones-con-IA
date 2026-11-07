@@ -1,4 +1,5 @@
 from datetime import datetime, time, timedelta, timezone
+import logging
 import math
 
 import requests
@@ -9,8 +10,10 @@ from investiq.domain import QuoteResult, SourceReference
 from investiq.instruments import INSTRUMENT_BY_SYMBOL
 from investiq.limits import QuotaExceeded, provider_rate_limiter, reserve_daily_request
 from investiq.settings import Settings
+from investiq.logging_config import log_stage
 
 TWELVE_DATA_QUOTE_URL = "https://api.twelvedata.com/quote"
+logger = logging.getLogger(__name__)
 
 
 def _aware(value: datetime) -> datetime:
@@ -116,20 +119,25 @@ def market_quote(
     now = datetime.now(timezone.utc)
     cached = session.get(PriceCacheEntry, symbol)
     if cached and _aware(cached.expires_at) > now:
+        cached_provider = cached.provider if cached.provider in {"Twelve Data", "yfinance histórico"} else "other"
+        logger.info("provider.quote.cache_hit provider=%s", cached_provider)
         return _quote_from_cache(cached)
+    logger.debug("provider.quote.cache_miss")
 
     provider_error = None
     if settings.has_twelve_data_key:
         try:
             provider_rate_limiter.acquire("twelve_data", 8, 60.0)
             reserve_daily_request(session, "twelve_data", 800)
-            response = http_get(
-                TWELVE_DATA_QUOTE_URL,
-                params={"symbol": symbol, "apikey": settings.twelve_data_api_key.strip()},
-                timeout=settings.http_timeout_seconds,
-            )
-            response.raise_for_status()
-            payload = response.json()
+            with log_stage(logger, "provider.quote.request", failure_level=logging.WARNING,
+                           provider="twelve_data"):
+                response = http_get(
+                    TWELVE_DATA_QUOTE_URL,
+                    params={"symbol": symbol, "apikey": settings.twelve_data_api_key.strip()},
+                    timeout=settings.http_timeout_seconds,
+                )
+                response.raise_for_status()
+                payload = response.json()
             if payload.get("status") == "error" or "close" not in payload:
                 raise ValueError("invalid quote response")
             price = float(payload["close"])
@@ -156,20 +164,28 @@ def market_quote(
                 ),
             )
             _store_quote(session, quote, timedelta(minutes=settings.price_cache_minutes))
+            logger.info("provider.quote.done provider=twelve_data freshness=provider")
             return quote
         except QuotaExceeded:
             provider_error = "Se alcanzó la cuota diaria de cotizaciones; se usa el dato histórico disponible."
+            logger.warning("provider.quote.fallback provider=twelve_data reason=quota")
         except (requests.RequestException, ValueError, KeyError, TypeError, AttributeError):
             provider_error = "No se pudo validar la cotización en vivo; se usa el dato histórico disponible."
+            logger.warning("provider.quote.fallback provider=twelve_data reason=provider_or_payload_error")
+    else:
+        logger.info("provider.quote.skipped provider=twelve_data reason=no_key")
 
     if cached:
         quote = _quote_from_cache(cached, expired=True)
         quote.error = provider_error
+        logger.info("provider.quote.fallback provider=cache freshness=stale")
         return quote
 
     quote = _historical_quote(session, symbol)
     if quote:
         _store_quote(session, quote, timedelta(minutes=settings.price_cache_minutes))
         quote.error = provider_error
+        logger.info("provider.quote.fallback provider=yfinance_historical available=true")
         return quote
+    logger.warning("provider.quote.unavailable")
     return QuoteResult(symbol=symbol, error=provider_error or "No hay precio verificable en caché ni histórico local.")

@@ -17,6 +17,18 @@ Se actualizaron `PLAN.md` y `README.md` para describir la web local y las tools 
 
 La interfaz y documentación llaman ahora a la fuente **filings de la SEC**. La ficha educativa fue renombrada a «Informes públicos de empresas» y el servidor MCP se identifica como servicio de filings SEC. Se conservan los identificadores de protocolo y las rutas técnicas oficiales necesarios para obtener y enlazar esos documentos; no aparecen como nombre del producto.
 
+## Actualización — acceso directo a métricas
+
+Al elegir la sugerencia de métricas, el chat ahora precarga «Dame las métricas de la acción o ETF: » en el campo de escritura, enfoca el campo y espera a que la persona agregue el símbolo y envíe el mensaje. La selección no dispara una consulta ni llama al modelo. La spec de ficha individual documenta este comportamiento.
+
+## Actualización — logs operativos
+
+Se añadió configuración de logs de consola (`INVESTIQ_LOG_LEVEL`, predeterminado `INFO`) y trazas correlacionadas por request para el servidor web. El recorrido registra etapas de servicio, diálogo, clasificación, tools, proveedores, LLM, degradaciones y persistencia con duraciones. Los errores inesperados registran tipo y marcos del código sin mensajes de excepción; los logs excluyen prompts, símbolos, datos financieros, claves y contenido de proveedores. También se instrumentaron los comandos de conocimiento, MCP, verificación del agente y pipeline ML. `compileall`, `node --check`, validación de `specs/logs-operativos` y `git diff --check` pasan; no se ejecutó la suite de tests ni se hicieron llamadas externas.
+
+## Actualización — recomendaciones guiadas
+
+Se reemplazó el prompt prefabricado del botón por una acción que muestra únicamente la intervención del asistente. La aclaración reúne en una sola pregunta los criterios obligatorios pendientes; usa una redacción del modelo configurado y una alternativa local cuando no está disponible. Se corrigió la interpretación de negaciones para conservar frases como «no soy de tomar riesgos» como preferencia de baja variación histórica, se dejó opcional el símbolo de referencia y se añadió transparencia si se menciona dinero: el monto no interviene en el ranking. `compileall`, `node --check`, validación de la spec y `git diff --check` pasan. No se ejecutaron pruebas automatizadas ni llamadas a servicios externos.
+
 ## Historial
 
 ### Estado

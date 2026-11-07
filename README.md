@@ -35,6 +35,7 @@ Edita `.env` en tu equipo:
 | `MARKET_TIMEZONE` | Zona IANA para «hoy» en noticias; por defecto `America/Bogota`. |
 | `CONVERSATION_MEMORY_DAYS` | Retención del contexto resumido, por defecto 90 días. |
 | `INVESTIQ_SHOW_DIAGNOSTICS` | `true` muestra categorías de diagnóstico para desarrollo. Por defecto `false`. |
+| `INVESTIQ_LOG_LEVEL` | Nivel de logs en terminal: `DEBUG`, `INFO` (predeterminado), `WARNING`, `ERROR` o `CRITICAL`. |
 
 Las variables exportadas en la consola tienen prioridad sobre `.env`. Conserva `.env` en cada equipo; no se sube a Git.
 
@@ -53,6 +54,8 @@ El lanzador detecta su propia carpeta, entra en la raíz correcta y utiliza el P
 ```bash
 INVESTIQ_PYTHON=/ruta/al/entorno/bin/python bash run_web.sh --port 8001
 ```
+
+La ejecución muestra en la terminal el inicio de la app y, por cada consulta, sus etapas de diálogo, enrutamiento, herramientas, proveedores y respuesta, con duración y un identificador para seguirla. Usa `INVESTIQ_LOG_LEVEL=DEBUG bash run_web.sh` para más detalle. Los logs no incluyen el texto escrito, símbolos, cifras, claves ni respuestas de proveedores; si hay un error inesperado muestran su tipo y ubicación interna.
 
 `INVESTIQ_PYTHON` tiene prioridad; si no lo defines, se utiliza `.venv/bin/python` y después el Python disponible en la consola.
 
@@ -84,7 +87,7 @@ Puedes seguir una lección con «No entiendo», «¿Me lo explicas con un ejempl
 
 Los accesos **Noticias de hoy**, **Recomendaciones guiadas** y **Sectores de hoy · NASDAQ** permanecen visibles junto al chat, también en móvil. Las sugerencias iniciales conducen a esos tres modos. Puedes preguntar «Últimas noticias del sector financiero en Colombia», «Noticias del sector tecnológico» o «Noticias de AAPL». Se muestran hasta tres titulares de hoy por recencia, con publicación y fuente. NVIDIA puede traducirlos y resumir el extracto al pulsar «Resumir noticia 2» o escribir «Resume la segunda». Sin modelo se conserva el original; sin extracto no se inventa un resumen. Los artículos no se guardan en la memoria personal.
 
-Para consultar una acción o ETF, el acceso inicial pregunta **«¿Quieres conocer las métricas de una acción o ETF?»** y luego solicita su símbolo. La ficha reúne cotización, variación, volatilidad anualizada, beta, correlación con instrumentos similares, sector y período de cálculo, con su fuente y fecha cuando están disponibles. La cobertura de mercado es de instrumentos estadounidenses. La cotización puede ser en tiempo real si Twelve Data y el plan de la cuenta lo permiten; si no, la app identifica el dato histórico o demorado. Las métricas calculadas usan precios históricos y no son valores en tiempo real ni predicen resultados. La cotización en tiempo real requiere `TWELVE_DATA_API_KEY` y acceso habilitado por el proveedor.
+Para consultar una acción o ETF, elige **«¿Quieres conocer las métricas de una acción o ETF?»**: la sugerencia prepara **«Dame las métricas de la acción o ETF: »** en la caja de escritura sin enviarlo. Agrega el símbolo y envía el mensaje cuando quieras. La ficha reúne cotización, variación, volatilidad anualizada, beta, correlación con instrumentos similares, sector y período de cálculo, con su fuente y fecha cuando están disponibles. La cobertura de mercado es de instrumentos estadounidenses. La cotización puede ser en tiempo real si Twelve Data y el plan de la cuenta lo permiten; si no, la app identifica el dato histórico o demorado. Las métricas calculadas usan precios históricos y no son valores en tiempo real ni predicen resultados. La cotización en tiempo real requiere `TWELVE_DATA_API_KEY` y acceso habilitado por el proveedor.
 
 «¿Qué acción o ETF me recomiendas para invertir hoy?» pregunta tipo, plazo, variación histórica y referencia opcional dentro del chat. Usa el KMeans aprobado y características coherentes; presenta hasta tres candidatos para estudiar con volatilidad anualizada en porcentaje, beta, sector, grupo y fuentes del período histórico. La coincidencia del modelo no es rentabilidad ni probabilidad de ganar, y el tercil de volatilidad no constituye un perfil financiero completo. Los criterios no se guardan automáticamente como preferencias. Sin modelo/datos o coincidencias compatibles, se explica la limitación; el corto plazo no se resuelve presentando acciones o ETF como seguros.
 

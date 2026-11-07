@@ -12,6 +12,8 @@ REQ-004: la sugerencia inicia `instrument_info` sin símbolo, que activa un pend
 
 REQ-005: el bloque determinista explica que la cotización se obtiene al consultar la fuente y su frescura depende de proveedor/plan/caché, mientras las features se calcularon desde históricos. El mercado cubierto es Estados Unidos; no se anuncia que beta, volatilidad o correlación sean datos en tiempo real.
 
+REQ-006: el botón de métricas usa `data-prefill` en vez de `data-prompt`. El controlador común de sugerencias coloca el texto preparado en el textarea, ajusta su altura, actualiza el botón de envío y enfoca el campo; no llama a `sendMessage` hasta que la persona envíe explícitamente el texto.
+
 ## Datos e interfaces
 
 Cotización: precio, cambio absoluto/porcentual, timestamp, proveedor y marca de retraso desde `QuoteResult`. Características: volatilidad anualizada, `volatility_bucket`, beta, correlación media entre pares, sector y `calculated_at` desde `InstrumentFeature`. No se añaden cálculos ni columnas. El beta usa SPY como benchmark cuando está en el universo de datos; en caso contrario usa el promedio del universo. El período ML se incluye solo cuando existe un registro local aprobado.

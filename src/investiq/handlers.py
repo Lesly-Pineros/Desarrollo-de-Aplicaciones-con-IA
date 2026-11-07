@@ -1,5 +1,6 @@
 """Deterministic query execution; no language model, UI or query logging."""
 
+import logging
 from dataclasses import dataclass, field
 from typing import Literal
 
@@ -17,6 +18,9 @@ from investiq.tools import (
     volatility_bucket,
     exploration_candidates,
 )
+from investiq.logging_config import log_stage
+
+logger = logging.getLogger(__name__)
 
 _COVERAGE = ", ".join(sorted(item.symbol for item in INSTRUMENTS))
 
@@ -51,8 +55,11 @@ def _symbol_feature_block(session: Session, symbol: str, quote=None) -> tuple[st
         error = quote.error if quote is not None else None
         lines.append(f"- Cotización: no disponible{(': ' + error) if error else ''}.")
 
-    feature = instr_features(session, symbol)
-    model_source = local_model_source(session)
+    with log_stage(logger, "tool.symbol_features"):
+        feature = instr_features(session, symbol)
+        model_source = local_model_source(session)
+    logger.debug("tool.symbol_features.availability quote=%s features=%s model_metadata=%s",
+                 quote is not None and quote.price is not None, feature is not None, model_source is not None)
     if feature:
         lines.append(f"- Volatilidad histórica anualizada: {feature['volatility']:.2%}.")
         lines.append(f"- Tercil de volatilidad del universo: {feature['volatility_bucket']}.")
@@ -208,7 +215,8 @@ def _recommend_similar(session: Session, decision: RouterDecision) -> HandlerRes
                   + ". La similitud histórica no predice rendimiento.")
         return HandlerResult(answer, facts={"reference": reference, "neighbors": [row["symbol"] for row in rows]},
                              sources=sources, status="ok" if rows else "degraded", tools_used=tools)
-    except (RuntimeError, KeyError, ValueError):
+    except (RuntimeError, KeyError, ValueError) as error:
+        logger.warning("tool.similar_instruments.degraded error_type=%s", type(error).__name__)
         return HandlerResult(
             "Todavía no tengo los datos y el modelo histórico listos para buscar similitudes. Podemos consultar un instrumento o hablar de cómo se mide la similitud.",
             sources=sources, status="degraded", tools_used=tools,
@@ -237,6 +245,7 @@ def _compare(session: Session, email: str, decision: RouterDecision, use_prefere
         return HandlerResult(answer, facts={"scores": rows}, sources=sources,
                              status="ok" if rows else "degraded", tools_used=tools)
     except ValueError as error:
+        logger.warning("tool.compare_instruments.degraded error_type=%s", type(error).__name__)
         return HandlerResult(str(error), sources=sources, status="degraded", tools_used=tools)
 
 
@@ -293,6 +302,16 @@ def _explore(session: Session, decision: RouterDecision) -> HandlerResult:
 
 def execute_query(session: Session, email: str, query: str, settings: Settings, decision: RouterDecision,
                   *, use_preferences: bool = True, explanation_level: str = "standard") -> HandlerResult:
+    with log_stage(logger, "handler.execute", intent=decision.intent):
+        result = _execute_query(session, email, query, settings, decision,
+                                use_preferences=use_preferences, explanation_level=explanation_level)
+    logger.info("handler.result intent=%s status=%s tools=%s", decision.intent, result.status,
+                ",".join(result.tools_used) or "none")
+    return result
+
+
+def _execute_query(session: Session, email: str, query: str, settings: Settings, decision: RouterDecision,
+                   *, use_preferences: bool = True, explanation_level: str = "standard") -> HandlerResult:
     if decision.intent == "sector_performance":
         if decision.sector_market != "Estados Unidos":
             return HandlerResult(sector_limitation(decision.sector_market), status="degraded")

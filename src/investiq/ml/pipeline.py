@@ -1,6 +1,7 @@
 import argparse
 import hashlib
 import json
+import logging
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -11,9 +12,12 @@ from investiq.data.database import create_db, ensure_sqlite_parent, make_engine
 from investiq.data.models import InstrumentFeature, MLClusterMembership, MLClusterRun, PriceBar
 from investiq.ingest import IngestResult, ingest_history
 from investiq.instruments import INSTRUMENTS
+from investiq.logging_config import configure_logging, log_stage
 from investiq.ml.features import build_feature_frame
 from investiq.ml.similarity import fit_similarity_model, save_model_artifact
 from investiq.ml.volatility import assign_volatility_buckets
+
+logger = logging.getLogger(__name__)
 
 
 def closes_from_session(session: Session) -> pd.DataFrame:
@@ -34,9 +38,11 @@ def run_training(
     seed: int = 42,
     min_observations: int = 60,
 ) -> dict[str, object]:
-    closes = closes_from_session(session)
+    with log_stage(logger, "ml.load_history"):
+        closes = closes_from_session(session)
     sectors = {item.symbol: item.sector for item in INSTRUMENTS}
-    feature_result = build_feature_frame(closes, sectors, min_observations=min_observations)
+    with log_stage(logger, "ml.build_features"):
+        feature_result = build_feature_frame(closes, sectors, min_observations=min_observations)
     buckets = assign_volatility_buckets(feature_result.values["volatility"])
     feature_columns = ["volatility", "mean_peer_correlation", "beta", "sector"]
     feature_values = feature_result.values[feature_columns]
@@ -55,7 +61,8 @@ def run_training(
     session.commit()
 
     numeric = feature_result.values.drop(columns=["sector"])
-    evaluation = fit_similarity_model(numeric, seed=seed)
+    with log_stage(logger, "ml.train_similarity"):
+        evaluation = fit_similarity_model(numeric, seed=seed)
     feature_fingerprint = hashlib.sha256(
         numeric.round(12).to_csv(float_format="%.12g").encode("utf-8")
     ).hexdigest()
@@ -111,11 +118,16 @@ def run_training(
     for symbol, label in evaluation.labels.items():
         session.add(MLClusterMembership(run_id=run_id, symbol=symbol, cluster_label=label))
     session.commit()
+    logger.info("ml.train.done instruments=%d clusters=%d passed_thresholds=%s",
+                len(numeric), manifest["n_clusters"], evaluation.passed_thresholds)
     return {**manifest, "manifest_path": str(manifest_path), "artifact_path": str(artifact_path)}
 
 
 def run_ingest(session: Session, *, period: str = "2y") -> IngestResult:
-    return ingest_history(session, period=period)
+    with log_stage(logger, "ml.ingest"):
+        result = ingest_history(session, period=period)
+    logger.info("ml.ingest.result downloaded=%d errors=%d", result.downloaded, len(result.errors))
+    return result
 
 
 def main() -> None:
@@ -126,20 +138,29 @@ def main() -> None:
     parser.add_argument("--artifact-dir", default="ml/artifacts")
     args = parser.parse_args()
 
+    from investiq.settings import get_settings
+    settings = get_settings()
+    configure_logging(settings.log_level)
+    logger.info("startup.begin component=data_pipeline command=%s", args.command)
     from investiq.data.database import database_url
 
     url = database_url()
-    ensure_sqlite_parent(url)
-    engine = create_db(make_engine(url))
-    with Session(engine) as session:
-        if args.command in ("ingest", "all"):
-            result = run_ingest(session, period=args.period)
-            print(json.dumps({"downloaded": result.downloaded, "errors": result.errors}, indent=2))
-            if result.errors and not result.downloaded:
-                raise SystemExit("ingestion failed for all requested instruments")
-        if args.command in ("train", "all"):
-            report = run_training(session, artifact_dir=args.artifact_dir, seed=args.seed)
-            print(json.dumps(report, ensure_ascii=False, indent=2))
+    with log_stage(logger, "pipeline.database"):
+        ensure_sqlite_parent(url)
+        engine = create_db(make_engine(url))
+    try:
+        with Session(engine) as session:
+            if args.command in ("ingest", "all"):
+                result = run_ingest(session, period=args.period)
+                print(json.dumps({"downloaded": result.downloaded, "errors": result.errors}, indent=2))
+                if result.errors and not result.downloaded:
+                    raise SystemExit("ingestion failed for all requested instruments")
+            if args.command in ("train", "all"):
+                report = run_training(session, artifact_dir=args.artifact_dir, seed=args.seed)
+                print(json.dumps(report, ensure_ascii=False, indent=2))
+    finally:
+        engine.dispose()
+        logger.info("shutdown.done component=data_pipeline")
 
 
 if __name__ == "__main__":

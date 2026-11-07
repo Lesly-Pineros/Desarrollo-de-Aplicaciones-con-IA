@@ -1,6 +1,7 @@
 """Intent routing and normalization, with an offline Spanish fallback."""
 
 import json
+import logging
 import re
 
 from investiq.domain import ResponseDiagnostics, RouterDecision
@@ -13,6 +14,8 @@ from investiq.response_style import provider_failure
 from investiq.tools import normalize_symbol
 from investiq.sector_context import is_current_sector_query, sector_market
 from investiq.news_context import news_decision
+
+logger = logging.getLogger(__name__)
 
 
 def fallback_route(query: str) -> RouterDecision:
@@ -95,12 +98,19 @@ def route_query(query: str, client: ChatNVIDIAClient | None, *, context: dict | 
                 diagnostics: ResponseDiagnostics | None = None) -> RouterDecision:
     if client:
         try:
+            logger.debug("router.classify.context_present=%s", context is not None)
+            logger.info("router.classify.start provider=NVIDIA")
             classifier_input = json.dumps({"current_message": query, "conversation_context": context}, ensure_ascii=False) if context else query
             decision = normalize_decision(client.classify(classifier_input), query=query)
             if diagnostics is not None:
                 diagnostics.routing = "llm"
+            logger.info("router.classify.done intent=%s", decision.intent)
             return decision
         except LLMUnavailable as error:
             if diagnostics is not None:
                 diagnostics.fallback_reason = provider_failure(error)
-    return fallback_route(query)
+            category = getattr(error, "provider_failure_category", "provider-error")
+            logger.warning("router.classify.fallback category=%s", category)
+    decision = fallback_route(query)
+    logger.info("router.rules.done intent=%s", decision.intent)
+    return decision

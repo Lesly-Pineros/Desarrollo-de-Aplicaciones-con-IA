@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import sys
 from typing import Any, Callable
 
@@ -11,8 +12,11 @@ from sqlmodel import Session
 from investiq.data.database import create_db, make_engine
 from investiq.domain import FilingItem
 from investiq.instruments import INSTRUMENT_BY_SYMBOL
+from investiq.logging_config import configure_logging, log_stage, log_unexpected
 from investiq.providers.sec import sec_docs
 from investiq.settings import Settings
+
+logger = logging.getLogger(__name__)
 
 SERVER_INFO = {"name": "investiq-sec-filings", "version": "0.2.0"}
 TOOL = {
@@ -43,10 +47,13 @@ def _tool_result(arguments: Any, settings: Settings,
         return {"isError": True, "content": [{"type": "text", "text": "Símbolo fuera del universo cubierto."}]}
     engine = create_db(make_engine(settings.database_url))
     try:
-        with Session(engine) as session:
+        with Session(engine) as session, log_stage(logger, "mcp.sec_filings", provider="sec"):
             filings, reason = fetch(session, symbol, settings, limit=limit)
-    except Exception:
+    except Exception as error:
+        log_unexpected(logger, "mcp.sec_filings", error)
         return {"isError": True, "content": [{"type": "text", "text": "No se pudo completar la consulta de filings de la SEC."}]}
+    finally:
+        engine.dispose()
     payload = {
         "symbol": symbol,
         "filings": [item.model_dump(mode="json") if isinstance(item, FilingItem) else item for item in filings],
@@ -89,12 +96,25 @@ def serve(input_stream=None, output_stream=None, settings: Settings | None = Non
     input_stream = input_stream or sys.stdin
     output_stream = output_stream or sys.stdout
     settings = settings or Settings()
+    configure_logging(settings.log_level)
+    logger.info("startup.ready component=mcp")
     for line in input_stream:
         try:
             message = json.loads(line)
+            method = message.get("method") if isinstance(message, dict) else None
+            if method:
+                safe_method = method if method in {
+                    "initialize", "notifications/initialized", "ping", "tools/list", "tools/call"
+                } else "other"
+                logger.info("mcp.request method=%s", safe_method)
             response = handle_message(message, settings)
         except (json.JSONDecodeError, AttributeError, TypeError):
+            logger.warning("mcp.request.rejected reason=invalid_json")
             response = {"jsonrpc": "2.0", "id": None, "error": {"code": -32700, "message": "JSON-RPC inválido."}}
+        except Exception as error:
+            log_unexpected(logger, "mcp.request", error)
+            response = {"jsonrpc": "2.0", "id": None,
+                        "error": {"code": -32603, "message": "Error interno al procesar la solicitud."}}
         if response is not None:
             output_stream.write(json.dumps(response, ensure_ascii=False) + "\n")
             output_stream.flush()

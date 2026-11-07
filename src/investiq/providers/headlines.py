@@ -3,6 +3,7 @@
 from datetime import datetime, timedelta, timezone
 import hashlib
 import json
+import logging
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
@@ -17,6 +18,9 @@ from investiq.news_context import NEWS_COUNTRIES, NEWS_SECTORS
 from investiq.providers.news import MARKETAUX_NEWS_URL, _aware, _published
 from investiq.settings import Settings
 from investiq.tutor.grounding import suspicious_passage
+from investiq.logging_config import log_stage
+
+logger = logging.getLogger(__name__)
 
 
 def safe_news_url(value: str) -> bool:
@@ -75,6 +79,7 @@ def daily_headlines(session: Session, decision: RouterDecision, settings: Settin
     if cached and _aware(cached.expires_at) > now:
         try:
             articles = validated(json.loads(cached.payload_json))
+            logger.info("provider.headlines.cache_hit provider=marketaux")
             return NewsCollection(articles=articles, available=bool(articles),
                                   reason=None if articles else "No hay titulares verificados de hoy con esos filtros.")
         except (ValueError, TypeError):
@@ -83,11 +88,13 @@ def daily_headlines(session: Session, decision: RouterDecision, settings: Settin
     if settings.has_marketaux_key:
         try:
             reserve_daily_request(session, "marketaux", 100)
-            response = (http_get or requests.get)(MARKETAUX_NEWS_URL,
-                params={**params, "api_token": settings.marketaux_api_key.strip()},
-                timeout=settings.http_timeout_seconds)
-            response.raise_for_status()
-            payload = response.json()
+            with log_stage(logger, "provider.headlines.request", failure_level=logging.WARNING,
+                           provider="marketaux"):
+                response = (http_get or requests.get)(MARKETAUX_NEWS_URL,
+                    params={**params, "api_token": settings.marketaux_api_key.strip()},
+                    timeout=settings.http_timeout_seconds)
+                response.raise_for_status()
+                payload = response.json()
             if not isinstance(payload, dict) or not isinstance(payload.get("data"), list):
                 raise ValueError("invalid collection")
             raw = []
@@ -108,18 +115,25 @@ def daily_headlines(session: Session, decision: RouterDecision, settings: Settin
                 expires_at=min(now + timedelta(minutes=settings.headlines_cache_minutes),
                                start + timedelta(days=1))))
             session.commit()
+            logger.info("provider.headlines.done provider=marketaux outcome=success")
             return NewsCollection(articles=articles, available=bool(articles),
                 reason=None if articles else "No hay titulares verificados de hoy con esos filtros.")
         except QuotaExceeded:
             reason = "Se alcanzó la cuota diaria de noticias; vuelve a intentarlo más tarde."
+            logger.warning("provider.headlines.fallback provider=marketaux reason=quota")
         except (requests.RequestException, ValueError, TypeError, AttributeError):
             reason = "No pude validar noticias nuevas de Marketaux; puede faltar acceso o conexión."
+            logger.warning("provider.headlines.fallback provider=marketaux reason=provider_or_payload_error")
+    else:
+        logger.info("provider.headlines.skipped provider=marketaux reason=no_key")
     # Expired same-day data can still be useful, but is explicitly marked stale.
     if cached:
         try:
             articles = [a.model_copy(update={"delayed": True}) for a in validated(json.loads(cached.payload_json))]
             if articles:
+                logger.warning("provider.headlines.fallback provider=cache freshness=stale")
                 return NewsCollection(articles=articles, reason=reason + " Muestro el caché de hoy sin actualizar.")
         except (ValueError, TypeError):
             pass
+    logger.warning("provider.headlines.unavailable provider=marketaux")
     return NewsCollection(available=False, reason=reason)

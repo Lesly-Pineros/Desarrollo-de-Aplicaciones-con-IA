@@ -29,6 +29,10 @@ Se añadió configuración de logs de consola (`INVESTIQ_LOG_LEVEL`, predetermin
 
 Se reemplazó el prompt prefabricado del botón por una acción que muestra únicamente la intervención del asistente. La aclaración reúne en una sola pregunta los criterios obligatorios pendientes; usa una redacción del modelo configurado y una alternativa local cuando no está disponible. Se corrigió la interpretación de negaciones para conservar frases como «no soy de tomar riesgos» como preferencia de baja variación histórica, se dejó opcional el símbolo de referencia y se añadió transparencia si se menciona dinero: el monto no interviene en el ranking. `compileall`, `node --check`, validación de la spec y `git diff --check` pasan. No se ejecutaron pruebas automatizadas ni llamadas a servicios externos.
 
+## Actualización — resumen de memoria al iniciar
+
+Se corrigió un `KeyError` al cargar memoria cuando quedaba pendiente elegir un símbolo. Se añadió el texto de resumen para `instrument_symbol` y el resumen ahora ignora de forma segura cualquier campo pendiente sin descripción. Verificación estática: `compileall` y `git diff --check`; no se ejecutaron pruebas.
+
 ## Historial
 
 ### Estado

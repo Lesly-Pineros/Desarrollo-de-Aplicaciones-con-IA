@@ -122,6 +122,7 @@ def _summary(state: ConversationState, *, enabled: bool) -> str:
         "preference_beta": "Quedó pendiente elegir la beta objetivo que quieres usar.",
         "education_topic": "Quedó pendiente elegir qué palabra o símbolo quieres entender.",
         "sector_market": "Quedó pendiente elegir el mercado para la consulta sectorial.",
+        "instrument_symbol": "Quedó pendiente elegir un símbolo del catálogo para consultar sus métricas.",
         "news_scope": "Quedó pendiente elegir sector o país de las noticias.",
         "explore_kind": "Quedó pendiente elegir acciones, ETF o ambos.",
         "explore_horizon": "Quedó pendiente conocer el plazo para explorar candidatos.",
@@ -130,7 +131,9 @@ def _summary(state: ConversationState, *, enabled: bool) -> str:
         "explore_sector": "Quedó pendiente aclarar el sector de los candidatos.",
     }
     if state.pending_field:
-        pieces.append(pending[state.pending_field])
+        pending_summary = pending.get(state.pending_field)
+        if pending_summary:
+            pieces.append(pending_summary)
         if state.pending_decision and state.pending_decision.comparison_symbols:
             pieces.append("La comparación era entre " + " y ".join(state.pending_decision.comparison_symbols) + ".")
     level = getattr(state, "explanation_level", "standard")

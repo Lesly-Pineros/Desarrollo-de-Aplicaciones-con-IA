@@ -5,7 +5,7 @@ import logging
 import re
 
 from investiq.domain import ResponseDiagnostics, RouterDecision
-from investiq.instruments import mentioned_symbols
+from investiq.instruments import mentioned_symbols, query_only_company_symbols
 from investiq.knowledge import get_library
 from investiq.language import canonical_education_topic, is_educational_question, plain
 from investiq.learning import lesson_request
@@ -22,6 +22,7 @@ def fallback_route(query: str) -> RouterDecision:
     text = query.casefold()
     normalized = plain(query)
     covered = mentioned_symbols(query)
+    quote_only = query_only_company_symbols(query)
     if (headlines := news_decision(query)) is not None:
         return headlines
     from investiq.dialogue.exploration import criteria_patch, is_exploration_query
@@ -32,9 +33,16 @@ def fallback_route(query: str) -> RouterDecision:
         return RouterDecision(intent="sector_performance", sector_market=market,
                               needs_clarification=market is None)
     if (re.search(r"\b(?:metricas?|indicadores?|valores)\b", normalized)
-            and (bool(covered) or re.search(r"\b(?:accion(?:es)?|etf|simbolo|ticker)\b", normalized))):
+            and (bool(covered or quote_only) or re.search(r"\b(?:accion(?:es)?|etf|simbolo|ticker)\b", normalized))):
+        symbols = list(dict.fromkeys([*covered, *quote_only]))
+        return RouterDecision(intent="instrument_info", symbol=symbols[0] if len(symbols) == 1 else None,
+                              needs_clarification=len(symbols) != 1)
+    if covered and re.search(r"\b(?:accion(?:es)?|empresa|ticker|simbolo)\b", normalized):
         return RouterDecision(intent="instrument_info", symbol=covered[0] if len(covered) == 1 else None,
-                              needs_clarification=not bool(covered))
+                              needs_clarification=len(covered) != 1)
+    if quote_only and re.search(r"\b(?:accion(?:es)?|cotizacion|cotiza\w*|precio|valor)\b", normalized):
+        return RouterDecision(intent="instrument_info", symbol=quote_only[0] if len(quote_only) == 1 else None,
+                              needs_clarification=len(quote_only) != 1)
     if is_educational_question(query):
         return RouterDecision(intent="education", education_topic=query)
     if any(word in text for word in ("compara", "comparar", "comparación", "comparacion", "diferencias entre")):

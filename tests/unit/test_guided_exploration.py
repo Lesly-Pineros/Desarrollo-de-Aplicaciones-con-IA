@@ -77,16 +77,11 @@ def test_investment_exploration_is_a_distinct_route(query):
     assert fallback_route(query).intent == "explore"
 
 
-def test_guided_conversation_restores_each_question_and_uses_real_model(exploration):
+def test_guided_conversation_groups_missing_criteria_and_uses_real_model(exploration):
     first = ask(exploration, "Quiero una recomendación educativa para invertir")
-    assert "acciones, ETF o ambos" in first.answer
-    second = ask(exploration, "ambos", restore=True)
-    assert "cuándo" in second.answer.casefold()
-    third = ask(exploration, "largo plazo", restore=True)
-    assert "baja, media o alta" in third.answer
-    fourth = ask(exploration, "baja", restore=True)
-    assert "referencia" in fourth.answer
-    result = ask(exploration, "sin referencia", restore=True)
+    assert "acciones" in first.answer and "ETF" in first.answer
+    assert "cuánto tiempo" in first.answer and "subidas y bajadas" in first.answer
+    result = ask(exploration, "acciones, más de cinco años y variaciones bajas", restore=True)
     assert result.intent == "explore" and result.status == "ok"
     assert "Volatilidad anualizada" in result.answer and "2025-01-01 a 2026-10-30" in result.answer
     assert "Grupo ML" in result.answer and "11.20%" in result.answer
@@ -123,8 +118,7 @@ def test_education_interrupts_and_the_exploration_can_resume(exploration):
     assert lesson.intent == "education" and lesson.sources
     assert load_memory(exploration[0], "learner").state.pending_field == "explore_horizon"
     ask(exploration, "más de cinco años", restore=True)
-    ask(exploration, "alta", restore=True)
-    result = ask(exploration, "sin referencia", restore=True)
+    result = ask(exploration, "alta", restore=True)
     assert result.intent == "explore" and result.status == "ok"
 
 
@@ -151,7 +145,8 @@ def test_unknown_sector_is_clarified_instead_of_ignored(exploration):
     assert "no está en el catálogo" in first.answer
     assert load_memory(exploration[0], "learner").state.pending_field == "explore_sector"
     response = ask(exploration, "tecnología", restore=True)
-    assert "cuándo" in response.answer.casefold()
+    assert "cuánto tiempo" in response.answer.casefold()
+    assert "subidas y bajadas" in response.answer.casefold()
 
 
 def test_missing_model_is_honest_and_never_fabricates_percentages(exploration):
@@ -186,7 +181,7 @@ def test_changed_feature_values_fail_the_training_fingerprint(exploration):
 def test_negated_criterion_does_not_select_the_opposite_of_the_request(exploration):
     ask(exploration, "Recomiéndame ETF a largo plazo")
     result = ask(exploration, "no quiero volatilidad alta", restore=True)
-    assert "sí te interesa" in result.answer
+    assert "¿Cómo te sientes" in result.answer
     assert load_memory(exploration[0], "learner").state.pending_decision.volatility_target is None
 
 

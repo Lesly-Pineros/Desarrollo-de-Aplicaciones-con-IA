@@ -14,6 +14,8 @@ REQ-005: el bloque determinista explica que la cotización se obtiene al consult
 
 REQ-006: el botón de métricas usa `data-prefill` en vez de `data-prompt`. El controlador común de sugerencias coloca el texto preparado en el textarea, ajusta su altura, actualiza el botón de envío y enfoca el campo; no llama a `sendMessage` hasta que la persona envíe explícitamente el texto.
 
+REQ-007: `instruments.py` resuelve nombres/alias de forma determinista y distingue el catálogo ML de símbolos consultables individualmente. Los nombres canónicos y alias del catálogo (incluido Johnson & Johnson → JNJ) se resuelven sin LLM. Coca-Cola/Coca Cola/CocaCola/Coke resuelven a KO mediante una allowlist de consulta individual; KO no entra en `INSTRUMENTS`, ingesta ni clustering. `market_quote` admite el ticker permitido KO; features ausentes se comunican, y noticias/SEC mantienen el límite del catálogo actual. Los nombres no cubiertos no disparan búsquedas externas ni adivinación.
+
 ## Datos e interfaces
 
 Cotización: precio, cambio absoluto/porcentual, timestamp, proveedor y marca de retraso desde `QuoteResult`. Características: volatilidad anualizada, `volatility_bucket`, beta, correlación media entre pares, sector y `calculated_at` desde `InstrumentFeature`. No se añaden cálculos ni columnas. El beta usa SPY como benchmark cuando está en el universo de datos; en caso contrario usa el promedio del universo. El período ML se incluye solo cuando existe un registro local aprobado.
@@ -24,7 +26,7 @@ Datos, cálculos, selección de fuentes y formato de cifras son deterministas. N
 
 ## Seguridad, fuentes y degradación
 
-Twelve Data es opcional: la clave vacía no provoca solicitud externa. Se conserva caché y límite existente y fallback histórico yfinance. Métricas ausentes se identifican individualmente, no se sustituyen por ceros. Noticias/filings siguen sus fuentes y límites actuales. Cada respuesta conserva el disclaimer.
+Twelve Data es opcional: la clave vacía no provoca solicitud externa. Se conserva caché y límite existente y fallback histórico yfinance. Métricas ausentes se identifican individualmente, no se sustituyen por ceros. Noticias/filings siguen sus fuentes y límites actuales. KO se usa solo para cotización consultada bajo demanda y Twelve Data opcional; sin clave, caché o histórico disponible, la ficha declara la falta de cotización y de features. Cada respuesta conserva el disclaimer.
 
 ## Decisiones y alternativas
 

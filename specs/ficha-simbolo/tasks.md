@@ -7,6 +7,7 @@
 | TASK-003 | Añadir sugerencia inicial, pedir símbolo y resolver la ficha | REQ-004 | validate_spec.py; inspección del prompt general, selección válida y símbolo no cubierto |
 | TASK-004 | Declarar cobertura estadounidense y frescura por tipo de dato | REQ-001, REQ-002, REQ-005 | inspección de mensajes con quote live, fallback histórico, caché vencida y features históricas |
 | TASK-005 | Precargar el mensaje de métricas en el composer sin enviarlo | REQ-006 | selección del acceso directo, texto visible/foco en composer y ausencia de envío automático |
+| TASK-006 | Resolver nombre empresarial a ticker cubierto; habilitar consulta individual KO sin alterar universo ML | REQ-003, REQ-007 | alias conocidos, variante «Jhonson», ambigüedad y desconocidos; inspección de ticker enviado a cotización y degradación sin features; API real no usada | Implementada; checks estáticos pasan, recorrido local pendiente |
 
 ## Trazabilidad
 
@@ -18,3 +19,4 @@
 | REQ-004 | TASK-003 | La sugerencia pregunta por un símbolo y una respuesta válida abre la ficha |
 | REQ-005 | TASK-004 | Cotización y features tienen etiquetas correctas de origen/frescura |
 | REQ-006 | TASK-005 | El acceso directo rellena el mensaje y espera a que la persona lo envíe |
+| REQ-007 | TASK-006 | Nombre reconocido resuelve al ticker permitido; símbolos no cubiertos no se adivinan; KO no entra en el universo de clustering |

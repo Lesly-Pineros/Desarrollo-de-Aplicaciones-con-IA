@@ -116,9 +116,9 @@ def criteria_patch(query, *, expected=None):
             r"\b(?:variacion|volatilidad|movimiento)\b.{0,12}\b(?:alt[oa]|much[oa])\b", text))
         targets = set() if negated else {
             target for target, pattern in {
-                "baja": r"\b(?:baj[oa]|suave|poco movimiento|pocas variaciones?|pocos cambios)\b",
-                "media": r"\b(?:medi[oa]|moderad[oa])\b",
-                "alta": r"\b(?:alt[oa]|mucho movimiento|muchas variaciones?|muchos cambios)\b",
+                "baja": r"\b(?:baj[oa]s?|suaves?|poco movimiento|pocas variaciones?|pocos cambios)\b",
+                "media": r"\b(?:medi[oa]s?|moderad[oa]s?)\b",
+                "alta": r"\b(?:alt[oa]s?|mucho movimiento|muchas variaciones?|muchos cambios)\b",
             }.items() if re.search(pattern, text)
         }
         if len(targets) == 1:

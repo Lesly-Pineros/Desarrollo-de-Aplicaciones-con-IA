@@ -8,7 +8,7 @@ from sqlmodel import Session, select
 from investiq.data.models import InstrumentFeature, MLClusterRun, UserPreference
 from investiq.domain import FilingItem, NewsItem, PreferenceInput, SourceReference
 from investiq.education import EDUCATION_CATALOGUE, DefinitionView
-from investiq.instruments import INSTRUMENT_BY_SYMBOL
+from investiq.instruments import INSTRUMENT_BY_SYMBOL, QUOTE_INSTRUMENT_BY_SYMBOL
 from investiq.ml.similarity import load_model_artifact, similar_instruments as find_similar
 from investiq.ml.volatility import assign_volatility_buckets
 from investiq.providers.market_data import market_quote
@@ -25,6 +25,13 @@ def normalize_symbol(value: str | None) -> str | None:
         return None
     symbol = value.strip().upper()
     return symbol if symbol in INSTRUMENT_BY_SYMBOL else None
+
+
+def normalize_quote_symbol(value: str | None) -> str | None:
+    if not value:
+        return None
+    symbol = value.strip().upper()
+    return symbol if symbol in QUOTE_INSTRUMENT_BY_SYMBOL else None
 
 
 def market_quote_tool(session: Session, symbol: str, settings: Settings):
@@ -260,7 +267,7 @@ def source_references(quote, news_items: list[NewsItem], filings: list[FilingIte
         SourceReference(
             source_id=item.source_id,
             title=item.title,
-            url=item.url,
+            url=str(item.url),
             provider=item.provider,
             published_at=item.published_at,
             delayed=item.delayed,
@@ -271,7 +278,7 @@ def source_references(quote, news_items: list[NewsItem], filings: list[FilingIte
         SourceReference(
             source_id=item.source_id,
             title=f"SEC {item.form} presentado {item.filing_date}",
-            url=item.url,
+            url=str(item.url),
             provider="SEC",
         )
         for item in filings

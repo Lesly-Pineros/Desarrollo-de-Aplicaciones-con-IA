@@ -7,7 +7,7 @@ from sqlmodel import Session, select
 
 from investiq.data.models import PriceBar, PriceCacheEntry
 from investiq.domain import QuoteResult, SourceReference
-from investiq.instruments import INSTRUMENT_BY_SYMBOL
+from investiq.instruments import QUOTE_INSTRUMENT_BY_SYMBOL
 from investiq.limits import QuotaExceeded, provider_rate_limiter, reserve_daily_request
 from investiq.settings import Settings
 from investiq.logging_config import log_stage
@@ -113,7 +113,7 @@ def market_quote(
 ) -> QuoteResult:
     """Prefer Twelve Data; otherwise return explicitly dated yfinance history."""
     symbol = symbol.strip().upper()
-    if symbol not in INSTRUMENT_BY_SYMBOL:
+    if symbol not in QUOTE_INSTRUMENT_BY_SYMBOL:
         return QuoteResult(symbol=symbol, error="Símbolo fuera del universo cubierto.")
 
     now = datetime.now(timezone.utc)

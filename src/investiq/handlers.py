@@ -8,13 +8,13 @@ from sqlmodel import Session
 
 from investiq.domain import RouterDecision, SourceReference
 from investiq.knowledge import get_library
-from investiq.instruments import INSTRUMENTS, INSTRUMENT_BY_SYMBOL
+from investiq.instruments import INSTRUMENTS, INSTRUMENT_BY_SYMBOL, QUERY_ONLY_BY_SYMBOL
 from investiq.language import plain
 from investiq.settings import Settings
 from investiq.sector_context import sector_limitation
 from investiq.tools import (
     compare_instruments, feature_sources, instr_features, local_model_source, market_quote_tool,
-    news_tool, normalize_symbol, sec_docs_tool, similar_instruments, source_references,
+    news_tool, normalize_quote_symbol, normalize_symbol, sec_docs_tool, similar_instruments, source_references,
     volatility_bucket,
     exploration_candidates,
 )
@@ -22,7 +22,7 @@ from investiq.logging_config import log_stage
 
 logger = logging.getLogger(__name__)
 
-_COVERAGE = ", ".join(sorted(item.symbol for item in INSTRUMENTS))
+_COVERAGE = ", ".join(sorted(item.symbol for item in INSTRUMENTS)) + "; consulta individual adicional: KO (Coca-Cola)"
 
 
 @dataclass
@@ -84,42 +84,53 @@ def _symbol_feature_block(session: Session, symbol: str, quote=None) -> tuple[st
 
 
 def _explain(session: Session, settings: Settings, decision: RouterDecision) -> HandlerResult:
-    symbol = normalize_symbol(decision.symbol)
+    symbol = normalize_quote_symbol(decision.symbol)
     if not symbol:
         return HandlerResult(
             f"No pude identificar un símbolo cubierto. El universo disponible es: {_COVERAGE}.",
             status="degraded",
         )
     quote = market_quote_tool(session, symbol, settings)
-    news_result = news_tool(session, symbol, settings)
-    filings, sec_reason = sec_docs_tool(session, symbol, settings)
+    in_catalogue = symbol in INSTRUMENT_BY_SYMBOL
+    news_result = news_tool(session, symbol, settings) if in_catalogue else None
+    filings, sec_reason = sec_docs_tool(session, symbol, settings) if in_catalogue else ([], None)
     metrics, metric_sources, metric_facts = _symbol_feature_block(session, symbol, quote)
-    sources = source_references(quote, news_result.articles, filings)
+    sources = source_references(quote, news_result.articles if news_result else [], filings)
     sources.extend(source for source in metric_sources if source.source_id not in {item.source_id for item in sources})
-    tools = ["market_quote", "news", "sec_docs"]
-    tools.append("instr_features")
+    company = QUERY_ONLY_BY_SYMBOL[symbol].name if symbol in QUERY_ONLY_BY_SYMBOL else None
+    display_symbol = f"{company} ({symbol})" if company else symbol
+    if company:
+        sources.append(SourceReference(
+            source_id=f"query-alias:{symbol}", title=f"Resolución local de empresa: {company} → {symbol}",
+            url=f"local://aliases/{symbol}", provider="Alias de consulta de InvestiQ",
+        ))
+    tools = (["market_quote", "news", "sec_docs", "instr_features"] if in_catalogue
+             else ["market_quote", "instr_features"])
     if quote.price is None:
-        return HandlerResult(f"No hay un precio verificable para {symbol}. {quote.error or ''}\n\n{metrics}",
+        return HandlerResult(f"No hay un precio verificable para {display_symbol}. {quote.error or ''}\n\n{metrics}",
                              facts={"symbol": symbol, **metric_facts}, sources=sources,
                              status="degraded", tools_used=tools)
     when = quote.as_of.isoformat() if quote.as_of else "fecha no disponible"
     freshness = "dato histórico/demorado" if quote.delayed else "dato del proveedor"
     pct = f"{quote.change_pct:.2f}%" if quote.change_pct is not None else "variación no disponible"
-    answer = f"{symbol}: {pct} al {when} ({quote.provider}; {freshness}).\n\n{metrics}"
-    if news_result.articles:
+    answer = f"{display_symbol}: {pct} al {when} ({quote.provider}; {freshness}).\n\n{metrics}"
+    if news_result and news_result.articles:
         answer += " Noticias disponibles: " + "; ".join(article.title for article in news_result.articles[:2]) + "."
-    else:
+    elif news_result:
         answer += f" No hay noticia disponible: {news_result.reason or 'sin resultados'}."
-    if filings:
-        answer += " Hay filings SEC recientes en las fuentes enlazadas."
+    if in_catalogue:
+        if filings:
+            answer += " Hay filings SEC recientes en las fuentes enlazadas."
+        else:
+            answer += f" No hay filing verificable: {sec_reason or 'sin resultados'}"
     else:
-        answer += f" No hay filing verificable: {sec_reason or 'sin resultados'}"
+        answer += " Noticias y filings SEC no forman parte de esta consulta individual adicional."
     if quote.error:
         answer += f" Aviso: {quote.error}"
     return HandlerResult(
         answer,
         facts={"symbol": symbol, "price": quote.price, "change_pct": quote.change_pct, **metric_facts,
-               "news_titles": [article.title for article in news_result.articles[:2]],
+               "news_titles": [article.title for article in news_result.articles[:2]] if news_result else [],
                "filings": [filing.source_id for filing in filings]},
         sources=sources, status="ok" if sources else "degraded", tools_used=tools,
     )
@@ -139,8 +150,8 @@ def _educate(query: str, decision: RouterDecision, explanation_level: str) -> Ha
 
 
 def _instrument_info(session: Session, settings: Settings, decision: RouterDecision) -> HandlerResult:
-    symbol = normalize_symbol(decision.symbol)
-    item = INSTRUMENT_BY_SYMBOL.get(symbol)
+    symbol = normalize_quote_symbol(decision.symbol)
+    item = INSTRUMENT_BY_SYMBOL.get(symbol) or QUERY_ONLY_BY_SYMBOL.get(symbol)
     if item is None:
         return HandlerResult("¿Qué empresa o símbolo quieres conocer? Puedes elegir uno del catálogo.",
                              status="degraded")
@@ -151,17 +162,20 @@ def _instrument_info(session: Session, settings: Settings, decision: RouterDecis
         "Broad Market": "mercado amplio",
     }
     kind = "una acción" if item.kind == "equity" else "un ETF"
-    answer = (
-        f"**{item.symbol}** es el símbolo bursátil de **{item.name}**. "
-        f"En nuestro catálogo es {kind}, en la categoría de {sectors.get(item.sector, item.sector)}.\n\n"
-        "Puedes usar ese símbolo para consultar sus movimientos o compararlo con otro instrumento."
-    )
+    query_only = item.symbol in QUERY_ONLY_BY_SYMBOL
+    answer = (f"**{item.symbol}** es el símbolo bursátil de **{item.name}**. "
+              f"Es {kind}, en la categoría de {sectors.get(item.sector, item.sector)}.")
+    if query_only:
+        answer += (" La consulta individual está habilitada, aunque KO no forma parte del universo de "
+                   "características históricas ni del ranking del modelo ML.")
+    else:
+        answer += " Puedes usar ese símbolo para consultar sus movimientos o compararlo con otro instrumento."
     source = SourceReference(
-        source_id=f"catalogue:{item.symbol}", title=f"Catálogo local: {item.symbol} · {item.name}",
-        url=f"local://catalogue/{item.symbol}", provider="Catálogo de instrumentos de InvestiQ",
+        source_id=f"catalogue:{item.symbol}", title=f"Instrumento local: {item.symbol} · {item.name}",
+        url=f"local://catalogue/{item.symbol}", provider="Catálogo de consulta de InvestiQ",
     )
     sources = [source]
-    tools = ["instrument_catalogue"]
+    tools = ["instrument_aliases" if query_only else "instrument_catalogue"]
     quote = market_quote_tool(session, item.symbol, settings)
     metric_block, metric_sources, metric_facts = _symbol_feature_block(session, item.symbol, quote)
     answer += "\n\n" + metric_block

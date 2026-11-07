@@ -9,7 +9,7 @@ from sqlmodel import Session
 
 from investiq.data.models import ConversationMemory
 from investiq.domain import ConversationState, PendingField, RouterDecision
-from investiq.instruments import INSTRUMENT_BY_SYMBOL
+from investiq.instruments import QUOTE_INSTRUMENT_BY_SYMBOL
 from investiq.language import canonical_education_topic
 from investiq.sector_context import MARKETS
 
@@ -32,7 +32,7 @@ def _covered(value: str | None) -> str | None:
     if not isinstance(value, str):
         return None
     candidate = value.strip().upper()
-    return candidate if candidate in INSTRUMENT_BY_SYMBOL else None
+    return candidate if candidate in QUOTE_INSTRUMENT_BY_SYMBOL else None
 
 
 def _decision(decision: RouterDecision | None) -> RouterDecision | None:

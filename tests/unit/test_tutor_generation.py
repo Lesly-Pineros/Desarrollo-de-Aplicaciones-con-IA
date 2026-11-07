@@ -330,7 +330,7 @@ def test_teach_prompt_marks_sources_as_untrusted_and_uses_evidence_schema():
     settings = Settings(_env_file=None, nvidia_api_key=None)
     client = ChatNVIDIAClient(settings, model=object())
 
-    def structured(system, payload, schema):
+    def structured(system, payload, schema, **kwargs):
         observed.update(system=system, payload=payload, schema=schema)
         return narration("Una acción representa una participación en una empresa.")
 

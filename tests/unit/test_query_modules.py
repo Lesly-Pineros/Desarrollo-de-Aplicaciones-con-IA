@@ -7,11 +7,12 @@ from sqlmodel import Session, select
 
 from investiq.data.database import create_db, make_engine
 from investiq.data.models import QueryLog, ResponseTrace
-from investiq.domain import NewsCollection, QuoteResult, RouterDecision, SourceReference
+from investiq.domain import FilingItem, NewsCollection, NewsItem, QuoteResult, RouterDecision, SourceReference
 from investiq.handlers import execute_query
 from investiq.orchestration import answer_query
-from investiq.routing import route_query
+from investiq.routing import fallback_route, route_query
 from investiq.settings import Settings
+from investiq.tools import source_references
 from investiq.tutor import TutorEvidence, TutorNarration, TutorParagraph
 
 
@@ -139,6 +140,33 @@ def test_coordinator_resolves_explanation_symbols_before_executing_tools(local_q
     assert response.tools_used == ["market_quote", "news", "sec_docs", "instr_features"]
     assert response.status == "degraded"
     assert "AAPL" in response.answer
+
+
+@pytest.mark.parametrize(("query", "symbol"), [
+    ("Dame las métricas de la acción Coca-Cola", "KO"),
+    ("Métricas de Coca Cola", "KO"),
+    ("Dame las métricas de CocaCola", "KO"),
+    ("Métricas de Coke", "KO"),
+    ("Métricas de Johnson & Johnson", "JNJ"),
+    ("Métricas de J&J", "JNJ"),
+    ("Métricas de Jhonson & Jhonson", "JNJ"),
+])
+def test_company_names_resolve_to_supported_quote_symbols(query, symbol):
+    decision = fallback_route(query)
+    assert decision.intent == "instrument_info"
+    assert decision.symbol == symbol
+
+
+def test_news_and_filing_http_urls_convert_to_source_reference_strings():
+    news = NewsItem(title="Titular de prueba", url="https://example.com/news", provider="fixture",
+                    source_id="news:fixture")
+    filing = FilingItem(form="10-K", filing_date="2026-11-07", url="https://www.sec.gov/Archives/",
+                        accession="fixture", source_id="sec:fixture")
+
+    sources = source_references(None, [news], [filing])
+
+    assert [source.url for source in sources] == [str(news.url), str(filing.url)]
+    assert all(isinstance(source.url, str) for source in sources)
 
 
 def test_router_completes_missing_llm_symbol_from_the_current_query():

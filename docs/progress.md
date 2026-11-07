@@ -33,6 +33,18 @@ Se reemplazó el prompt prefabricado del botón por una acción que muestra úni
 
 Se corrigió un `KeyError` al cargar memoria cuando quedaba pendiente elegir un símbolo. Se añadió el texto de resumen para `instrument_symbol` y el resumen ahora ignora de forma segura cualquier campo pendiente sin descripción. Verificación estática: `compileall` y `git diff --check`; no se ejecutaron pruebas.
 
+## Actualización — consulta de métricas por empresa
+
+La ficha individual ahora resuelve nombres y alias declarados en el catálogo, incluidos Johnson & Johnson y J&J. Se habilitó Coca-Cola como consulta individual por nombre o KO para cotización opcional, manteniendo el universo histórico/ML de 20 instrumentos; las métricas locales ausentes se declaran y KO no activa noticias ni filings. `compileall`, `node --check`, validación de la spec y `git diff --check` pasan. No se ejecutaron pruebas ni llamadas a Twelve Data.
+
+## Actualización — conversión de fuentes a referencias
+
+Se corrigió la validación al transformar noticias y filings: sus URL tipadas (`HttpUrl`) ahora se serializan a texto antes de construir `SourceReference`, cuyo contrato usa `str`. `compileall` y `git diff --check` pasan; no se ejecutaron pruebas ni se hicieron llamadas a proveedores.
+
+## Verificación local — 2026-11-07
+
+Por solicitud del usuario se ejecutó la suite unitaria completa en dos grupos: 689 pruebas sin `test_web_server.py` y 15 pruebas del servidor con sockets locales autorizados; resultado combinado: 704 passed. No se ejecutaron tests de integración ni llamadas a APIs externas. La ejecución detectó expectations de exploración que aún exigían preguntas secuenciales/referencia, una regresión en el orden de tools y que faltaba aceptar «variaciones bajas»; se actualizaron esas expectativas, se restauró el orden y se amplió el parser. Se añadieron casos locales para nombres de empresa y la conversión de URLs tipadas de noticias/filings. Avisos restantes: deprecación de LangSmith y detección de núcleos de joblib en Python 3.14.
+
 ## Historial
 
 ### Estado

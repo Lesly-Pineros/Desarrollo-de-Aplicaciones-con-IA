@@ -42,6 +42,12 @@
 
 **Criterios de aceptación:** el texto inicial es «Dame las métricas de la acción o ETF: »; el campo recibe el foco para que la persona agregue el símbolo y lo envíe cuando quiera. No se inicia una petición al chat al seleccionar la sugerencia.
 
+### REQ-007 — Resolver consultas por nombre de empresa
+
+**EARS:** Cuando la persona consulte las métricas de una empresa por su nombre, el sistema deberá resolver determinísticamente el nombre a un símbolo cubierto y mostrar la ficha correspondiente.
+
+**Criterios de aceptación:** la ayuda de inicio indica que puede escribir el nombre de empresa o símbolo. El sistema reconoce los nombres y alias declarados en el catálogo, incluidos Coca-Cola/Coca Cola/CocaCola/Coke → KO y Johnson & Johnson/Johnson and Johnson/J&J → JNJ; tolera también la variante escrita «Jhonson & Jhonson». KO se habilita solo para consultas individuales y cotización; no se incorpora al universo de 20 del modelo ML, y las métricas históricas se declaran ausentes si no hay datos locales. No se envía el nombre de empresa como símbolo a Twelve Data; el proveedor recibe el ticker resuelto. Para nombres no cubiertos, el sistema explica la cobertura sin inventar coincidencias.
+
 ## Changelog
 
 | Fecha | Cambio |
@@ -50,3 +56,4 @@
 | 2026-11-07 | Se añade una sugerencia inicial de métricas por símbolo y resolución determinista de esa pregunta. |
 | 2026-11-07 | La sugerencia inicia aclaración de símbolo y la respuesta explica cobertura estadounidense y frescura de cada grupo de valores. |
 | 2026-11-07 | El acceso directo de métricas prepara el mensaje en el campo de escritura sin enviarlo; la persona agrega el símbolo. |
+| 2026-11-07 | Se especifica resolución determinista de nombres empresariales y la cobertura individual de KO sin ampliar el universo ML. |

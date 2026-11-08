@@ -4,7 +4,7 @@
 |---|---|---|---|---|
 | TASK-501 | Parametrizar bind/puerto y health check; mantener defaults locales. | REQ-501 | Pruebas unitarias de HTTP local; compilación. | Completa |
 | TASK-502 | Implementar Basic Auth fail-closed en Render y cookies seguras detrás del proxy. | REQ-502 | Pruebas HTTP de acceso permitido/denegado y cookie Secure. | Completa |
-| TASK-503 | Crear Blueprint Render Free y guía de variables/limitaciones. | REQ-503 | Parseo YAML, build de wheel y revisión de diff por secretos. | Completa |
+| TASK-503 | Crear Blueprint Render Free con todas las variables de `.env.example` y guía de variables/limitaciones. | REQ-503 | Parseo YAML, build de wheel y revisión de diff por secretos. | Ajuste de variables en curso |
 | TASK-504 | Publicar en Render después de configurar secretos; validar health, auth, front y assets en vivo. | REQ-504 | Smoke test contra URL real; proveedores externos y NVIDIA excluidos salvo petición/configuración explícitas. | Pendiente: configuración manual de la usuaria |
 
 ## Trazabilidad

@@ -16,6 +16,9 @@ Render instala el paquete desde `pyproject.toml`, ejecuta la entrada `investiq-a
 - `PORT`: puerto de escucha suministrado por Render.
 - `INVESTIQ_ACCESS_PASSWORD`: secreto obligatorio al correr en Render; no se define valor por defecto.
 - `NVIDIA_API_KEY`: secreto opcional, necesario para generación con NVIDIA.
+- `TWELVE_DATA_API_KEY`, `MARKETAUX_API_KEY`, `FMP_API_KEY`: credenciales opcionales de proveedores de datos.
+- `SEC_USER_AGENT`: nombre y correo real de contacto, requerido por el flujo de filings SEC; no es una API key.
+- Otros valores de `.env.example` con defaults explícitos para el servicio: modelo y límites de NVIDIA/HTTP, retención, zona horaria, fallback sectorial y logging.
 - `DATABASE_URL`: permanece SQLite por defecto; el almacenamiento local de Render Free es efímero.
 - `/api/health`: endpoint mínimo para monitor de Render.
 

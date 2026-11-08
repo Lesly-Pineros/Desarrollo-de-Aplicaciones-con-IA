@@ -75,12 +75,16 @@ La aplicación local usa la web HTML/CSS/JS servida por Python; no mantiene una 
 
 ## Despliegue del POC en Render Free
 
-El manifiesto [render.yaml](render.yaml) define un único servicio Python en el plan Free. Desde Render, crea un **Blueprint** conectado a este repositorio y selecciona `render.yaml`. Durante la creación, Render pedirá las variables marcadas `sync: false`:
+El manifiesto [render.yaml](render.yaml) define un único servicio Python en el plan Free y declara las variables de configuración del runtime de `.env.example`. Desde Render, crea un **Blueprint** conectado a este repositorio y selecciona `render.yaml`. Durante la creación, Render pedirá valores para las variables marcadas `sync: false`:
 
 - `INVESTIQ_ACCESS_PASSWORD`: **obligatoria**. Crea una contraseña larga y única para restringir el POC. El navegador mostrará un diálogo de autenticación; el usuario es `investiq`. No compartas esta contraseña ampliamente: las personas autorizadas comparten la memoria de esta instalación.
-- `NVIDIA_API_KEY`: opcional. Déjala vacía si solo quieres comprobar el modo local; sin ella no se generará texto con NVIDIA. Configúrala solo si aceptas las condiciones de uso/costo de tu cuenta.
+- `NVIDIA_API_KEY`: necesaria para generación con NVIDIA; puedes dejarla vacía para probar el modo local. Configúrala solo si aceptas las condiciones de uso/costo de tu cuenta.
+- `TWELVE_DATA_API_KEY`: opcional, para enriquecer cotizaciones; puede requerir un plan habilitado por Twelve Data.
+- `MARKETAUX_API_KEY`: opcional, para noticias. Se aplican las cuotas y condiciones de tu cuenta.
+- `FMP_API_KEY`: opcional, para ranking sectorial NASDAQ y cálculo por componentes S&P 500. La cobertura depende del plan de FMP.
+- `SEC_USER_AGENT`: no es una API key. Introduce el nombre de la app y un correo real de contacto, por ejemplo `InvestiQ contacto tu-correo@dominio.com`; la SEC lo necesita para habilitar consultas de filings. No uses literalmente el ejemplo de `.env.example`.
 
-Si dejas `NVIDIA_API_KEY` vacía, el servicio puede responder con las capacidades locales disponibles. Las claves Twelve Data, Marketaux, FMP y SEC User-Agent no forman parte del primer alta del Blueprint; se pueden agregar luego en **Dashboard → servicio `investiq-poc` → Environment** si decides habilitar esas consultas.
+Las claves de Twelve Data, Marketaux y FMP pueden quedar vacías; sin ellas esas consultas se degradan o usan el respaldo disponible. No añadas una clave solo para completar el formulario: algunos proveedores pueden aplicar límites o cargos según tu cuenta. Si después quieres habilitar o cambiar una integración, ve a **Dashboard → servicio `investiq-poc` → Environment**. Guardar cambios reinicia el servicio.
 
 Render termina HTTPS y remite las solicitudes al proceso Python. El servicio falla al arrancar si falta la contraseña. La ruta `/api/health` queda abierta solo para el monitor técnico de Render; la web, sus recursos y la API requieren autenticación. `render.yaml` no guarda valores de secretos.
 

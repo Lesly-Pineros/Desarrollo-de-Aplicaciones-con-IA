@@ -31,7 +31,9 @@ Los tres artículos y sus selecciones viven temporalmente en la sesión del chat
 
 El botón **Sectores de hoy · NASDAQ** consulta el snapshot diario de los once sectores de esa bolsa en [FMP](https://site.financialmodelingprep.com/developer/docs/stable/sector-performance-snapshot). Si hoy no es un día de mercado o aún no se publicó el snapshot, busca fechas recientes anteriores y muestra la fecha de los datos. Se exige el mismo día y bolsa, once sectores únicos y porcentajes finitos. NASDAQ es una bolsa y no representa todo el mercado estadounidense.
 
-El botón **Sectores · S&P 500** obtiene la lista actual de componentes y cierres diarios por lote desde FMP. Busca los dos días de mercado más recientes con datos completos, calcula el cambio entre ambos cierres y promedia esas variaciones por sector. Muestra cuántos componentes incluye. Ese cálculo no es un índice sectorial oficial ni ponderado por capitalización. Requiere cobertura completa y fechas coherentes. Ambos accesos indican la fecha y fuente; fallos de conexión, cuota, permisos o ausencia de datos se describen por separado. La disponibilidad real de estos endpoints depende de la cuenta FMP; las comprobaciones offline no acreditan una respuesta live.
+El botón **Sectores · S&P 500** intenta primero obtener la lista actual de componentes y cierres diarios por lote desde FMP. Busca los dos días de mercado más recientes con datos completos, calcula el cambio entre ambos cierres y promedia esas variaciones por sector. Muestra cuántos componentes incluye. Ese cálculo no es un índice sectorial oficial ni ponderado por capitalización.
+
+Si FMP no está configurado o no entrega datos utilizables, la app consulta los cierres históricos de los [once ETF sectoriales Select Sector SPDR de State Street](https://www.ssga.com/us/en/individual/capabilities/equities/sector-investing/select-sector-etfs). Valida dos sesiones recientes comunes y presenta la variación cierre a cierre de cada ETF, con símbolo, fecha y enlaces a sus series en Yahoo Finance. Se identifica expresamente como referencia mediante ETF: no es el rendimiento oficial del sector ni el promedio de los componentes. Si tampoco hay once series completas y recientes, se explica la falta de datos; no se rellenan valores. Para pruebas desconectadas, `INVESTIQ_SECTOR_ETF_FALLBACK_ENABLED=false` desactiva solo este respaldo.
 
 ## Recomendaciones guiadas
 
@@ -56,8 +58,8 @@ Para preparar una copia nueva con Internet, el comando histórico sigue siendo `
 ## Verificar offline
 
 ```bash
-NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= SEC_USER_AGENT= .venv/bin/python -m pytest -q
-NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= SEC_USER_AGENT= .venv/bin/python -m pytest -q tests/unit/test_market_current.py tests/unit/test_guided_exploration.py tests/unit/test_llm.py
+NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= INVESTIQ_SECTOR_ETF_FALLBACK_ENABLED=false SEC_USER_AGENT= .venv/bin/python -m pytest -q
+NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= INVESTIQ_SECTOR_ETF_FALLBACK_ENABLED=false SEC_USER_AGENT= .venv/bin/python -m pytest -q tests/unit/test_market_current.py tests/unit/test_guided_exploration.py tests/unit/test_llm.py
 .venv/bin/python -m investiq.knowledge validate
 node tools/check_web.mjs
 ```

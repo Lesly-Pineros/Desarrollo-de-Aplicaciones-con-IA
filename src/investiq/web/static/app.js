@@ -13,9 +13,13 @@ const elements = {
   memoryEnabled: $("#memory-enabled"), memorySummary: $("#memory-summary"),
   forgetMemory: $("#forget-memory"), newChat: $("#new-conversation"), mobileNewChat: $("#mobile-new-conversation"),
   modeText: $("#mode-text"),
+  mentorMedia: $("#mentor-media"), mentorVideo: $("#mentor-video"), mentorPlayback: $("#mentor-playback"),
 };
 const mobile = window.matchMedia("(max-width: 820px)");
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const state = {ready: false, busy: false, instruments: [], memory: {enabled: false, summary: ""}, retry: null, sidebarReturnFocus: null};
+let mentorPausedByUser = false;
+let mentorExplicitPlay = false;
 const DISCLAIMER = "No es asesoría financiera.";
 const STARTERS = {
   news: {prompt: "¿Cuáles son las últimas noticias del mercado hoy?"},
@@ -93,6 +97,22 @@ function resizeInput() {
 
 function scrollToEnd() {
   elements.scroll.scrollTop = elements.scroll.scrollHeight;
+}
+
+function syncMentorPlayback() {
+  const shouldPlay = !elements.welcome.hidden && (mentorExplicitPlay || (!reducedMotion.matches && !mentorPausedByUser));
+  if (!shouldPlay) {
+    elements.mentorVideo.pause();
+    elements.mentorMedia.classList.remove("is-playing");
+    elements.mentorPlayback.textContent = "Reproducir";
+    elements.mentorPlayback.setAttribute("aria-label", "Reproducir animación del profesor");
+    return;
+  }
+  elements.mentorVideo.play().catch(() => {
+    elements.mentorMedia.classList.remove("is-playing");
+    elements.mentorPlayback.textContent = "Video no disponible";
+    elements.mentorPlayback.disabled = true;
+  });
 }
 
 function updateMemory(memory) {
@@ -258,12 +278,14 @@ function renderMessage(message) {
   elements.messages.append(article);
   elements.messages.hidden = false;
   elements.welcome.hidden = true;
+  syncMentorPlayback();
   return article;
 }
 
 function clearMessages() {
   elements.messages.replaceChildren(); elements.messages.hidden = true; elements.welcome.hidden = false;
   elements.scroll.scrollTop = 0;
+  syncMentorPlayback();
 }
 
 function prefillMessage(prompt) {
@@ -394,6 +416,25 @@ elements.memoryEnabled.addEventListener("change", () => updateMemorySetting({ena
 elements.forgetMemory.addEventListener("click", () => updateMemorySetting({forget: true}));
 elements.retry.addEventListener("click", () => { const action = state.retry; if (action) action(); });
 elements.dismissError.addEventListener("click", hideError);
+elements.mentorVideo.addEventListener("playing", () => {
+  elements.mentorMedia.classList.add("is-playing");
+  elements.mentorPlayback.textContent = "Pausar";
+  elements.mentorPlayback.setAttribute("aria-label", "Pausar animación del profesor");
+});
+elements.mentorVideo.addEventListener("error", () => {
+  elements.mentorMedia.classList.remove("is-playing");
+  elements.mentorPlayback.textContent = "Video no disponible";
+  elements.mentorPlayback.disabled = true;
+});
+elements.mentorPlayback.addEventListener("click", () => {
+  if (!elements.mentorVideo.paused) {
+    mentorPausedByUser = true; mentorExplicitPlay = false;
+  } else {
+    mentorPausedByUser = false; mentorExplicitPlay = true;
+  }
+  syncMentorPlayback();
+});
+reducedMotion.addEventListener("change", syncMentorPlayback);
 for (const button of document.querySelectorAll(".suggestion, .branch-action")) {
   button.addEventListener("click", () => resetConversation(STARTERS[button.dataset.starter]));
 }

@@ -11,9 +11,17 @@
 - La suite offline pasó **696 pruebas**; el verificador web pasó **96 comprobaciones** en Chrome con fixtures sintéticos; **17 specs** validaron. Los servicios financieros externos no se consultaron en esas verificaciones.
 - Integraciones reales de proveedores/modelo y despliegue cloud siguen pendientes. La fase 5 no ha iniciado.
 
+## Actualización — identidad del robot y video de bienvenida (2026-11-07)
+
+Se sustituyó la paleta verde anterior por una derivada del robot aportado: marino `#011637`, azul `#0E64A4`, cian `#0AD6C8`, blanco frío `#EDF3F7` y naranja `#F07000` como origen de las acciones. La bienvenida reproduce localmente uno de los videos de 10 segundos, silenciado y con control de pausa; la imagen original queda de respaldo. El video se detiene al iniciar el chat y no se reproduce automáticamente con movimiento reducido. Una leyenda identifica sus gráficas como ilustrativas. Verificación: **40 checks Chrome**, **15 pruebas de servidor**, cuatro anchuras y wheel inspeccionado con los tres recursos nuevos. No se hicieron llamadas a proveedores financieros ni al modelo.
+
 ## Actualización — rediseño web y accesos independientes (2026-11-07)
 
 La web local adopta un tema verde noche con paneles translúcidos, un profesor robot SVG local, accesos destacados y un catálogo horizontal en escritorio; en móvil conserva el explorador accesible. Noticias, recomendaciones, NASDAQ y S&P 500 tienen tarjetas propias. Cada acceso y pregunta inicial reinicia la sesión antes de consultar; métricas abre un chat nuevo con el mensaje preparado para que la persona lo complete. El botón «Nueva conversación» permanece. Las acciones dentro de respuestas continúan el hilo vigente. Las tres guías de diseño solicitadas se instalaron localmente y se leyeron; el cargador auxiliar de Impeccable no pudo iniciar por su caché global, así que se aplicó su documentación directamente. Verificación enfocada: **36 checks Chrome** y nueve capturas a cuatro anchuras, `node --check`, spec y `git diff --check`; las credenciales de proveedores estaban vacías. No se probaron FMP, Twelve Data ni el modelo en vivo.
+
+## Actualización — respaldo de sectores S&P 500 (2026-11-07)
+
+El acceso S&P 500 puede responder sin `FMP_API_KEY`: si FMP no entrega el cálculo por componentes, usa dos cierres recientes completos de los once ETF sectoriales Select Sector SPDR consultados mediante Yahoo Finance. La tabla identifica cada ETF, fecha, variación y fuentes, y aclara que no es el rendimiento oficial del sector ni el promedio de componentes. También se reconoce «cómo van los sectores» como consulta actual. El respaldo puede desactivarse en pruebas desconectadas. Verificación: **60 pruebas focalizadas** con fixtures, **36 checks Chrome** sin proveedores y consulta Yahoo real de los once ETF para 2026-11-06; la respuesta completa devolvió once filas y doce fuentes. FMP sigue sin clave configurada en este entorno y sus endpoints no se verificaron en vivo.
 
 ## Actualización — limpieza local y documentación
 

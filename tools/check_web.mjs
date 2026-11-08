@@ -132,7 +132,7 @@ try {
   if (!executable) throw new Error("Chrome no encontrado. Define CHROME_PATH con su ejecutable.");
   app = spawn("bash", [path.join(root, "run_web.sh"), "--port", String(appPort)], {
     cwd: scratch,
-    env: {...process.env, DATABASE_URL: `sqlite:///${path.join(scratch, "test.db")}`, NVIDIA_API_KEY: "", TWELVE_DATA_API_KEY: "", MARKETAUX_API_KEY: "", FMP_API_KEY: "", SEC_USER_AGENT: ""},
+    env: {...process.env, DATABASE_URL: `sqlite:///${path.join(scratch, "test.db")}`, NVIDIA_API_KEY: "", TWELVE_DATA_API_KEY: "", MARKETAUX_API_KEY: "", FMP_API_KEY: "", INVESTIQ_SECTOR_ETF_FALLBACK_ENABLED: "false", SEC_USER_AGENT: ""},
     stdio: "ignore",
   });
   app.on("error", () => {processError = new Error("No se pudo iniciar el servidor Python.");});
@@ -157,6 +157,12 @@ try {
   await expect("!document.querySelector('#welcome').hidden", "Welcome visible before first message");
   await expect("document.querySelectorAll('.branch-action').length===4 && document.querySelectorAll('.suggestion').length===5", "Quick access and starter questions expose the available modes");
   await expect("document.querySelector('#mode-text').textContent==='Respuestas locales'", "Local mode accurately labelled");
+  await waitFor("!document.querySelector('#mentor-video').paused && document.querySelector('#mentor-media').classList.contains('is-playing')", "local professor video starts in the welcome");
+  await expect("document.querySelector('#mentor-video').currentSrc.endsWith('/media/profesor-investiq.mp4') && document.querySelector('.mentor-visual figcaption').textContent.includes('ilustrativas')", "Video is local and its graphics are labelled illustrative");
+  await click('#mentor-playback');
+  await expect("document.querySelector('#mentor-video').paused && document.querySelector('#mentor-playback').textContent==='Reproducir'", "Professor video can be paused");
+  await click('#mentor-playback');
+  await waitFor("!document.querySelector('#mentor-video').paused", "professor video resumes");
   await readable(["#message-input::placeholder", ".composer-help", ".composer-invitation", ".branch-intro p", ".branch-copy small"]);
   await noOverflow("1440x900"); await screenshot("desktop");
   await type("#symbol-search", "apple");
@@ -165,6 +171,7 @@ try {
   await expect("!document.querySelector('#no-instruments').hidden", "Empty search gives recovery guidance");
   await type("#symbol-search", "");
   await send("quiero saber que es");
+  await expect("document.querySelector('#mentor-video').paused", "Professor video pauses when the chat begins");
   await expect("document.querySelector('.message.assistant:last-child').textContent.includes('¿Qué')", "Incomplete question asks for clarification");
   await send("volatilidad");
   await expect("document.querySelector('.message.assistant:last-child').textContent.toLowerCase().includes('volatilidad')", "Short answer completes educational question");
@@ -236,6 +243,11 @@ try {
   await noOverflow("mobile conversation"); await screenshot("mobile-chat");
   await cdp("Emulation.setEmulatedMedia", {features: [{name: "prefers-reduced-motion", value: "reduce"}]});
   await expect("matchMedia('(prefers-reduced-motion: reduce)').matches", "Reduced motion preference supported");
+  if (frontOnly) {
+    await click('#mobile-new-conversation');
+    await waitFor("!document.querySelector('#welcome').hidden", "welcome returns with reduced motion");
+    await expect("document.querySelector('#mentor-video').paused && !document.querySelector('#mentor-media').classList.contains('is-playing') && document.querySelector('.mentor-still').naturalWidth===1312", "Reduced motion keeps the supplied robot image visible until requested");
+  }
   if (!frontOnly) {
   await type("#message-input", '<img src=x onerror="alert(1)">'); await key("Enter", "Enter");
   await waitFor("document.querySelectorAll('.message.assistant').length===2", "untrusted text handled");
@@ -343,7 +355,7 @@ try {
   const branchPort = await freePort();
   const branchEnv = {...process.env, DATABASE_URL: `sqlite:///${path.join(scratch, 'branches.db')}`,
     PYTHONPATH: path.join(root, 'src'), NVIDIA_API_KEY: '', TWELVE_DATA_API_KEY: '',
-    MARKETAUX_API_KEY: '', FMP_API_KEY: '', SEC_USER_AGENT: ''};
+    MARKETAUX_API_KEY: '', FMP_API_KEY: '', INVESTIQ_SECTOR_ETF_FALLBACK_ENABLED: 'false', SEC_USER_AGENT: ''};
   const python = process.env.INVESTIQ_PYTHON || path.join(root, '.venv', 'bin', 'python');
   const fixtureCode = String.raw`
 from datetime import datetime, timedelta, timezone, date

@@ -8,6 +8,7 @@
 | TASK-004 | Accesos web, docs, ADR y regresión final | REQ-001, REQ-002, REQ-003, REQ-004, REQ-005 | 704 pruebas, 93 checks Chrome, 119 documentos, quince specs, wheel y diff --check | Completa local |
 | TASK-005 | Mantener acceso directo a NASDAQ y degradación visible si FMP no está disponible | REQ-003, REQ-004, REQ-006 | test_market_current.py: consulta explícita NASDAQ y ausencia/fallo FMP explicado; check web verifica respuesta visible | Implementación local; verificación pendiente |
 | TASK-006 | Corregir días sin sesión/datos NASDAQ y agregar consulta independiente S&P 500 basada en componentes y cierres diarios FMP | REQ-007 | Tests offline: búsqueda de los dos últimos EOD completos, cierres/cálculo cierre a cierre, agrupación por sector, cobertura/fecha inconsistente, cuotas/caché; verificación web de dos botones y respuestas aisladas | Implementación local; verificaciones funcionales pendientes |
+| TASK-007 | Habilitar respaldo S&P 500 mediante los once ETF sectoriales y explicitar su método | REQ-008 | 60 pruebas focalizadas, 36 checks Chrome sin proveedores y consulta real Yahoo con once sectores/fuentes; fecha, cobertura, caché y fallo comprobados | Completa local; Yahoo verificado en vivo |
 
 ## Trazabilidad
 
@@ -20,6 +21,13 @@
 | REQ-005 | TASK-001, TASK-003, TASK-004 | Configuración y evidencia offline/live separadas |
 | REQ-006 | TASK-005 | Acceso directo devuelve tabla o degradación explicada |
 | REQ-007 | TASK-006 | NASDAQ usa el último snapshot disponible; S&P 500 agrupa exclusivamente sus componentes y declara promedio/cobertura |
+| REQ-008 | TASK-007 | Respaldo ETF con dos cierres comunes verificados y método/fuentes explícitos |
+
+## Evidencia ejecutada — 2026-11-07 (TASK-007)
+
+- `.venv/bin/python -m pytest -q tests/unit/test_market_current.py` → **60 passed**, con datos sectoriales sintéticos; no consulta proveedores.
+- `node tools/check_web.mjs --front-only` → **36 comprobaciones Chrome** con `INVESTIQ_SECTOR_ETF_FALLBACK_ENABLED=false` y claves vacías; ninguna llamada externa.
+- Consulta real de Yahoo Finance desde este equipo, sin clave FMP: **11 ETF, fecha 2026-11-06, sin error**. El recorrido completo `answer_turn` devolvió `status=ok`, `intent=sector_performance`, once filas ETF, doce referencias y disclaimer. Esta verificación no acredita los endpoints FMP.
 
 ## Evidencia ejecutada — 2026-11-04
 

@@ -5,6 +5,7 @@ import json
 from types import SimpleNamespace
 
 import pytest
+import pandas as pd
 import requests
 from sqlmodel import Session, select
 
@@ -15,7 +16,7 @@ from investiq.domain import ConversationState, NewsCollection, NewsItem, RouterD
 from investiq.memory import load_memory
 from investiq.newsroom import NewsRewrite, NewsRewrites
 from investiq.providers.headlines import daily_headlines
-from investiq.providers.sectors import SECTOR_LABELS, sector_snapshot, validated_rows
+from investiq.providers.sectors import SECTOR_ETFS, SECTOR_LABELS, sector_snapshot, validated_rows
 from investiq.responses import DISCLAIMER
 from investiq.routing import fallback_route
 from investiq.settings import Settings
@@ -228,10 +229,9 @@ def test_incomplete_or_inconsistent_sector_data_is_rejected(mutation):
 def test_sector_handler_labels_scope_date_and_source(market, monkeypatch):
     session, settings, state = market
     monkeypatch.setattr("investiq.providers.sectors.sector_snapshot", lambda *a: (validated_rows(sector_payload(), "2026-11-04"), "2026-11-04", NOW, None))
-    answer_turn(session, "local", "¿Qué sectores lideran hoy?", settings, state)
-    response = answer_turn(session, "local", "Estados Unidos", settings, state)
+    response = answer_turn(session, "local", "¿Qué sectores lideran hoy en NASDAQ?", settings, state)
     assert response.status == "ok" and len(response.sources) == 1
-    assert "NASDAQ" in response.answer and "no representa todo el país" in response.answer
+    assert "NASDAQ" in response.answer and "no representa todo el mercado estadounidense" in response.answer
     assert "+1.00%" in response.answer and "hora exacta" in response.answer
     assert "fixture-fmp" not in response.model_dump_json()
 
@@ -307,10 +307,73 @@ def test_historical_news_is_not_replaced_with_today_without_disclosure(market):
 
 def test_fmp_plan_denial_is_safe_and_does_not_suggest_a_subscription(market):
     def denied(*args, **kwargs):
-        raise requests.HTTPError("403 fixture-fmp private-token")
+        response = requests.Response()
+        response.status_code = 403
+        raise requests.HTTPError("403 fixture-fmp private-token", response=response)
     rows, _, _, reason = sector_snapshot(market[0], market[1], http_get=denied, now=NOW)
-    assert not rows and "acceso de tu plan" in reason
+    assert not rows and "rechazó el acceso" in reason
     assert "fixture-fmp" not in reason and "private-token" not in reason
+
+
+def sector_etf_history(days=("2026-11-02", "2026-11-03", "2026-11-04")):
+    symbols = list(SECTOR_ETFS.values())
+    columns = pd.MultiIndex.from_product([["Close"], symbols])
+    values = [[100.0 + index + offset for index in range(len(symbols))]
+              for offset in range(len(days))]
+    return pd.DataFrame(values, index=pd.to_datetime(days), columns=columns)
+
+
+def test_sp500_sector_etfs_work_without_fmp_key_and_use_cache(market):
+    session, settings, _ = market
+    settings = settings.model_copy(update={"fmp_api_key": None})
+    calls = []
+    def fetch(symbols, timeout):
+        calls.append(symbols)
+        return sector_etf_history()
+    rows, day, _, error = sector_snapshot(session, settings, universe="S&P 500",
+                                          history_fetch=fetch, now=NOW)
+    cached, cached_day, _, cached_error = sector_snapshot(session, settings, universe="S&P 500",
+                                                          history_fetch=fetch, now=NOW + timedelta(minutes=1))
+    assert not error and not cached_error and day == cached_day == "2026-11-04"
+    assert len(rows) == len(cached) == 11 and rows == cached and len(calls) == 1
+    assert {row["proxy_symbol"] for row in rows} == set(SECTOR_ETFS.values())
+    assert all(row["change_pct"] > 0 for row in rows)
+
+
+def test_sp500_sector_etf_fallback_can_be_disabled_for_offline_runs(market):
+    session, settings, _ = market
+    settings = settings.model_copy(update={"fmp_api_key": None, "sector_etf_fallback_enabled": False})
+    rows, _, _, reason = sector_snapshot(session, settings, universe="S&P 500",
+                                         history_fetch=lambda *args: pytest.fail("No external history in offline mode"), now=NOW)
+    assert not rows and "desactivada" in reason
+
+
+@pytest.mark.parametrize("mutation", ["missing_symbol", "stale", "invalid_close"])
+def test_sp500_sector_etfs_reject_incomplete_or_stale_history(market, mutation):
+    session, settings, _ = market
+    settings = settings.model_copy(update={"fmp_api_key": None})
+    history = sector_etf_history(("2026-09-01", "2026-09-02") if mutation == "stale"
+                                 else ("2026-11-02", "2026-11-03", "2026-11-04"))
+    if mutation == "missing_symbol":
+        history = history.drop(columns=("Close", "XLK"))
+    if mutation == "invalid_close":
+        history[("Close", "XLK")] = float("nan")
+    rows, _, _, reason = sector_snapshot(session, settings, universe="S&P 500",
+                                         history_fetch=lambda *args: history, now=NOW)
+    assert not rows and "once ETF sectoriales" in reason
+
+
+def test_sp500_sector_etf_answer_discloses_proxy_method_and_sources(market, monkeypatch):
+    session, settings, state = market
+    history = sector_etf_history()
+    rows, day, fetched, _ = sector_snapshot(session, settings.model_copy(update={"fmp_api_key": None}),
+                                            universe="S&P 500", history_fetch=lambda *args: history, now=NOW)
+    monkeypatch.setattr("investiq.providers.sectors.sector_snapshot", lambda *args, **kwargs: (rows, day, fetched, None))
+    response = answer_turn(session, "local", "¿Cómo van los sectores de las empresas del S&P 500?", settings, state)
+    assert "ETF de referencia" in response.answer and "no son el rendimiento oficial" in response.answer
+    assert "No es asesoría financiera" in response.answer
+    assert len(response.sources) == 12 and any(source.provider == "State Street" for source in response.sources)
+    assert any(source.source_id.startswith("yahoo:XLK:") for source in response.sources)
 
 
 def test_web_selection_uses_stable_id_and_keeps_internal_ids_out_of_chat(market, monkeypatch):

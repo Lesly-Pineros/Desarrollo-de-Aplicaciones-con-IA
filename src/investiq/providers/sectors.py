@@ -40,6 +40,13 @@ SP500_SECTORS = {
     "Real Estate": "Real Estate", "Technology": "Technology", "Information Technology": "Technology",
     "Utilities": "Utilities",
 }
+SECTOR_ETFS = {
+    "Basic Materials": "XLB", "Communication Services": "XLC",
+    "Consumer Cyclical": "XLY", "Consumer Defensive": "XLP", "Energy": "XLE",
+    "Financial Services": "XLF", "Healthcare": "XLV", "Industrials": "XLI",
+    "Real Estate": "XLRE", "Technology": "XLK", "Utilities": "XLU",
+}
+SECTOR_ETF_GUIDE = "https://www.ssga.com/us/en/individual/capabilities/equities/sector-investing/select-sector-etfs"
 
 
 def validated_rows(payload, day, exchange="NASDAQ"):
@@ -282,20 +289,108 @@ def _sp500_snapshot(session, settings, http_get, now):
     return [], now.astimezone(NEW_YORK).date().isoformat(), now, reason
 
 
-def sector_snapshot(session, settings, *, universe="NASDAQ", http_get=None, now=None):
+def _download_sector_etfs(symbols, timeout):
+    import yfinance as yf
+
+    return yf.download(symbols, period="14d", interval="1d", auto_adjust=False,
+                       progress=False, threads=False, timeout=timeout)
+
+
+def _sector_etf_rows(history, now):
+    if history is None or getattr(history, "empty", True) or "Close" not in history:
+        raise ValueError("missing sector ETF closes")
+    closes = history["Close"]
+    symbols = set(SECTOR_ETFS.values())
+    if not symbols.issubset(set(closes.columns)):
+        raise ValueError("incomplete sector ETF coverage")
+    valid = []
+    seen_days = set()
+    today = now.astimezone(NEW_YORK).date().isoformat()
+    for timestamp, values in closes.iterrows():
+        day = timestamp.date().isoformat()
+        if day > today:
+            continue
+        if day in seen_days:
+            raise ValueError("duplicate sector ETF date")
+        seen_days.add(day)
+        prices = {}
+        for symbol in symbols:
+            try:
+                close = float(values[symbol])
+            except (TypeError, ValueError, KeyError):
+                break
+            if not math.isfinite(close) or close <= 0:
+                break
+            prices[symbol] = close
+        if len(prices) == len(symbols):
+            valid.append((day, prices))
+    if len(valid) < 2 or valid[-1][0] not in _business_days(now):
+        raise ValueError("no two recent complete sector ETF sessions")
+    day, current = valid[-1]
+    _, previous = valid[-2]
+    rows = [{"sector": sector, "proxy_symbol": symbol,
+             "change_pct": (current[symbol] / previous[symbol] - 1) * 100}
+            for sector, symbol in SECTOR_ETFS.items()]
+    return sorted(rows, key=lambda row: (-row["change_pct"], row["sector"])), day
+
+
+def _sp500_etf_snapshot(session, settings, now, history_fetch):
+    cached = _cache_read(session, "sectors:SP500:etf:latest", now)
+    if cached:
+        rows, day, fetched = cached
+        if (len(rows) == len(SECTOR_ETFS)
+                and {row.get("sector"): row.get("proxy_symbol") for row in rows} == SECTOR_ETFS
+                and all(isinstance(row.get("change_pct"), (int, float))
+                            and not isinstance(row["change_pct"], bool)
+                            and math.isfinite(row["change_pct"]) for row in rows)):
+            logger.info("provider.sectors.cache_hit provider=yahoo universe=SP500 method=etf")
+            return rows, day, fetched, None
+    try:
+        with log_stage(logger, "provider.sectors.etf_history", failure_level=logging.WARNING,
+                       provider="yahoo", universe="SP500"):
+            history = history_fetch(list(SECTOR_ETFS.values()), settings.http_timeout_seconds)
+        rows, day = _sector_etf_rows(history, now)
+        _cache_write(session, "sectors:SP500:etf:latest", rows, day, now)
+        logger.info("provider.sectors.done provider=yahoo universe=SP500 method=etf market_day=%s", day)
+        return rows, day, now, None
+    except Exception:
+        logger.warning("provider.sectors.fallback_unavailable provider=yahoo universe=SP500")
+        return [], now.astimezone(NEW_YORK).date().isoformat(), now, (
+            "No pude verificar dos cierres recientes y completos para los once ETF sectoriales del S&P 500.")
+
+
+def sector_snapshot(session, settings, *, universe="NASDAQ", http_get=None, now=None, history_fetch=None):
     now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
-    if not settings.has_fmp_key:
-        logger.info("provider.sectors.skipped provider=fmp reason=no_key")
-        return [], now.astimezone(NEW_YORK).date().isoformat(), now, "FMP_API_KEY no está configurada."
     getter = http_get or requests.get
     if universe == "NASDAQ":
+        if not settings.has_fmp_key:
+            logger.info("provider.sectors.skipped provider=fmp reason=no_key")
+            return [], now.astimezone(NEW_YORK).date().isoformat(), now, "FMP_API_KEY no está configurada."
         return _nasdaq_snapshot(session, settings, getter, now)
     if universe == "S&P 500":
-        return _sp500_snapshot(session, settings, getter, now)
+        fmp_error = None
+        if settings.has_fmp_key:
+            rows, day, fetched, fmp_error = _sp500_snapshot(session, settings, getter, now)
+            if rows:
+                return rows, day, fetched, None
+        if not settings.sector_etf_fallback_enabled:
+            return [], now.astimezone(NEW_YORK).date().isoformat(), now, (
+                fmp_error or "La consulta sectorial externa está desactivada en esta ejecución.")
+        rows, day, fetched, fallback_error = _sp500_etf_snapshot(
+            session, settings, now, history_fetch or _download_sector_etfs)
+        if rows:
+            return rows, day, fetched, None
+        return rows, day, fetched, (f"{fmp_error} {fallback_error}" if fmp_error else fallback_error)
     raise ValueError("unsupported sector universe")
 
 
-def snapshot_sources(universe, day, fetched):
+def snapshot_sources(universe, day, fetched, *, proxy=False):
+    if universe == "S&P 500" and proxy:
+        return [SourceReference(source_id="ssga:select-sector-etfs", title="State Street · ETF de los once sectores S&P 500",
+                                url=SECTOR_ETF_GUIDE, provider="State Street")] + [
+            SourceReference(source_id=f"yahoo:{symbol}:{day}", title=f"Yahoo Finance · cierres de {symbol} · {day}",
+                            url=f"https://finance.yahoo.com/quote/{symbol}/history/", provider="Yahoo Finance")
+            for symbol in SECTOR_ETFS.values()]
     if universe == "S&P 500":
         return [
             SourceReference(source_id=f"fmp:sp500-constituents:{day}", title=f"FMP · componentes del S&P 500 · {day}",

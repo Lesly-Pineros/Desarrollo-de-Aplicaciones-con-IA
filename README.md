@@ -32,6 +32,7 @@ Edita `.env` en tu equipo:
 | `TWELVE_DATA_API_KEY` | Enriquecimiento opcional de cotizaciones. |
 | `MARKETAUX_API_KEY` | Clave propia para noticias del día por país, sector o símbolo; sin ella se informa de la falta de fuente. |
 | `FMP_API_KEY` | Opcional para el snapshot sectorial de NASDAQ y el cálculo por sectores de los componentes del S&P 500. El segundo es un promedio simple entre cierres diarios, no un índice sectorial oficial; el acceso depende del plan. |
+| `INVESTIQ_SECTOR_ETF_FALLBACK_ENABLED` | `true` por defecto: si FMP no entrega el S&P 500 por componentes, consulta los once ETF sectoriales de State Street mediante cierres históricos de Yahoo Finance. `false` evita esa llamada en pruebas desconectadas. |
 | `MARKET_TIMEZONE` | Zona IANA para «hoy» en noticias; por defecto `America/Bogota`. |
 | `CONVERSATION_MEMORY_DAYS` | Retención del contexto resumido, por defecto 90 días. |
 | `INVESTIQ_SHOW_DIAGNOSTICS` | `true` muestra categorías de diagnóstico para desarrollo. Por defecto `false`. |
@@ -77,6 +78,8 @@ Puedes preguntar «¿qué es una acción?», «¿qué brókers existen?», «¿c
 
 La biblioteca contiene **119 documentos en 16 categorías**, con 113 referencias. Incluye fondos de inversión, Bitcoin, Ethereum, blockchain, wallets, stablecoins y staking; análisis fundamental y técnico, RSI, MACD, medias móviles, Bollinger, ATR, ADX, estocástico, OBV, CCI y VWAP. También cubre órdenes, derivados, tamaño de posición, drawdown y backtesting. Es una cobertura educativa ampliable, no una garantía de responder cualquier tema ni un generador de señales de compra o venta.
 
+La bienvenida usa la paleta del robot de las diapositivas y reproduce un video local silenciado. Puedes pausarlo; se detiene al iniciar el chat y permanece estático si prefieres movimiento reducido. Las gráficas del video son ilustrativas y no sustituyen los datos citados en las respuestas.
+
 La pregunta «¿qué es mejor para obtener mayores rentabilidades a largo plazo: un ETF o acciones individuales?» recibe una comparación de diversificación, concentración, costes y riesgo, sin prometer un ganador. «¿Qué sectores lideran hoy?» pide mercado y puede consultar un snapshot completo de once sectores de NASDAQ mediante FMP configurado. Declara bolsa, fecha y cobertura; sin acceso o datos válidos informa la limitación. La integración real de ese proveedor sigue pendiente. La biblioteca estática y los pocos ETF del catálogo no permiten afirmar líderes actuales. Si escribes ambas preguntas en un mensaje, atiende la comparación y conserva la aclaración del mercado.
 
 La búsqueda es local, por alias y similitud TF-IDF; no necesita descargar embeddings ni contratar una base vectorial. La redacción con NVIDIA necesita conexión. Sin modelo o ante una salida que no pase la validación, responde con explicaciones y ejemplos locales. Las fuentes citadas no eliminan por sí solas los errores del modelo.
@@ -85,7 +88,7 @@ Puedes seguir una lección con «No entiendo», «¿Me lo explicas con un ejempl
 
 ## Noticias y exploración guiada
 
-Los accesos **Noticias de hoy**, **Recomendaciones guiadas** y **Sectores de hoy · NASDAQ** permanecen visibles junto al chat, también en móvil. Las sugerencias iniciales conducen a esos tres modos. Puedes preguntar «Últimas noticias del sector financiero en Colombia», «Noticias del sector tecnológico» o «Noticias de AAPL». Se muestran hasta tres titulares de hoy por recencia, con publicación y fuente. NVIDIA puede traducirlos y resumir el extracto al pulsar «Resumir noticia 2» o escribir «Resume la segunda». Sin modelo se conserva el original; sin extracto no se inventa un resumen. Los artículos no se guardan en la memoria personal.
+Los accesos **Noticias de hoy**, **Recomendaciones guiadas**, **Sectores · NASDAQ** y **Sectores · S&P 500** permanecen visibles junto al chat, también en móvil. Cada acceso abre un chat nuevo. El botón S&P 500 usa componentes y cierres FMP si están completos; en otro caso muestra la variación reciente de once ETF sectoriales como referencia explícita, sin presentarla como rendimiento oficial de los sectores. Puedes preguntar «Últimas noticias del sector financiero en Colombia», «Noticias del sector tecnológico» o «Noticias de AAPL». Se muestran hasta tres titulares de hoy por recencia, con publicación y fuente. NVIDIA puede traducirlos y resumir el extracto al pulsar «Resumir noticia 2» o escribir «Resume la segunda». Sin modelo se conserva el original; sin extracto no se inventa un resumen. Los artículos no se guardan en la memoria personal.
 
 Para consultar una acción o ETF, elige **«¿Quieres conocer las métricas de una acción o ETF?»**: la sugerencia prepara **«Dame las métricas de la acción o ETF: »** en la caja de escritura sin enviarlo. Agrega el símbolo y envía el mensaje cuando quieras. La ficha reúne cotización, variación, volatilidad anualizada, beta, correlación con instrumentos similares, sector y período de cálculo, con su fuente y fecha cuando están disponibles. La cobertura de mercado es de instrumentos estadounidenses. La cotización puede ser en tiempo real si Twelve Data y el plan de la cuenta lo permiten; si no, la app identifica el dato histórico o demorado. Las métricas calculadas usan precios históricos y no son valores en tiempo real ni predicen resultados. La cotización en tiempo real requiere `TWELVE_DATA_API_KEY` y acceso habilitado por el proveedor.
 
@@ -126,7 +129,7 @@ Los manifiestos y modelos quedan en `ml/artifacts/`. La base contiene precios, f
 Este es el comando principal de regresión. Deshabilita las credenciales aunque tu `.env` tenga valores:
 
 ```bash
-NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= SEC_USER_AGENT= .venv/bin/python -m pytest -q
+NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= INVESTIQ_SECTOR_ETF_FALLBACK_ENABLED=false SEC_USER_AGENT= .venv/bin/python -m pytest -q
 ```
 
 El comando configurado en `pyproject.toml` recoge `tests/unit`. La suite unitaria también aísla las credenciales mediante un fixture compartido. Incluye lógica local, modelos simulados y la interfaz con SQLite temporal; un resultado en verde no acredita una integración en vivo.
@@ -134,13 +137,13 @@ El comando configurado en `pyproject.toml` recoge `tests/unit`. La suite unitari
 Para comprobar solo los nuevos temas, las dos preguntas propuestas y sus seguimientos:
 
 ```bash
-NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= SEC_USER_AGENT= .venv/bin/python -m pytest -q tests/unit/test_trading_education.py
+NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= INVESTIQ_SECTOR_ETF_FALLBACK_ENABLED=false SEC_USER_AGENT= .venv/bin/python -m pytest -q tests/unit/test_trading_education.py
 ```
 
 Para comprobar conversaciones completas con aclaraciones, interpretación, ejemplos, cambios de tema, nivel principiante y memoria restaurada:
 
 ```bash
-NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= SEC_USER_AGENT= .venv/bin/python -m pytest -q tests/unit/test_teacher_continuity.py
+NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= INVESTIQ_SECTOR_ETF_FALLBACK_ENABLED=false SEC_USER_AGENT= .venv/bin/python -m pytest -q tests/unit/test_teacher_continuity.py
 ```
 
 Las pruebas offline cubren la conversación, las tools, los proveedores simulados y la web local. Para ejecutarlas instala `.[dev]`; la integración real de proveedores requiere configuración aparte.

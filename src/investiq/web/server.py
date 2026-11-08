@@ -26,7 +26,10 @@ STATIC_FILES = {
     "/": ("index.html", "text/html; charset=utf-8"),
     "/index.html": ("index.html", "text/html; charset=utf-8"),
     "/app.css": ("app.css", "text/css; charset=utf-8"),
+    "/robot-theme.css": ("robot-theme.css", "text/css; charset=utf-8"),
     "/app.js": ("app.js", "text/javascript; charset=utf-8"),
+    "/media/profesor-investiq.mp4": ("media/profesor-investiq.mp4", "video/mp4"),
+    "/media/profesor-investiq.png": ("media/profesor-investiq.png", "image/png"),
     "/fonts/fraunces.ttf": ("fonts/fraunces.ttf", "font/ttf"),
     "/fonts/manrope.ttf": ("fonts/manrope.ttf", "font/ttf"),
     "/fonts/fraunces-OFL.txt": ("fonts/fraunces-OFL.txt", "text/plain; charset=utf-8"),
@@ -67,7 +70,7 @@ class WebHandler(BaseHTTPRequestHandler):
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "no-referrer")
         self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'self'; "
-                         "style-src 'self'; font-src 'self'; img-src 'self' data:; "
+                         "style-src 'self'; font-src 'self'; img-src 'self' data:; media-src 'self'; "
                          "connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
         if cookie:
             self.send_header("Set-Cookie", cookie)

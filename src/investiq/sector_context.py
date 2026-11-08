@@ -1,8 +1,4 @@
-"""Distinguish current sector leadership from static educational knowledge.
-
-The pilot has no verified, complete sector-performance feed. This module never
-substitutes historical features or the two covered sector ETFs for such a feed.
-"""
+"""Distinguish current sector performance from static educational knowledge."""
 
 from html import unescape
 import re
@@ -34,7 +30,8 @@ def is_current_sector_query(query: str) -> bool:
             continue
         leaders = re.search(r"\b(?:lidera\w*|lideres|mejor\w*|ganador\w*|destaca\w*|mayor\w* rendimiento\w*)\b", text)
         recent = re.search(r"\b(?:hoy|ahora|actual\w*|esta semana|este mes|este ano|ultim\w*)\b", text)
-        if leaders or recent:
+        everyday_performance = re.search(r"\b(?:como van|como les fue|como se movieron)\b", text)
+        if leaders or recent or everyday_performance:
             return True
     return False
 

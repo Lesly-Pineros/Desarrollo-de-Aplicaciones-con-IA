@@ -41,6 +41,12 @@
 
 **Criterios de aceptación:** la web tiene un botón independiente para cada universo y las consultas escritas reconocen ambos. NASDAQ usa el snapshot FMP por bolsa y puede recuperar el día de mercado más reciente disponible cuando hoy no haya sesión o datos publicados. S&P 500 usa la lista vigente de componentes y precios EOD de FMP, busca los dos últimos días de mercado con cobertura completa y calcula el cambio cierre a cierre, agrupado por sector mediante promedio simple. Declara cobertura, método, fecha y fuente; no lo presenta como índice sectorial oficial ni como retorno ponderado del índice. Respuestas vacías, parciales, fechas inconsistentes, falta de clave, cuota o rechazo de endpoint se explican según el caso sin atribuir siempre el problema a la conexión. Cada respuesta incluye «No es asesoría financiera».
 
+### REQ-008 — Respaldo sectorial sin clave FMP
+
+**EARS:** Cuando S&P 500 no pueda calcularse por componentes con FMP, el sistema deberá intentar una vista alternativa con los once ETF sectoriales Select Sector SPDR, siempre que pueda verificar dos cierres completos y fechas comunes recientes.
+
+**Criterios de aceptación:** el respaldo utiliza los once símbolos sectoriales publicados por State Street y cierres históricos reales de Yahoo Finance, sin completar valores ausentes ni mezclar fechas. Muestra símbolo, variación cierre a cierre, fecha, fuente y límites; dice explícitamente que son ETF de referencia y no el rendimiento oficial de los sectores ni el promedio de componentes. Se conserva caché breve y un error honesto si tampoco hay datos del respaldo. NASDAQ y las respuestas con FMP completo mantienen su método actual.
+
 ### REQ-005 — Evidencia y operación
 
 **EARS:** Cuando se entregue la capacidad, el repositorio deberá documentar configuración, cuotas, cobertura y verificaciones reales frente a simuladas.

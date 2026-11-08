@@ -8,6 +8,7 @@
 | TASK-004 | Lanzador, empaquetado, ADR, documentación y validación final | REQ-001, REQ-002, REQ-003, REQ-004 | 338 tests, nueve specs, shell/JS/Git, wheel y revisión independiente; NIM pendiente | Completa local |
 | TASK-005 | Aplicar la nueva identidad visual, profesor robot y catálogo horizontal adaptable | REQ-001, REQ-005 | Nueve capturas Chrome y checks de desborde, contraste, foco y movimiento a 1440/1024/768/390 px; sin datos financieros ficticios | Completa local |
 | TASK-006 | Unificar accesos iniciales y reiniciar antes de abrir cada consulta | REQ-002, REQ-005 | Chrome local con sesión temporal: NASDAQ, S&P 500 y recomendaciones abren hilos separados; métricas solo prellena; reinicio bloquea envío ante error | Completa local |
+| TASK-007 | Aplicar la paleta del robot e integrar video de bienvenida con respaldo | REQ-006 | 40 checks Chrome, 15 pruebas de servidor, wheel con video/imagen/tema y capturas a cuatro tamaños | Completa local |
 
 ## Trazabilidad
 
@@ -18,6 +19,13 @@
 | REQ-003 | TASK-003, TASK-004 | Conversaciones completas con datos locales y fuentes |
 | REQ-004 | TASK-004 | Comandos documentados y resultados reales, sin declarar NIM verificado |
 | REQ-005 | TASK-005, TASK-006 | Nuevo diseño adaptable y transición de sesión por acceso |
+| REQ-006 | TASK-007 | Paleta basada en asset, video local, respaldo, pausa y legibilidad |
+
+## Evidencia ejecutada — 2026-11-07 (TASK-007)
+
+- `node tools/check_web.mjs --front-only` → **40 comprobaciones** en Chrome local, con reproducción y pausa del video, pausa al comenzar el chat, respaldo con movimiento reducido, contraste y cuatro tamaños de pantalla. Nueve capturas revisadas; proveedores financieros desactivados.
+- `.venv/bin/python -m pytest -q tests/unit/test_web_server.py` → **15 passed** con sockets locales; el primer intento dentro de sandbox no pudo abrir el puerto y se repitió con autorización.
+- `pip wheel --no-deps --no-build-isolation` generó el paquete; se comprobó que contiene `robot-theme.css`, el MP4 y el PNG. `node --check`, validador SDD y `git diff --check` pasaron. No se consultaron proveedores financieros.
 
 ## Evidencia ejecutada — 2026-11-07 (TASK-005 y TASK-006)
 

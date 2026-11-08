@@ -10,6 +10,12 @@
 
 **Criterios de aceptación:** el diseño prioriza lectura de respuestas, fuentes y disclaimer sobre adornos; el catálogo deja de ocupar una columna fija en escritorio y sigue accesible en móvil; el robot acompaña la bienvenida y distingue visualmente respuestas del profesor sin fingir datos de mercado. Noticias, recomendaciones, NASDAQ y S&P 500 usan una sola definición de acción compartida entre navegación y sugerencias. El acceso de métricas reinicia la sesión y deja la pregunta preparada para completar; no envía una consulta incompleta. Si el reinicio falla, no se envía la nueva consulta; el reintento no duplica mensajes. Se conserva el botón independiente «Nueva conversación». Las acciones de respuesta, como resumir una noticia, continúan la conversación actual. El diseño funciona con teclado, móvil, movimiento reducido y assets locales.
 
+### REQ-006 — Identidad derivada del robot y bienvenida en video
+
+**EARS:** Cuando la persona abra la web, el sistema deberá presentar la paleta derivada del robot suministrado y uno de sus videos al inicio, con la imagen suministrada como respaldo visual. Cuando comience una conversación o active movimiento reducido, el sistema deberá detener la reproducción automática.
+
+**Criterios de aceptación:** azul marino, cian, azul eléctrico, blanco frío y naranja se aplican de forma coherente y legible; el video se sirve localmente, silenciado, con reproducción controlable y sin bloquear el chat. Una leyenda visible indica que las gráficas del video son ilustrativas. La imagen de respaldo aparece si el video no carga; el navegador no descarga ni reproduce el video automáticamente bajo `prefers-reduced-motion`. Los accesos, respuestas, fuentes y disclaimer siguen visibles en móvil y escritorio. No se incorporan cifras del video como información financiera de la app.
+
 ### REQ-001 — Web local accesible y adaptable
 
 **EARS:** Cuando se abra la aplicación, el sistema deberá presentar una web en español con conversación central, explicación amigable del propósito, catálogo consultable y preferencias recogidas en el diálogo.
@@ -41,3 +47,4 @@
 | 2026-11-04 | Especificación previa del rediseño solicitado; skills descargadas en .local/design-skills. |
 | 2026-11-04 | Implementación y pulido tras revisión: 338 pruebas offline, 38 comprobaciones en Chrome, nueve specs válidas y assets del wheel comprobados. |
 | 2026-11-07 | Borrador de rediseño con verde y vidrio, profesor robot, catálogo horizontal en escritorio y reinicio de sesión en accesos iniciales. |
+| 2026-11-07 | Nueva dirección visual a partir del robot aportado: paleta azul/cian/naranja, video ilustrativo y respaldo estático accesible. |

@@ -338,10 +338,12 @@ def _execute_query(session: Session, email: str, query: str, settings: Settings,
         else:
             rows, day, fetched, error = sector_snapshot(session, settings, universe=universe)
         if not rows:
-            tools = ((["sector_snapshot"] if universe == "NASDAQ" else ["sp500_constituents", "eod_bulk"])
-                     if settings.has_fmp_key else [])
-            return HandlerResult((error or "No hay un snapshot sectorial disponible.") +
-                                 " Puedes volver a intentarlo cuando FMP publique datos válidos.",
+            tools = (["sector_snapshot"] if universe == "NASDAQ" and settings.has_fmp_key
+                     else ["sp500_constituents", "eod_bulk", "sector_etf_history"] if settings.has_fmp_key
+                     else ["sector_etf_history"] if universe == "S&P 500" else [])
+            recovery = (" Puedes volver a intentarlo cuando FMP publique datos válidos."
+                        if universe == "NASDAQ" else " Puedes volver a intentarlo cuando haya datos verificables.")
+            return HandlerResult((error or "No hay datos sectoriales disponibles.") + recovery,
                                  status="degraded", tools_used=tools)
         if universe == "NASDAQ":
             answer = (f"Sectores de NASDAQ · {day} (fecha de Nueva York). "
@@ -350,6 +352,16 @@ def _execute_query(session: Session, email: str, query: str, settings: Settings,
             answer += "\n".join(f"| {SECTOR_LABELS[row['sector']]} | {row['change_pct']:+.2f}% |" for row in rows)
             answer += (f"\n\nConsulta: {fetched.strftime('%Y-%m-%d %H:%M')} UTC. El proveedor informa fecha, no hora exacta del dato. "
                        "NASDAQ es una bolsa, no representa todo el mercado estadounidense. El orden diario no predice rentabilidad futura.")
+        elif "proxy_symbol" in rows[0]:
+            answer = (f"Referencia de los sectores del S&P 500 mediante ETF · {day} (fecha de Nueva York). "
+                      "Cada variación compara el cierre del ETF con el cierre de la sesión anterior. "
+                      "Estos ETF ofrecen exposición a los once sectores; sus cambios no son el rendimiento oficial "
+                      "de cada sector del índice ni un promedio de sus componentes.\n\n"
+                      "| Sector | ETF de referencia | Variación del ETF |\n|---|---|---:|\n")
+            answer += "\n".join(f"| {SECTOR_LABELS[row['sector']]} | {row['proxy_symbol']} | {row['change_pct']:+.2f}% |" for row in rows)
+            answer += (f"\n\nConsulta: {fetched.strftime('%Y-%m-%d %H:%M')} UTC. "
+                       "Se usaron once ETF y dos sesiones con cierres completos. "
+                       "El orden diario no predice rentabilidad futura.")
         else:
             answer = (f"Empresas del S&P 500 agrupadas por sector · {day} (fecha de Nueva York). "
                       "La variación es el promedio simple por sector del cambio entre el cierre de ese día y el cierre anterior, "
@@ -359,8 +371,10 @@ def _execute_query(session: Session, email: str, query: str, settings: Settings,
             answer += (f"\n\nConsulta: {fetched.strftime('%Y-%m-%d %H:%M')} UTC. Cobertura: {sum(row['member_count'] for row in rows)} "
                        "componentes actuales con cotización válida; la composición del índice puede cambiar. "
                        "El promedio diario no predice rentabilidad futura.")
-        return HandlerResult(answer, sources=snapshot_sources(universe, day, fetched),
-                             tools_used=["sector_snapshot"] if universe == "NASDAQ" else ["sp500_constituents", "eod_bulk"])
+        proxy = universe == "S&P 500" and "proxy_symbol" in rows[0]
+        return HandlerResult(answer, sources=snapshot_sources(universe, day, fetched, proxy=proxy),
+                             tools_used=["sector_snapshot"] if universe == "NASDAQ" else ["sector_etf_history"] if proxy
+                             else ["sp500_constituents", "eod_bulk"])
     if decision.intent == "explore":
         return _explore(session, decision)
     if decision.intent == "explanation":

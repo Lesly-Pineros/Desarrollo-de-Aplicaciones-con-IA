@@ -3,11 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#081f1a">
+  <meta name="theme-color" content="#e9f2f8">
   <meta name="description" content="Un espacio para entender acciones, ETF y conceptos financieros conversando. InvestiQ es educativo. No es asesoría financiera.">
   <title>InvestiQ — Tu profesor de mercado</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231d453b'/%3E%3Cpath d='M9 22V15M16 22V9M23 22V12' stroke='%23f9f8f4' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="/app.css">
+  <link rel="stylesheet" href="/robot-theme.css">
   <script src="/app.js" defer></script>
 </head>
 <body>
@@ -93,35 +94,16 @@
           <h1 id="welcome-title">El mercado se entiende mejor <em>acompañado.</em></h1>
           <p class="welcome-copy">Soy tu profesor de mercado. Pregúntame por una empresa, un ETF o algo que viste en las noticias. Revisamos los datos y sus fuentes paso a paso.</p>
         </div>
-        <div class="mentor-visual" aria-hidden="true">
-          <div class="mentor-orbit"></div>
-          <svg class="mentor-portrait" viewBox="0 0 360 330" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="robot-shell" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f2fff0"/><stop offset=".52" stop-color="#bfdac7"/><stop offset="1" stop-color="#70a992"/></linearGradient>
-              <linearGradient id="robot-visor" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#193a32"/><stop offset="1" stop-color="#0b211d"/></linearGradient>
-              <linearGradient id="robot-body" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d8f4db"/><stop offset="1" stop-color="#6fa78d"/></linearGradient>
-            </defs>
-            <ellipse cx="183" cy="303" rx="112" ry="15" fill="#03130f" opacity=".35"/>
-            <path d="M108 297c3-67 22-93 72-93s72 26 75 93" fill="url(#robot-body)" stroke="#d7f8d8" stroke-width="5"/>
-            <path d="M143 215c10 19 24 29 37 29s27-10 37-29" fill="#1e4b3c"/>
-            <path d="m159 238 21 31 21-31" fill="#f7fff0"/><path d="m180 269-12 28h24z" fill="#bfe978"/>
-            <rect x="163" y="34" width="34" height="35" rx="14" fill="#7cae98" stroke="#e4ffdf" stroke-width="4"/>
-            <circle cx="180" cy="31" r="13" fill="#c6f083" stroke="#eaffbc" stroke-width="4"/>
-            <rect x="70" y="111" width="25" height="60" rx="12" fill="#81b69d"/><rect x="265" y="111" width="25" height="60" rx="12" fill="#81b69d"/>
-            <rect x="84" y="61" width="192" height="163" rx="54" fill="url(#robot-shell)" stroke="#e5ffe5" stroke-width="5"/>
-            <rect x="101" y="91" width="158" height="102" rx="34" fill="url(#robot-visor)" stroke="#5f9c7d" stroke-width="3"/>
-            <path d="M123 120c20-14 40-17 58-15" stroke="#f0fff0" stroke-width="4" opacity=".28" stroke-linecap="round"/>
-            <rect x="117" y="120" width="61" height="46" rx="19" fill="none" stroke="#d5f3d4" stroke-width="5"/>
-            <rect x="182" y="120" width="61" height="46" rx="19" fill="none" stroke="#d5f3d4" stroke-width="5"/>
-            <path d="M178 142h4" stroke="#d5f3d4" stroke-width="5" stroke-linecap="round"/>
-            <ellipse cx="146" cy="143" rx="8" ry="11" fill="#c9f17f"/><ellipse cx="213" cy="143" rx="8" ry="11" fill="#c9f17f"/>
-            <path d="M163 177c10 7 24 7 34 0" fill="none" stroke="#b7e4b5" stroke-width="4" stroke-linecap="round"/>
-            <rect x="150" y="206" width="60" height="11" rx="5" fill="#89b79d"/>
-            <path d="M64 239c27-10 54-10 79 0v54c-25-10-52-10-79 0zm79 0c27-10 54-10 79 0v54c-25-10-52-10-79 0z" fill="#eefee9" stroke="#b9e0b9" stroke-width="4"/>
-            <path d="M143 239v54M82 255h40M164 255h40" stroke="#78a88b" stroke-width="3" stroke-linecap="round"/>
-          </svg>
-          <div class="mentor-tag"><span class="mentor-tag-dot"></span>Tu profesor InvestiQ</div>
-        </div>
+        <figure class="mentor-visual" aria-label="Robot profesor de InvestiQ">
+          <div id="mentor-media" class="mentor-media">
+            <img class="mentor-still" src="/media/profesor-investiq.png" alt="" width="1312" height="1199">
+            <video id="mentor-video" class="mentor-video" muted loop playsinline preload="none" aria-hidden="true">
+              <source src="/media/profesor-investiq.mp4" type="video/mp4">
+            </video>
+            <button id="mentor-playback" class="mentor-playback" type="button" aria-label="Reproducir animación del profesor">Reproducir</button>
+          </div>
+          <figcaption>Tu profesor InvestiQ <span aria-hidden="true">·</span> Gráficas del video ilustrativas</figcaption>
+        </figure>
         <div class="starting-points" aria-label="Ideas para empezar">
           <h2>Una pregunta para comenzar</h2>
           <button class="suggestion" data-starter="recommendations" type="button"><span>Quiero explorar acciones y ETF</span><svg class="icon"><use href="#icon-arrow"/></svg></button>

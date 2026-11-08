@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     twelve_data_api_key: str | None = Field(default=None, repr=False, validation_alias="TWELVE_DATA_API_KEY")
     marketaux_api_key: str | None = Field(default=None, repr=False, validation_alias="MARKETAUX_API_KEY")
     fmp_api_key: str | None = Field(default=None, repr=False, validation_alias="FMP_API_KEY")
+    sector_etf_fallback_enabled: bool = Field(default=True, validation_alias="INVESTIQ_SECTOR_ETF_FALLBACK_ENABLED")
     market_timezone: str = Field(default="America/Bogota", validation_alias="MARKET_TIMEZONE")
     headlines_cache_minutes: int = Field(default=15, ge=1, le=60)
     sec_user_agent: str = Field(default="", validation_alias="SEC_USER_AGENT")

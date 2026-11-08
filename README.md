@@ -31,7 +31,7 @@ Edita `.env` en tu equipo:
 | `DATABASE_URL` | Base local; por defecto `sqlite:///./investiq.db`. App y pipeline leen la misma configuración. |
 | `TWELVE_DATA_API_KEY` | Enriquecimiento opcional de cotizaciones. |
 | `MARKETAUX_API_KEY` | Clave propia para noticias del día por país, sector o símbolo; sin ella se informa de la falta de fuente. |
-| `FMP_API_KEY` | Opcional para snapshots de once sectores de NASDAQ. Acceso dependiente del plan; no se contrata ninguno. |
+| `FMP_API_KEY` | Opcional para el snapshot sectorial de NASDAQ y el cálculo por sectores de los componentes del S&P 500. El segundo es un promedio simple entre cierres diarios, no un índice sectorial oficial; el acceso depende del plan. |
 | `MARKET_TIMEZONE` | Zona IANA para «hoy» en noticias; por defecto `America/Bogota`. |
 | `CONVERSATION_MEMORY_DAYS` | Retención del contexto resumido, por defecto 90 días. |
 | `INVESTIQ_SHOW_DIAGNOSTICS` | `true` muestra categorías de diagnóstico para desarrollo. Por defecto `false`. |

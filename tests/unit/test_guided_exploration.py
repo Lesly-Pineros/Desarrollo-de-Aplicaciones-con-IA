@@ -12,6 +12,8 @@ from sqlmodel import Session
 from investiq.conversation import answer_turn
 from investiq.data.database import create_db, make_engine
 from investiq.data.models import InstrumentFeature, MLClusterRun, UserPreference
+from investiq.dialogue.exploration import (criteria_patch, is_exploration_query,
+                                           offline_exploration_clarification)
 from investiq.domain import ConversationState, RouterDecision
 from investiq.instruments import INSTRUMENTS, INSTRUMENT_BY_SYMBOL
 from investiq.memory import load_memory
@@ -81,6 +83,8 @@ def test_guided_conversation_groups_missing_criteria_and_uses_real_model(explora
     first = ask(exploration, "Quiero una recomendación educativa para invertir")
     assert "acciones" in first.answer and "ETF" in first.answer
     assert "cuánto tiempo" in first.answer and "subidas y bajadas" in first.answer
+    assert "no hace falta usar términos financieros" not in first.answer.casefold()
+    assert "puedes responder a tu manera" not in first.answer.casefold()
     result = ask(exploration, "acciones, más de cinco años y variaciones bajas", restore=True)
     assert result.intent == "explore" and result.status == "ok"
     assert "Volatilidad anualizada" in result.answer and "2025-01-01 a 2026-10-30" in result.answer
@@ -89,6 +93,51 @@ def test_guided_conversation_groups_missing_criteria_and_uses_real_model(explora
     assert any(s.source_id == "ml:fixture" for s in result.sources)
     assert "exploration_candidates" in result.tools_used
     assert load_memory(exploration[0], "learner").state.pending_field is None
+
+
+def test_everyday_investment_phrases_complete_the_guided_criteria(exploration):
+    opening = "Quiero invertir en algo que no sea tan volátil"
+    assert is_exploration_query(opening)
+    assert criteria_patch(opening)["volatility_target"] == "baja"
+
+    first = ask(exploration, opening)
+    assert "pocos vaivenes" in first.answer
+    assert "por cuánto tiempo" in first.answer.casefold()
+    assert "subidas y bajadas" not in first.answer.casefold()
+    result = ask(exploration, "acciones, por un año, en subidas y bajas pocas", restore=True)
+
+    assert result.intent == "explore" and result.status == "ok"
+    assert "Volatilidad anualizada" in result.answer
+    assert load_memory(exploration[0], "learner").state.pending_field is None
+
+
+@pytest.mark.parametrize(("query", "field", "expected"), [
+    ("por medio año", "exploration_horizon", "short"),
+    ("sin tantos altibajos", "volatility_target", "baja"),
+    ("un par de años", "exploration_horizon", "medium"),
+    ("quiero tomar pocos riesgos", "volatility_target", "baja"),
+])
+def test_more_everyday_phrases_map_to_one_off_exploration_criteria(query, field, expected):
+    assert criteria_patch(query)[field] == expected
+
+
+def test_offline_clarification_acknowledges_known_criteria_without_a_canned_closing():
+    known = RouterDecision(intent="explore", exploration_kind="equity", volatility_target="baja")
+    prompt = offline_exploration_clarification(("exploration_horizon",), known)
+
+    assert prompt.startswith("Veo que te interesan las acciones y prefieres pocos vaivenes.")
+    assert "plazo" in prompt.casefold()
+    assert "no hace falta usar términos financieros" not in prompt.casefold()
+    assert "puedes responder a tu manera" not in prompt.casefold()
+
+
+def test_six_months_and_stable_preference_trigger_short_horizon_caution(exploration):
+    ask(exploration, "Recomiéndame acciones")
+    result = ask(exploration, "por unos 6 meses, prefiero algo más estable", restore=True)
+
+    assert result.intent == "explore" and result.status == "degraded"
+    assert "menos de un año" in result.answer
+    assert "| Instrumento |" not in result.answer
 
 
 def test_complete_request_uses_filters_and_reference_without_more_questions(exploration):
@@ -145,7 +194,7 @@ def test_unknown_sector_is_clarified_instead_of_ignored(exploration):
     assert "no está en el catálogo" in first.answer
     assert load_memory(exploration[0], "learner").state.pending_field == "explore_sector"
     response = ask(exploration, "tecnología", restore=True)
-    assert "cuánto tiempo" in response.answer.casefold()
+    assert "plazo" in response.answer.casefold()
     assert "subidas y bajadas" in response.answer.casefold()
 
 
@@ -181,7 +230,7 @@ def test_changed_feature_values_fail_the_training_fingerprint(exploration):
 def test_negated_criterion_does_not_select_the_opposite_of_the_request(exploration):
     ask(exploration, "Recomiéndame ETF a largo plazo")
     result = ask(exploration, "no quiero volatilidad alta", restore=True)
-    assert "¿Cómo te sientes" in result.answer
+    assert "te acomodan las subidas y bajadas" in result.answer
     assert load_memory(exploration[0], "learner").state.pending_decision.volatility_target is None
 
 

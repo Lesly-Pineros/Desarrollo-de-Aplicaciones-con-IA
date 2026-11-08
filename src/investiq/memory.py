@@ -45,7 +45,8 @@ def _decision(decision: RouterDecision | None) -> RouterDecision | None:
         return RouterDecision(intent="education", education_topic=canonical) if canonical else None
     if intent == "sector_performance":
         market = decision.sector_market if decision.sector_market in MARKETS else None
-        return RouterDecision(intent=intent, sector_market=market)
+        universe = decision.sector_universe if decision.sector_universe in {"NASDAQ", "S&P 500"} else None
+        return RouterDecision(intent=intent, sector_market=market, sector_universe=universe)
     if intent == "market_news":
         from investiq.news_context import NEWS_COUNTRIES, NEWS_SECTORS
         return RouterDecision(intent=intent, symbol=_covered(decision.symbol),
@@ -100,6 +101,7 @@ def _summary(state: ConversationState, *, enabled: bool) -> str:
             pieces.append(f"Hablamos de {last.education_topic}.")
         elif last.intent == "sector_performance":
             pieces.append("Querías consultar liderazgo sectorial actual" +
+                          (f" de {last.sector_universe}" if last.sector_universe else "") +
                           (f" en {last.sector_market}." if last.sector_market else "."))
         elif last.intent == "market_news":
             pieces.append("Consultamos noticias financieras; los titulares no se guardan en esta memoria.")

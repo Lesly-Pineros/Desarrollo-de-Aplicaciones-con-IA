@@ -104,7 +104,8 @@ def _answer_turn(session: Session, email: str, query: str, settings: Settings,
         return reply(exploration.reply, intent="explore")
     if exploration.clarification_fields:
         missing = [CRITERIA_LABELS[field] for field in exploration.clarification_fields]
-        known = known_exploration_criteria(state.pending_decision or RouterDecision(intent="explore"))
+        known_decision = state.pending_decision or RouterDecision(intent="explore")
+        known = known_exploration_criteria(known_decision)
         text = None
         clarification_client = ensure_client()
         if clarification_client is not None:
@@ -113,7 +114,8 @@ def _answer_turn(session: Session, email: str, query: str, settings: Settings,
             except LLMUnavailable as error:
                 logger.info("exploration.clarification.fallback category=%s",
                             getattr(error, "provider_failure_category", "provider-error"))
-        return reply(text or offline_exploration_clarification(exploration.clarification_fields), intent="explore")
+        return reply(text or offline_exploration_clarification(
+            exploration.clarification_fields, known_decision), intent="explore")
     if exploration.decision is not None:
         diagnostics.routing = "context" if exploration.used_context else "rules"
         response = answer_query(session, email, query, settings, decision=exploration.decision,
@@ -208,7 +210,7 @@ def start_guided_exploration(session: Session, email: str, settings: Settings,
             logger.info("exploration.clarification.fallback category=%s",
                         getattr(error, "provider_failure_category", "provider-error"))
     response = make_response("explore", text or offline_exploration_clarification(
-        tuple(field for _, field in REQUIRED_CRITERIA)), client=client, diagnostics=diagnostics)
+        tuple(field for _, field in REQUIRED_CRITERIA), decision), client=client, diagnostics=diagnostics)
     record_response(session, email, response, settings.query_log_retention_days)
     remember_turn(state, None, response, decision)
     with log_stage(logger, "dialogue.save_state"):

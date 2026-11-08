@@ -289,13 +289,17 @@ class ChatNVIDIAClient:
             "cotidianas y ofrece ejemplos breves solo para los criterios faltantes. No preguntes por símbolo "
             "de referencia ni presupuesto: la referencia es opcional y el presupuesto no se usa. No infieras datos, "
             "perfil financiero ni recomendaciones; no elijas criterios por la persona. Sin saludo, cifras de "
-            "mercado ni más de una pregunta. Devuelve un mensaje conversacional de una o dos frases."
+            "mercado ni más de una pregunta. Evita muletillas o instrucciones sobre cómo responder, en especial "
+            "«no hace falta usar términos financieros» y «puedes responder a tu manera». La pregunta debe sentirse "
+            "propia de esta conversación, no como un formulario. Devuelve una o dos frases."
         )
         payload = json.dumps({"known": known, "missing": missing}, ensure_ascii=False)
         result = self._structured(system, payload, ExplorationClarification, attempts=1,
                                   operation="exploration_clarification")
         message = result.message.strip()
         if ("?" not in message or message.count("?") != 1 or "\n" in message
-                or len(message.split()) > 70 or re.search(r"(?m)^\s*(?:[-*]|\d+[.)])\s", message)):
+                or len(message.split()) > 70 or re.search(r"(?m)^\s*(?:[-*]|\d+[.)])\s", message)
+                or re.search(r"no hace falta usar t[eé]rminos financieros|puedes responder a tu manera|"
+                             r"no necesitas usar t[eé]rminos financieros", message, re.IGNORECASE)):
             raise LLMUnavailable("La aclaración generada no cumple el formato conversacional.")
         return message

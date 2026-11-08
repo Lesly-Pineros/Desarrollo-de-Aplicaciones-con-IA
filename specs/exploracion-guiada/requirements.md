@@ -9,7 +9,7 @@
 
 **EARS:** Cuando se pida explorar acciones o ETF, el sistema deberá aprovechar todos los criterios explícitos del mensaje y, si faltan criterios necesarios, pedirlos juntos en una sola aclaración natural.
 
-**Criterios de aceptación:** tipo (acciones/ETF/ambos), plazo y variación histórica deseada; sector cuando se declare. La referencia es opcional y no bloquea la búsqueda. Aceptar criterios expresados juntos y en lenguaje cotidiano, respuestas cortas, correcciones, interrupción educativa y cancelación. No repetir criterios ya entendidos ni convertir cualquier negación en rechazo. Sin formularios ni guardar automáticamente preferencias financieras. Reconocer que un objetivo de usar el dinero hoy/corto plazo no se resuelve presentando acciones como seguras.
+**Criterios de aceptación:** tipo (acciones/ETF/ambos), plazo y variación histórica deseada; sector cuando se declare. La referencia es opcional y no bloquea la búsqueda. Aceptar criterios expresados juntos y en lenguaje cotidiano, incluidos «no tan volátil», «por un año», «subidas y bajas pocas», «seis meses» y «más estable»; aceptar respuestas cortas, correcciones, interrupción educativa y cancelación. No repetir criterios ya entendidos ni convertir cualquier negación en rechazo. Sin formularios ni guardar automáticamente preferencias financieras. Reconocer que un objetivo de usar el dinero hoy/corto plazo no se resuelve presentando acciones como seguras.
 
 ### REQ-002 — Candidatos desde ML real local
 
@@ -33,7 +33,7 @@
 
 **EARS:** Cuando falten criterios para explorar, el sistema deberá hacer una pregunta breve con respuestas de ejemplo fáciles de expresar.
 
-**Criterios de aceptación:** una sola intervención natural reúne únicamente los criterios obligatorios que falten; evita listas de campos o preguntas encadenadas. La referencia puede omitirse sin confirmación. Las frases «no soy de tomar riesgos» y similares pueden mapearse al filtro histórico de variación baja solo para esa búsqueda, aclarando que no es un perfil ni protección de capital. Al finalizar muestra candidatos con cifras históricas, período y fuentes conforme a REQ-002/003.
+**Criterios de aceptación:** una sola intervención natural reúne únicamente los criterios obligatorios que falten y reconoce brevemente lo que ya entendió; evita listas de campos, preguntas repetidas y cierres genéricos como «no hace falta usar términos financieros». El modo local también pregunta en lenguaje claro, sin una coletilla fija. Reconoce frases cotidianas de plazo y variación (por ejemplo «medio año», «sin tantos altibajos», «más estable» y «pocas subidas y bajadas»). La referencia puede omitirse sin confirmación. Las frases «no soy de tomar riesgos» y similares pueden mapearse al filtro histórico de variación baja solo para esa búsqueda, aclarando que no es un perfil ni protección de capital. Al finalizar muestra candidatos con cifras históricas, período y fuentes conforme a REQ-002/003.
 
 ### REQ-006 — Acceso guiado visible y sugerencias de modo
 
@@ -61,3 +61,5 @@
 | 2026-11-04 | Flujo por chat, KMeans aprobado, huella de características, métricas/fuentes y frontend verificados dentro de 704 pruebas offline y 93 comprobaciones Chrome. |
 | 2026-11-07 | Se ofrece «Recomendaciones guiadas» y se alinean las sugerencias iniciales con modos disponibles; se conserva el acceso sectorial NASDAQ. |
 | 2026-11-07 | Se corrige la aclaración repetida por negaciones; se agrupan criterios faltantes, la referencia queda opcional y el botón deja de enviar un mensaje prefabricado. |
+| 2026-11-07 | Se amplía la interpretación determinista de frases cotidianas sobre volatilidad, estabilidad y plazos para evitar repetir criterios que la persona ya indicó. |
+| 2026-11-07 | Se elimina la coletilla prefabricada de la aclaración local y se exige que el modelo evite cierres genéricos; la pregunta reconoce los criterios ya expresados. |

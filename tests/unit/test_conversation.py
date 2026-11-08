@@ -48,6 +48,23 @@ def local_fixture_source(session):
     )
 
 
+@pytest.mark.parametrize(("query", "symbol"), [
+    ("Dame las métricas de la acción o ETF: de cocacola", "KO"),
+    ("Dame las métricas de la acción o ETF: Johnson & Johnson", "JNJ"),
+])
+def test_pending_metric_prompt_accepts_company_names(chat, quote_calls, query, symbol):
+    state = chat[2]
+    state.pending_field = "instrument_symbol"
+    state.pending_decision = RouterDecision(intent="instrument_info", needs_clarification=True)
+
+    response = ask(chat, query)
+
+    assert response.intent == "instrument_info"
+    assert quote_calls == [symbol]
+    assert symbol in response.answer
+    assert state.pending_field is None
+
+
 @pytest.fixture
 def comparison_calls(monkeypatch):
     calls = []

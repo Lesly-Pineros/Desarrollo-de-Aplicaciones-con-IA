@@ -1,6 +1,6 @@
 # Noticias, sectores y exploración educativa
 
-La web ofrece tres accesos persistentes: **Noticias de hoy**, **Recomendaciones guiadas** y **Sectores de hoy · NASDAQ**. Las sugerencias iniciales llevan a esos mismos tres modos. Todos usan el mismo chat; no hay formulario de perfil. Arranque: `bash run_web.sh`, en `http://127.0.0.1:8000`.
+La web ofrece accesos persistentes para **Noticias de hoy**, **Recomendaciones guiadas**, **Sectores de hoy · NASDAQ** y **Sectores · S&P 500**. Los dos universos sectoriales se consultan por separado. Todos usan el mismo chat; no hay formulario de perfil. Arranque: `bash run_web.sh`, en `http://127.0.0.1:8000`.
 
 ## Configurar en cada equipo
 
@@ -13,7 +13,7 @@ FMP_API_KEY=
 MARKET_TIMEZONE=America/Bogota
 ```
 
-Los valores vacíos son intencionales. El modelo NVIDIA sigue configurado mediante `NVIDIA_MODEL`; no se contrató otro proveedor de LLM. Marketaux necesita una clave de tu cuenta para consultar noticias; FMP es opcional para snapshots, y el acceso al endpoint depende de tu plan. No se afirma que todos los endpoints de FMP estén incluidos en su cuenta gratuita. No se cambia ninguna suscripción ni se configura una clave real en el repositorio.
+Los valores vacíos son intencionales. El modelo NVIDIA sigue configurado mediante `NVIDIA_MODEL`; no se contrató otro proveedor de LLM. Marketaux necesita una clave de tu cuenta para consultar noticias; FMP es opcional y el acceso a sus endpoints depende de tu plan. No se afirma que todos los endpoints de FMP estén incluidos en su cuenta gratuita. No se cambia ninguna suscripción ni se configura una clave real en el repositorio.
 
 ## Noticias y resúmenes
 
@@ -29,9 +29,9 @@ Los tres artículos y sus selecciones viven temporalmente en la sesión del chat
 
 ## Sectores que lideran hoy
 
-El botón **Sectores de hoy · NASDAQ** consulta directamente el único ranking numérico conectado: los once sectores de NASDAQ/Estados Unidos. Colombia, España, Europa y global todavía no tienen una fuente sectorial conectada. También puedes preguntar «¿Qué sectores lideran hoy en NASDAQ?» La app puede usar [FMP](https://site.financialmodelingprep.com/developer/docs/stable/sector-performance-snapshot) con `FMP_API_KEY`: compara los once sectores según la media diaria publicada por ese proveedor. La fecha corresponde a Nueva York. Se exige el mismo día y bolsa, once sectores únicos y porcentajes finitos; se ordenan por código, sin usar noticias ni ETF como sustitutos de cobertura completa.
+El botón **Sectores de hoy · NASDAQ** consulta el snapshot diario de los once sectores de esa bolsa en [FMP](https://site.financialmodelingprep.com/developer/docs/stable/sector-performance-snapshot). Si hoy no es un día de mercado o aún no se publicó el snapshot, busca fechas recientes anteriores y muestra la fecha de los datos. Se exige el mismo día y bolsa, once sectores únicos y porcentajes finitos. NASDAQ es una bolsa y no representa todo el mercado estadounidense.
 
-La respuesta indica bolsa, fecha, métrica y hora de consulta, separada de la fecha del proveedor. No atribuye una hora intradía que la respuesta no contiene. No representa todo Estados Unidos. Si faltan clave, cuota o acceso, la respuesta lo explica y señala `FMP_API_KEY` y la dependencia del plan. La caché dura quince minutos y la cuota local de FMP es de 100 consultas/día. Su disponibilidad real sigue pendiente de comprobación con una cuenta autorizada; no se presume acceso de pago ni se presenta un mock como un ranking en vivo.
+El botón **Sectores · S&P 500** obtiene la lista actual de componentes y cierres diarios por lote desde FMP. Busca los dos días de mercado más recientes con datos completos, calcula el cambio entre ambos cierres y promedia esas variaciones por sector. Muestra cuántos componentes incluye. Ese cálculo no es un índice sectorial oficial ni ponderado por capitalización. Requiere cobertura completa y fechas coherentes. Ambos accesos indican la fecha y fuente; fallos de conexión, cuota, permisos o ausencia de datos se describen por separado. La disponibilidad real de estos endpoints depende de la cuenta FMP; las comprobaciones offline no acreditan una respuesta live.
 
 ## Recomendaciones guiadas
 

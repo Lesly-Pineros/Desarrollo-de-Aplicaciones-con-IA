@@ -40,11 +40,20 @@ def is_current_sector_query(query: str) -> bool:
 
 
 def sector_market(query: str) -> str | None:
+    if sector_universe(query) is not None:
+        return "Estados Unidos"
     text = plain(unescape(query))
     matched = [market for market, aliases in MARKETS.items() if any(
         re.search(r"(?<!\w)" + re.escape(alias) + r"(?!\w)", text) for alias in aliases
     )]
     return matched[0] if len(matched) == 1 else None
+
+
+def sector_universe(query: str) -> str | None:
+    text = plain(unescape(query))
+    nasdaq = bool(re.search(r"\bnasdaq\b", text))
+    sp500 = bool(re.search(r"\bs\s*&\s*p\s*[-.]?\s*500\b|\bs\s+p\s+500\b|\bsp\s*[-.]?\s*500\b|\bspx\b", text))
+    return "NASDAQ" if nasdaq and not sp500 else "S&P 500" if sp500 and not nasdaq else None
 
 
 def educational_part(query: str) -> str | None:
@@ -58,16 +67,10 @@ def educational_part(query: str) -> str | None:
 def sector_limitation(market: str | None) -> str:
     if market is None:
         return (
-            "Por ahora puedes consultar el ranking numérico de Estados Unidos (NASDAQ): cubre once sectores "
-            "y muestra sus variaciones cuando FMP está configurado y el snapshot está disponible. "
-            "Colombia, España, Europa y el mercado global todavía no tienen una fuente conectada para ese ranking. "
-            "¿Quieres consultar Estados Unidos/NASDAQ? Responde «sí» o «NASDAQ»."
+            "Puedo mostrarte el ranking de NASDAQ o un resumen por sectores de las empresas del S&P 500. "
+            "¿Cuál quieres consultar?"
         )
     return (
-        f"Para el mercado {market}, no tengo un ranking sectorial actual verificado con fecha y hora "
-        "y cobertura suficiente. Por eso no puedo afirmar qué sectores lideran hoy ni dar porcentajes. "
-        "El ranking disponible en esta app cubre únicamente los once sectores de NASDAQ, Estados Unidos, "
-        "y requiere una clave FMP con acceso al snapshot sectorial. Revisa FMP_API_KEY en .env y reinicia "
-        "la app; el acceso también depende del plan de FMP. Puedes pedirme que explique cómo se mide "
-        "el rendimiento sectorial y sus límites."
+        f"Todavía no hay una fuente sectorial numérica habilitada para {market}. "
+        "Puedes consultar NASDAQ o el resumen por sectores de las empresas del S&P 500."
     )

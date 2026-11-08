@@ -7,6 +7,7 @@
 | TASK-003 | Adaptador FMP y ranking con cobertura comprobada | REQ-003, REQ-005 | Once sectores sintéticos; rechazar faltantes/duplicados/otra fecha/bolsa/NaN; denegación de plan sanitizada | Completa offline; FMP real pendiente |
 | TASK-004 | Accesos web, docs, ADR y regresión final | REQ-001, REQ-002, REQ-003, REQ-004, REQ-005 | 704 pruebas, 93 checks Chrome, 119 documentos, quince specs, wheel y diff --check | Completa local |
 | TASK-005 | Mantener acceso directo a NASDAQ y degradación visible si FMP no está disponible | REQ-003, REQ-004, REQ-006 | test_market_current.py: consulta explícita NASDAQ y ausencia/fallo FMP explicado; check web verifica respuesta visible | Implementación local; verificación pendiente |
+| TASK-006 | Corregir días sin sesión/datos NASDAQ y agregar consulta independiente S&P 500 basada en componentes y cierres diarios FMP | REQ-007 | Tests offline: búsqueda de los dos últimos EOD completos, cierres/cálculo cierre a cierre, agrupación por sector, cobertura/fecha inconsistente, cuotas/caché; verificación web de dos botones y respuestas aisladas | Implementación local; verificaciones funcionales pendientes |
 
 ## Trazabilidad
 
@@ -18,6 +19,7 @@
 | REQ-004 | TASK-002, TASK-004 | Chat y botones accesibles sin HTML externo |
 | REQ-005 | TASK-001, TASK-003, TASK-004 | Configuración y evidencia offline/live separadas |
 | REQ-006 | TASK-005 | Acceso directo devuelve tabla o degradación explicada |
+| REQ-007 | TASK-006 | NASDAQ usa el último snapshot disponible; S&P 500 agrupa exclusivamente sus componentes y declara promedio/cobertura |
 
 ## Evidencia ejecutada — 2026-11-04
 

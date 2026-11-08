@@ -329,18 +329,38 @@ def _execute_query(session: Session, email: str, query: str, settings: Settings,
     if decision.intent == "sector_performance":
         if decision.sector_market != "Estados Unidos":
             return HandlerResult(sector_limitation(decision.sector_market), status="degraded")
-        from investiq.providers.sectors import SECTOR_LABELS, sector_snapshot, snapshot_source
-        rows, day, fetched, error = sector_snapshot(session, settings)
+        if decision.sector_universe is None:
+            return HandlerResult(sector_limitation(None), status="degraded")
+        from investiq.providers.sectors import SECTOR_LABELS, sector_snapshot, snapshot_sources
+        universe = decision.sector_universe
+        if universe == "NASDAQ":
+            rows, day, fetched, error = sector_snapshot(session, settings)
+        else:
+            rows, day, fetched, error = sector_snapshot(session, settings, universe=universe)
         if not rows:
-            return HandlerResult(sector_limitation(decision.sector_market) + "\n\n" + (error or ""),
-                                 status="degraded", tools_used=["sector_snapshot"] if settings.has_fmp_key else [])
-        answer = (f"Sectores de NASDAQ, Estados Unidos · {day} (fecha de Nueva York). "
-                  "Ordenados por variación diaria media de FMP; esta bolsa no representa todo el país.\n\n"
-                  "| Sector | Variación diaria media |\n|---|---:|\n")
-        answer += "\n".join(f"| {SECTOR_LABELS[row['sector']]} | {row['change_pct']:+.2f}% |" for row in rows)
-        answer += (f"\n\nConsulta: {fetched.strftime('%Y-%m-%d %H:%M')} UTC. El proveedor informa fecha, no hora exacta del dato. "
-                   "El orden diario no predice rentabilidad futura.")
-        return HandlerResult(answer, sources=[snapshot_source(day, fetched)], tools_used=["sector_snapshot"])
+            tools = ((["sector_snapshot"] if universe == "NASDAQ" else ["sp500_constituents", "eod_bulk"])
+                     if settings.has_fmp_key else [])
+            return HandlerResult((error or "No hay un snapshot sectorial disponible.") +
+                                 " Puedes volver a intentarlo cuando FMP publique datos válidos.",
+                                 status="degraded", tools_used=tools)
+        if universe == "NASDAQ":
+            answer = (f"Sectores de NASDAQ · {day} (fecha de Nueva York). "
+                      "Ordenados por variación diaria media reportada por FMP.\n\n"
+                      "| Sector | Variación diaria media |\n|---|---:|\n")
+            answer += "\n".join(f"| {SECTOR_LABELS[row['sector']]} | {row['change_pct']:+.2f}% |" for row in rows)
+            answer += (f"\n\nConsulta: {fetched.strftime('%Y-%m-%d %H:%M')} UTC. El proveedor informa fecha, no hora exacta del dato. "
+                       "NASDAQ es una bolsa, no representa todo el mercado estadounidense. El orden diario no predice rentabilidad futura.")
+        else:
+            answer = (f"Empresas del S&P 500 agrupadas por sector · {day} (fecha de Nueva York). "
+                      "La variación es el promedio simple por sector del cambio entre el cierre de ese día y el cierre anterior, "
+                      "no es un índice sectorial oficial ni está ponderado por capitalización.\n\n"
+                      "| Sector | Promedio simple diario | Componentes incluidos |\n|---|---:|---:|\n")
+            answer += "\n".join(f"| {SECTOR_LABELS[row['sector']]} | {row['change_pct']:+.2f}% | {row['member_count']} |" for row in rows)
+            answer += (f"\n\nConsulta: {fetched.strftime('%Y-%m-%d %H:%M')} UTC. Cobertura: {sum(row['member_count'] for row in rows)} "
+                       "componentes actuales con cotización válida; la composición del índice puede cambiar. "
+                       "El promedio diario no predice rentabilidad futura.")
+        return HandlerResult(answer, sources=snapshot_sources(universe, day, fetched),
+                             tools_used=["sector_snapshot"] if universe == "NASDAQ" else ["sp500_constituents", "eod_bulk"])
     if decision.intent == "explore":
         return _explore(session, decision)
     if decision.intent == "explanation":

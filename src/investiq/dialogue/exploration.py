@@ -41,30 +41,60 @@ def known_exploration_criteria(decision: RouterDecision) -> dict[str, str]:
     return result
 
 
-def offline_exploration_clarification(missing: tuple[str, ...] | list[str]) -> str:
-    prompts = {
-        "exploration_kind": "si te atraen más las acciones, los ETF o cualquiera de los dos",
-        "exploration_horizon": "por cuánto tiempo piensas mantener el dinero",
-        "volatility_target": "cómo te sientes con las subidas y bajadas del precio: pocas, moderadas o marcadas",
-    }
-    parts = [prompts[field] for field in missing if field in prompts]
-    if len(parts) == 1 and missing[0] == "exploration_kind":
-        return "¿Te interesan más las acciones, los ETF o te da igual? Puedes decírmelo con tus palabras."
-    if len(parts) == 1 and missing[0] == "exploration_horizon":
-        return "¿Por cuánto tiempo piensas mantener el dinero: unos meses, algunos años o más de cinco? No hace falta una fecha exacta."
-    if len(parts) == 1 and missing[0] == "volatility_target":
-        return "¿Cómo te sientes con las subidas y bajadas del precio: prefieres que sean pocas, moderadas o no te incomoda que sean marcadas? Lo usaré solo como filtro histórico."
-    if len(parts) == 2:
-        combined = f"{parts[0]} y {parts[1]}"
+def offline_exploration_clarification(
+    missing: tuple[str, ...] | list[str], known: RouterDecision | None = None,
+) -> str:
+    """Ask only for missing criteria and briefly acknowledge anything understood."""
+    missing_set = set(missing)
+    known = known or RouterDecision(intent="explore")
+    known_parts = []
+    if known.exploration_kind:
+        known_parts.append({"equity": "te interesan las acciones", "etf": "te interesan los ETF",
+                            "any": "te interesan acciones o ETF"}[known.exploration_kind])
+    if known.exploration_horizon:
+        known_parts.append({"short": "piensas mantener el dinero a corto plazo",
+                            "medium": "piensas mantener el dinero entre uno y cinco años",
+                            "long": "piensas mantener el dinero a largo plazo"}[known.exploration_horizon])
+    if known.volatility_target:
+        known_parts.append({"baja": "prefieres pocos vaivenes", "media": "prefieres cambios moderados",
+                            "alta": "no te incomoda que haya más movimiento"}[known.volatility_target])
+
+    acknowledgement = ""
+    if known_parts:
+        if len(known_parts) == 1:
+            description = known_parts[0]
+        elif len(known_parts) == 2:
+            description = " y ".join(known_parts)
+        else:
+            description = f"{known_parts[0]}, {known_parts[1]} y {known_parts[2]}"
+        acknowledgement = f"Veo que {description}. "
+
+    ordered = [field for field, _ in REQUIRED_CRITERIA if field in missing_set]
+    if ordered == ["exploration_kind"]:
+        question = "¿Te interesan más las acciones, los ETF o te da igual?"
+    elif ordered == ["exploration_horizon"]:
+        question = "¿Qué plazo tienes en mente para mantener el dinero: meses, alrededor de un año o varios años?"
+    elif ordered == ["volatility_target"]:
+        question = "¿Qué tanto te acomodan las subidas y bajadas del precio: pocas, moderadas o marcadas?"
+    elif ordered == ["exploration_kind", "exploration_horizon"]:
+        question = "¿Te interesan más las acciones, los ETF o ambos, y por cuánto tiempo piensas mantener la inversión?"
+    elif ordered == ["exploration_kind", "volatility_target"]:
+        question = ("¿Prefieres acciones, ETF o ambos, y qué tanto te acomodan las subidas y bajadas: "
+                    "pocas, moderadas o marcadas?")
+    elif ordered == ["exploration_horizon", "volatility_target"]:
+        question = ("¿Qué plazo tienes en mente y qué tanto te acomodan las subidas y bajadas: "
+                    "pocas, moderadas o marcadas?")
     else:
-        combined = f"{parts[0]}, {parts[1]} y {parts[2]}" if parts else "qué estás buscando"
-    return (f"Para orientarme, cuéntame {combined}. Puedes responder a tu manera; "
-            "no hace falta usar términos financieros.")
+        question = ("¿Te interesan más las acciones, los ETF o ambos, por cuánto tiempo piensas mantener "
+                    "la inversión y qué tanto te acomodan las subidas y bajadas del precio: pocas, "
+                    "moderadas o marcadas?")
+    return acknowledgement + question
 
 
 def is_exploration_query(query):
     text = plain(query)
-    return bool(re.search(r"\b(?:recomiend\w*|recomendacion\w*|explorar|exploremos|opciones para invertir)\b", text)
+    return bool(re.search(r"\b(?:recomiend\w*|recomendacion\w*|explorar|exploremos|opciones para invertir|"
+                         r"quiero invertir|busco invertir|estoy buscando invertir)\b", text)
                 and re.search(r"\b(?:acciones?|etfs?|efts?|invertir|inversion)\b", text)
                 and not re.search(r"\b(?:que es|como (?:se|funciona)|significa)\b", text)
                 and not re.search(r"\b(?:similares?|parecid\w*)\b", text))
@@ -78,12 +108,17 @@ def criteria_patch(query, *, expected=None):
     if equity or fund or (expected == "explore_kind" and re.search(r"\b(?:ambos|cualquiera|los dos)\b", text)):
         result["exploration_kind"] = "any" if (equity and fund) or not (equity or fund) else "equity" if equity else "etf"
     horizons = set()
-    if re.search(r"\b(?:corto plazo|menos de un ano|meses|intrad[a-z]*|necesito (?:el )?dinero (?:hoy|manana))\b", text):
+    if re.search(r"\b(?:corto plazo|menos de un ano|meses|medio ano|semestre|intrad[a-z]*|"
+                 r"necesito (?:el )?dinero (?:hoy|manana))\b", text):
         horizons.add("short")
     if re.search(r"\b(?:medio plazo|mediano plazo|entre (?:uno|1) y (?:cinco|5)(?: anos)?)\b", text):
         horizons.add("medium")
+    if re.search(r"\b(?:algunos|varios|un par de) anos\b", text):
+        horizons.add("medium")
     if re.search(r"\b(?:largo plazo|mas de (?:cinco|5) anos)\b", text):
         horizons.add("long")
+    if re.search(r"\b(?:por|durante|en)\s+(?:un|uno|1)\s+ano\b", text):
+        horizons.add("medium")
     years = re.search(r"\b(\d{1,2})\s+anos?\b", text)
     if years:
         value = int(years[1])
@@ -107,16 +142,24 @@ def criteria_patch(query, *, expected=None):
         result["exploration_horizon"] = horizons.pop()
     low_risk = bool(re.search(
         r"\b(?:no soy de tomar riesgos?|no me gusta arriesgar|no quiero asumir riesgos?|"
-        r"prefiero evitar riesgos?|riesgo bajo|poco riesgo|conservador(?:a)?)\b", text))
+        r"prefiero evitar riesgos?|no quiero (?:tomar|asumir|correr) (?:mucho )?riesgos?|"
+        r"riesgo bajo|pocos? riesgos?|conservador(?:a)?|"
+        r"no sea tan volatil|no quiero que sea tan volatil|no tan volatil|no muy volatil|"
+        r"menos volatil|poco volatil|mas estable|algo estable|estable|tranquil[oa]|"
+        r"sin tantos altibajos|pocos altibajos|sin tantos movimientos?|sin mucho movimiento|"
+        r"que no fluctue mucho|pocas fluctuaciones?|"
+        r"pocas? subidas y bajadas?|subidas y bajas? pocas?)\b", text))
     if low_risk:
         result["volatility_target"] = "baja"
-    elif "volatilidad" in text or "variacion" in text or expected == "explore_volatility":
+    elif ("volatil" in text or "variacion" in text or "subida" in text or "bajada" in text
+          or expected == "explore_volatility"):
         negated = bool(re.search(
             r"\b(?:no quiero|no me gusta|prefiero evitar|evito)\b.{0,28}"
             r"\b(?:variacion|volatilidad|movimiento)\b.{0,12}\b(?:alt[oa]|much[oa])\b", text))
         targets = set() if negated else {
             target for target, pattern in {
-                "baja": r"\b(?:baj[oa]s?|suaves?|poco movimiento|pocas variaciones?|pocos cambios)\b",
+                "baja": r"\b(?:baj[oa]s?|suaves?|poco movimiento|pocas variaciones?|pocos cambios|"
+                        r"pocas? subidas y bajadas?|subidas y bajas? pocas?)\b",
                 "media": r"\b(?:medi[oa]s?|moderad[oa]s?)\b",
                 "alta": r"\b(?:alt[oa]s?|mucho movimiento|muchas variaciones?|muchos cambios)\b",
             }.items() if re.search(pattern, text)

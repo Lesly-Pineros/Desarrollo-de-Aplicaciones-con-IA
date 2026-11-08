@@ -41,6 +41,7 @@ class RouterDecision(BaseModel):
     volatility_target: Literal["baja", "media", "alta"] | None = None
     education_topic: str | None = None
     sector_market: Literal["Estados Unidos", "Colombia", "España", "Europa", "global"] | None = None
+    sector_universe: Literal["NASDAQ", "S&P 500"] | None = None
     news_sector: str | None = None
     news_country: str | None = None
     news_selection: str | None = None

@@ -12,7 +12,7 @@ from investiq.learning import lesson_request
 from investiq.llm import ChatNVIDIAClient, LLMUnavailable
 from investiq.response_style import provider_failure
 from investiq.tools import normalize_symbol
-from investiq.sector_context import is_current_sector_query, sector_market
+from investiq.sector_context import is_current_sector_query, sector_market, sector_universe
 from investiq.news_context import news_decision
 
 logger = logging.getLogger(__name__)
@@ -31,6 +31,7 @@ def fallback_route(query: str) -> RouterDecision:
     if is_current_sector_query(query):
         market = sector_market(query)
         return RouterDecision(intent="sector_performance", sector_market=market,
+                              sector_universe=sector_universe(query),
                               needs_clarification=market is None)
     if (re.search(r"\b(?:metricas?|indicadores?|valores)\b", normalized)
             and (bool(covered or quote_only) or re.search(r"\b(?:accion(?:es)?|etf|simbolo|ticker)\b", normalized))):

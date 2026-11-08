@@ -15,7 +15,7 @@ from investiq.responses import make_response
 from investiq.routing import normalize_decision, route_query
 from investiq.settings import Settings
 from investiq.tutor import answer_from_knowledge
-from investiq.sector_context import educational_part, is_current_sector_query, sector_market
+from investiq.sector_context import educational_part, is_current_sector_query, sector_market, sector_universe
 from investiq.logging_config import log_stage
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,8 @@ def answer_query(session: Session, email: str, query: str, settings: Settings,
     if not query:
         return make_response("unknown", "Escribe una consulta para comenzar.")
     if is_current_sector_query(query) and not (decision and decision.intent == "market_news"):
-        decision = RouterDecision(intent="sector_performance", sector_market=sector_market(query))
+        decision = RouterDecision(intent="sector_performance", sector_market=sector_market(query),
+                                  sector_universe=sector_universe(query))
     if auto_client and client is None and settings.has_nvidia_key and not (
         decision is not None and decision.intent == "sector_performance"
     ):

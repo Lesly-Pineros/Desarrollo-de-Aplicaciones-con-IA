@@ -33,7 +33,13 @@
 
 **EARS:** Cuando el usuario pregunte por líderes sectoriales actuales, el sistema deberá explicar qué mercados tienen cobertura disponible y permitir continuar con uno compatible.
 
-**Criterios de aceptación:** el acceso persistente y las consultas escritas identifican Estados Unidos/NASDAQ como el único mercado con ranking sectorial numérico conectado. La web declara que Colombia, España, Europa y global todavía no tienen cobertura numérica actual. El acceso consulta NASDAQ y presenta once variaciones porcentuales, fecha, fuente y límites cuando FMP dispone de datos completos. Sin clave, acceso o datos válidos, presenta el motivo conocido y cómo habilitar/consultar la función. No inventa cifras.
+**Criterios de aceptación:** el acceso persistente y las consultas escritas identifican correctamente NASDAQ y el S&P 500 como universos independientes. NASDAQ presenta once variaciones porcentuales de su snapshot, fecha, fuente y límites cuando FMP dispone de datos; la consulta del S&P 500 se define en REQ-007. Colombia, España, Europa y global todavía no tienen cobertura numérica actual. Sin clave, acceso o datos válidos, presenta el motivo conocido y cómo habilitar/consultar la función. No inventa cifras.
+
+### REQ-007 — Accesos independientes NASDAQ y S&P 500
+
+**EARS:** Cuando una persona elija NASDAQ o S&P 500, la app deberá consultar y mostrar únicamente el universo seleccionado, sin mezclarlos ni compararlos.
+
+**Criterios de aceptación:** la web tiene un botón independiente para cada universo y las consultas escritas reconocen ambos. NASDAQ usa el snapshot FMP por bolsa y puede recuperar el día de mercado más reciente disponible cuando hoy no haya sesión o datos publicados. S&P 500 usa la lista vigente de componentes y precios EOD de FMP, busca los dos últimos días de mercado con cobertura completa y calcula el cambio cierre a cierre, agrupado por sector mediante promedio simple. Declara cobertura, método, fecha y fuente; no lo presenta como índice sectorial oficial ni como retorno ponderado del índice. Respuestas vacías, parciales, fechas inconsistentes, falta de clave, cuota o rechazo de endpoint se explican según el caso sin atribuir siempre el problema a la conexión. Cada respuesta incluye «No es asesoría financiera».
 
 ### REQ-005 — Evidencia y operación
 
@@ -50,3 +56,4 @@
 | 2026-11-07 | Borrador de pulido: respuestas cortas para la exploración y recorrido explícito del acceso «Sectores de hoy», con degradación visible cuando FMP no está disponible. |
 | 2026-11-07 | El acceso de sectores ahora explica cobertura disponible y ofrece continuar con NASDAQ; los demás mercados se identifican como no conectados para ranking numérico. |
 | 2026-11-07 | Se conserva el acceso directo «Sectores de hoy · NASDAQ» junto a los modos de noticias y recomendaciones guiadas. |
+| 2026-11-07 | Se especifican dos consultas sectoriales independientes (NASDAQ y S&P 500) y la recuperación del snapshot NASDAQ más reciente disponible, distinguiendo fallos de datos de fallos de conexión. S&P 500 usa precios EOD de los dos últimos días disponibles para cubrir fines de semana, festivos y consultas posteriores al cierre. |

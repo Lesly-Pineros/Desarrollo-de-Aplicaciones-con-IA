@@ -155,7 +155,7 @@ Ejes: **Codex (elegido)** vs. alternativas de orquestación/flujo (agentes de ID
 | **ChatNVIDIA (NIM)** | Redacción/enseñanza | **Sí (única)** | ✅ LLM | Modelo configurable + límite de tokens por request |
 | **Twelve Data** | *Enriquecimiento*: cotización en vivo | Opc. | ✅ | 8/min, 800/día → caché TTL + cuota + degradar a yfinance |
 | **Marketaux** | Noticias por símbolo, sector o país y día | Opc. | ✅ | 100/día, tres artículos; caché diaria 15 min y por símbolo 6–12 h; fechas y aviso si está vencida |
-| **FMP** | Snapshot opcional de once sectores NASDAQ | Opc. | ✅ | Acceso dependiente del plan; cuota local 100/día, caché 15 min; cobertura y fecha obligatorias |
+| **FMP** | Snapshot de once sectores NASDAQ y cierres EOD para calcular variación simple de componentes del S&P 500 | Opc. | ✅ | Acceso dependiente del plan; cuota local 100/día, caché; cobertura y fecha obligatorias; promedio S&P 500 no ponderado |
 
 **Presupuesto de requests (v0.1, 20 instrumentos)** — demuestra que cabe en free tier:
 - Precios históricos (yfinance, batch 1 vez/día): 20 símbolos → cero coste de API de pago.

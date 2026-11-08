@@ -19,7 +19,7 @@ Fondo azul hielo, tinta azul marino, cian para señales de interacción y naranj
 
 - En escritorio, identidad, búsqueda y catálogo de símbolos forman una franja superior horizontal. «Nueva conversación» y memoria siguen visibles. En móvil, el catálogo y la memoria se abren en un panel con foco contenido.
 - Cuatro tarjetas de acceso para noticias, recomendaciones guiadas, sectores NASDAQ y sectores S&P 500 destacan sobre el chat. Cada tarjeta y cada pregunta de bienvenida reinicia la sesión antes de abrir su tema. El acceso de métricas solo precarga el borrador tras el reinicio.
-- El nuevo video de diez segundos del profesor acompaña la bienvenida como ilustración con fondo transparente: se repite silenciado y sin controles. La imagen original aparece si el video no se reproduce y bajo movimiento reducido. La leyenda indica que los gráficos animados son ilustrativos. Un icono pequeño identifica al profesor en las respuestas.
+- El video original de diez segundos del profesor acompaña la bienvenida en su marco: se repite silenciado y sin controles. La imagen original aparece si el video no se reproduce y bajo movimiento reducido. La leyenda indica que los gráficos animados son ilustrativos. Un icono pequeño identifica al profesor en las respuestas.
 - El compositor se mantiene a la vista. Las acciones dentro de una respuesta, como elegir una noticia, continúan el hilo actual.
 
 ## Reglas de sistema

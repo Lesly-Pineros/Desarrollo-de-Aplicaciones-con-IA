@@ -14,7 +14,7 @@
 
 **EARS:** Cuando la persona abra la web, el sistema deberá presentar la paleta derivada del robot suministrado y uno de sus videos al inicio, con la imagen suministrada como respaldo visual. Cuando comience una conversación o active movimiento reducido, el sistema deberá detener la reproducción automática.
 
-**Criterios de aceptación:** azul marino, cian, azul eléctrico, blanco frío y naranja se aplican de forma coherente y legible; la nueva animación se sirve localmente, silenciada, en bucle automático y sin controles visibles. Su fondo oscuro se elimina en el recurso web para integrarla en la bienvenida sin un rectángulo opaco. Una leyenda visible indica que las gráficas son ilustrativas. La imagen de respaldo aparece si la animación no carga; el navegador no la descarga ni reproduce automáticamente bajo `prefers-reduced-motion`. Los accesos, respuestas, fuentes y disclaimer siguen visibles en móvil y escritorio. No se incorporan cifras del video como información financiera de la app.
+**Criterios de aceptación:** azul marino, cian, azul eléctrico, blanco frío y naranja se aplican de forma coherente y legible; el video original se sirve localmente, silenciado, en bucle automático y sin controles visibles. Una leyenda visible indica que las gráficas son ilustrativas. La imagen de respaldo aparece si el video no carga; el navegador no lo descarga ni reproduce automáticamente bajo `prefers-reduced-motion`. Los accesos, respuestas, fuentes y disclaimer siguen visibles en móvil y escritorio. No se incorporan cifras del video como información financiera de la app.
 
 ### REQ-001 — Web local accesible y adaptable
 

@@ -32,7 +32,7 @@ investiq-web = "investiq.web.server:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-investiq = ["prompts/*.md", "knowledge/data/*.json", "web/static/*.html", "web/static/*.css", "web/static/*.js", "web/static/fonts/*.ttf", "web/static/fonts/*-OFL.txt", "web/static/media/*.mp4", "web/static/media/*.webm", "web/static/media/*.png"]
+investiq = ["prompts/*.md", "knowledge/data/*.json", "web/static/*.html", "web/static/*.css", "web/static/*.js", "web/static/fonts/*.ttf", "web/static/fonts/*-OFL.txt", "web/static/media/*.mp4", "web/static/media/*.png"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests/unit"]

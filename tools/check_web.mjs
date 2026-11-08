@@ -158,7 +158,7 @@ try {
   await expect("document.querySelectorAll('.branch-action').length===4 && document.querySelectorAll('.suggestion').length===5", "Quick access and starter questions expose the available modes");
   await expect("document.querySelector('#mode-text').textContent==='Respuestas locales'", "Local mode accurately labelled");
   await waitFor("!document.querySelector('#mentor-video').paused && document.querySelector('#mentor-media').classList.contains('is-playing')", "local professor video starts in the welcome");
-  await expect("document.querySelector('#mentor-video').currentSrc.endsWith('/media/profesor-investiq.webm') && document.querySelector('.mentor-visual figcaption').textContent.includes('ilustrativas')", "Transparent local video and illustrative graphics label");
+  await expect("document.querySelector('#mentor-video').currentSrc.endsWith('/media/profesor-investiq.mp4') && document.querySelector('.mentor-visual figcaption').textContent.includes('ilustrativas')", "Original local video and illustrative graphics label");
   await expect("document.querySelector('#mentor-video').loop && document.querySelector('#mentor-video').muted && !document.querySelector('#mentor-video').controls && !document.querySelector('#mentor-playback')", "Professor animation loops silently without playback controls");
   await evaluate("document.querySelector('#mentor-video').currentTime = Math.max(0, document.querySelector('#mentor-video').duration - 0.2)");
   await waitFor("document.querySelector('#mentor-video').currentTime < 2 && !document.querySelector('#mentor-video').paused", "professor animation starts again at the end");

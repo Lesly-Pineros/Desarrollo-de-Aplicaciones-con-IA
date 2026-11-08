@@ -9,7 +9,6 @@
 | TASK-005 | Aplicar la nueva identidad visual, profesor robot y catálogo horizontal adaptable | REQ-001, REQ-005 | Nueve capturas Chrome y checks de desborde, contraste, foco y movimiento a 1440/1024/768/390 px; sin datos financieros ficticios | Completa local |
 | TASK-006 | Unificar accesos iniciales y reiniciar antes de abrir cada consulta | REQ-002, REQ-005 | Chrome local con sesión temporal: NASDAQ, S&P 500 y recomendaciones abren hilos separados; métricas solo prellena; reinicio bloquea envío ante error | Completa local |
 | TASK-007 | Aplicar la paleta del robot e integrar video de bienvenida con respaldo | REQ-006 | 40 checks Chrome, 15 pruebas de servidor, wheel con video/imagen/tema y capturas a cuatro tamaños | Completa local |
-| TASK-008 | Sustituir la animación por el nuevo video con fondo transparente, bucle y tamaño adaptable | REQ-006 | 40 checks Chrome, 15 pruebas de servidor, alfa verificado, wheel con WebM y capturas a cuatro tamaños | Completa local |
 
 ## Trazabilidad
 
@@ -20,16 +19,11 @@
 | REQ-003 | TASK-003, TASK-004 | Conversaciones completas con datos locales y fuentes |
 | REQ-004 | TASK-004 | Comandos documentados y resultados reales, sin declarar NIM verificado |
 | REQ-005 | TASK-005, TASK-006 | Nuevo diseño adaptable y transición de sesión por acceso |
-| REQ-006 | TASK-007, TASK-008 | Paleta basada en asset, video local transparente, bucle, respaldo y legibilidad |
-
-## Evidencia ejecutada — 2026-11-07 (TASK-008)
-
-- El MP4 aportado mide 1280×720, dura 10 segundos y usa H.264 sin alfa. Se convirtió localmente a WebM VP9 de 960×540 con alfa; un fotograma decodificado con `libvpx-vp9` confirmó alfa cero en el fondo y alfa 255 en el robot. El MP4 nuevo queda como alternativa de reproducción.
-- `node tools/check_web.mjs --front-only` → **40 comprobaciones** en Chrome local: arranque automático, WebM seleccionado, bucle real tras buscar el final, ausencia de controles, imagen de respaldo con movimiento reducido y cuatro tamaños. Nueve capturas; proveedores financieros desactivados.
-- `.venv/bin/python -m pytest -q tests/unit/test_web_server.py` → **15 passed** con autorización para puertos locales. El wheel construido contiene MP4, WebM y PNG. `node --check`, validador SDD y `git diff --check` pasaron. No se consultaron proveedores ni el modelo.
+| REQ-006 | TASK-007 | Paleta basada en asset, video original local en bucle sin controles, respaldo y legibilidad |
 
 ## Evidencia ejecutada — 2026-11-07 (TASK-007)
 
+- Corrección posterior: se restauró el MP4 original y su marco, se retiró la variante WebM y se quitó el botón de pausa. `node tools/check_web.mjs --front-only` pasó **40 comprobaciones** con bucle efectivo, sin controles y con respaldo bajo movimiento reducido; nueve capturas revisadas. `node --check`, spec y `git diff --check` pasaron. Sin proveedores externos.
 - `node tools/check_web.mjs --front-only` → **40 comprobaciones** en Chrome local, con reproducción y pausa del video, pausa al comenzar el chat, respaldo con movimiento reducido, contraste y cuatro tamaños de pantalla. Nueve capturas revisadas; proveedores financieros desactivados.
 - `.venv/bin/python -m pytest -q tests/unit/test_web_server.py` → **15 passed** con sockets locales; el primer intento dentro de sandbox no pudo abrir el puerto y se repitió con autorización.
 - `pip wheel --no-deps --no-build-isolation` generó el paquete; se comprobó que contiene `robot-theme.css`, el MP4 y el PNG. `node --check`, validador SDD y `git diff --check` pasaron. No se consultaron proveedores financieros.

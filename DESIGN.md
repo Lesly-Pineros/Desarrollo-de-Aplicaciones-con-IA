@@ -1,40 +1,30 @@
 # Diseño de InvestiQ web local
 
-La nueva superficie es una aplicación de conversación para aprender, construida desde código. Esta dirección parte del pedido de reemplazar Streamlit por una web amigable; no presupone una aprobación estética adicional del usuario.
+La interfaz es una mesa de aprendizaje financiero en español. El rediseño responde al pedido del usuario de un ambiente verde, inspirado en pantallas de mercado, con superficies de vidrio y un robot profesor. No utiliza cifras decorativas ni simula actividad bursátil.
 
 ## Mundo visual
 
-Un cuaderno de consulta contemporáneo: superficies claras cálidas, tinta verde profunda y composición editorial tranquila. Fraunces aporta carácter a los títulos; Manrope facilita la lectura y los controles. Ambas fuentes variables se sirven localmente con sus licencias OFL.
+Fondo verde noche, paneles verde esmeralda translúcidos, bordes suaves y acentos lima para acciones. Fraunces da carácter a la bienvenida; Manrope mantiene legibles la conversación y los controles. Las fuentes y el SVG del profesor se sirven localmente, sin CDN.
 
 ## Composición y comportamiento
 
-La conversación ocupa el centro y domina la lectura. Un lateral compacto reúne identidad, propósito, nueva conversación y catálogo de instrumentos. En móvil se recoge en un menú accesible. La bienvenida ofrece caminos concretos que envían preguntas reales; desaparece al comenzar el chat. El compositor permanece disponible sin tapar mensajes.
-
-Las respuestas no usan avatares de robot. Las fuentes se muestran como referencias legibles, el aviso educativo acompaña cada respuesta y los estados de carga/error permiten entender qué ocurre. La memoria tiene controles secundarios explícitos; las preferencias se conversan.
+- En escritorio, identidad, búsqueda y catálogo de símbolos forman una franja superior horizontal. «Nueva conversación» y memoria siguen visibles. En móvil, el catálogo y la memoria se abren en un panel con foco contenido.
+- Cuatro tarjetas de acceso para noticias, recomendaciones guiadas, sectores NASDAQ y sectores S&P 500 destacan sobre el chat. Cada tarjeta y cada pregunta de bienvenida reinicia la sesión antes de abrir su tema. El acceso de métricas solo precarga el borrador tras el reinicio.
+- El profesor robot acompaña la bienvenida. Un icono pequeño lo identifica en las respuestas. La conversación sigue siendo la superficie principal para contenido y fuentes.
+- El compositor se mantiene a la vista. Las acciones dentro de una respuesta, como elegir una noticia, continúan el hilo actual.
 
 ## Reglas de sistema
 
-- Espaciado coherente, texto de conversación de ancho limitado y títulos con escala clara.
-- Contraste mínimo 4.5:1 en texto normal; foco visible y blancos táctiles cómodos.
-- Iconos SVG con geometría y trazo consistentes; sin emoji como sistema de interfaz.
-- Interacciones breves; transiciones de propiedades explícitas, hover solo con puntero y respeto de movimiento reducido.
-- Ninguna gráfica, precio, ganancia ni actividad de mercado se fabrica para llenar espacio.
-- Texto externo mediante DOM seguro, enlaces de fuentes validados y tablas contenidas en pantallas pequeñas.
+- Texto financiero con fuentes y «No es asesoría financiera» en cada respuesta. Sin precios, gráficos ni rendimiento inventados.
+- Contraste objetivo de 4.5:1 en texto normal, foco visible, controles táctiles adecuados y ayudas de al menos 11 px.
+- Movimiento breve en hover y pulsación solo con puntero fino; `prefers-reduced-motion` reduce las transiciones.
+- Texto externo mediante DOM seguro; enlaces validados; tablas con desplazamiento horizontal en pantallas pequeñas.
+- El fallo del reinicio muestra reintento y bloquea el envío de una nueva consulta.
 
-## Contrato de dirección de la superficie
+## Criterio de aceptación visual
 
-| Bloque | Compromiso comprobable |
-|---|---|
-| TYPE | Fraunces en bienvenida; Manrope en diálogo y controles. Avisos, ayudas y referencias de al menos 11 px. |
-| MATERIAL | Superficies planas de lectura y divisores finos; sin cristales, fotografías ajenas ni cifras decorativas. |
-| GROUND | Papel `#f9f8f4`, lateral `#efeee7`, tinta verde `#1d453b`; texto secundario `#59675a` con contraste medido. |
-| COMPOSITION | Conversación central, catálogo compacto a la izquierda, compositor visible; menú lateral adaptable en móvil. |
-| INTERACTION | Preguntas reales desde sugerencias/catálogo, carga y reintento visibles, foco recuperable y memoria controlable. |
-
-**QUALITY BAR:** una persona puede entender para qué sirve InvestiQ, iniciar una pregunta y encontrar los símbolos sin configurar preferencias. A 1440, 1024, 768 y 390 px no hay desplazamiento horizontal de página ni compositor tapado. Las fuentes y el aviso financiero siguen legibles en el chat. Se revisan también conversación, menú, memoria y error, no solo la bienvenida. Esta es una dirección construida desde código y derivada del encargo; no existe un comp gráfico aprobado.
+La persona debe reconocer al profesor y al tema financiero, encontrar un acceso o escribir una pregunta sin configuración previa, y leer fuentes y avisos en escritorio y móvil. La revisión usa Chrome local a 1440, 1024, 768 y 390 px e incluye estados de conversación, menú, memoria y error.
 
 ## Skills y límites
 
-Impeccable es la guía principal (Operate); Taste contribuye criterios de jerarquía y coherencia, Emil los detalles de interacción. Las recetas comerciales de Taste no se aplican como una landing a esta herramienta. El ejecutable auxiliar de Impeccable no pudo cargar contexto ni generar direcciones porque su caché global no está disponible; se siguió la alternativa de lectura directa de sus referencias. No se atribuyen resultados a ese ejecutable.
-
-La evidencia visual se genera con Chrome headless local en escritorio, tablet y móvil; las pruebas de proveedores externos se reportan por separado.
+Se leyeron Taste, Impeccable y las guías de Emil Kowalski desde copias locales. El cargador auxiliar de contexto de Impeccable falló por su caché global, así que se leyó el contexto y las referencias directamente. El navegador de prueba corre sin credenciales de proveedores; no acredita integraciones financieras en vivo.

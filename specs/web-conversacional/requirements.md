@@ -4,6 +4,12 @@
 - **Alcance:** sustituir la experiencia local principal de Streamlit por una web conversacional; corregir los casos de diálogo de la captura del usuario; descargar y aplicar las tres skills de diseño solicitadas.
 - **Exclusiones:** despliegue y fase 5, autenticación, nuevos proveedores, llamadas live a NIM, precios simulados, cambios en los cálculos financieros.
 
+### REQ-005 — Nueva experiencia visual y accesos independientes
+
+**EARS:** Cuando la persona abra InvestiQ, el sistema deberá presentar una interfaz financiera educativa con identidad verde, superficies translúcidas, un profesor robot identificable y accesos iniciales visibles. Cuando pulse un acceso de la navegación o una pregunta inicial, el sistema deberá iniciar una conversación nueva antes de realizar esa consulta.
+
+**Criterios de aceptación:** el diseño prioriza lectura de respuestas, fuentes y disclaimer sobre adornos; el catálogo deja de ocupar una columna fija en escritorio y sigue accesible en móvil; el robot acompaña la bienvenida y distingue visualmente respuestas del profesor sin fingir datos de mercado. Noticias, recomendaciones, NASDAQ y S&P 500 usan una sola definición de acción compartida entre navegación y sugerencias. El acceso de métricas reinicia la sesión y deja la pregunta preparada para completar; no envía una consulta incompleta. Si el reinicio falla, no se envía la nueva consulta; el reintento no duplica mensajes. Se conserva el botón independiente «Nueva conversación». Las acciones de respuesta, como resumir una noticia, continúan la conversación actual. El diseño funciona con teclado, móvil, movimiento reducido y assets locales.
+
 ### REQ-001 — Web local accesible y adaptable
 
 **EARS:** Cuando se abra la aplicación, el sistema deberá presentar una web en español con conversación central, explicación amigable del propósito, catálogo consultable y preferencias recogidas en el diálogo.
@@ -34,3 +40,4 @@
 |---|---|
 | 2026-11-04 | Especificación previa del rediseño solicitado; skills descargadas en .local/design-skills. |
 | 2026-11-04 | Implementación y pulido tras revisión: 338 pruebas offline, 38 comprobaciones en Chrome, nueve specs válidas y assets del wheel comprobados. |
+| 2026-11-07 | Borrador de rediseño con verde y vidrio, profesor robot, catálogo horizontal en escritorio y reinicio de sesión en accesos iniciales. |

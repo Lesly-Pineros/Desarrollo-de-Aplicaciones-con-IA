@@ -17,6 +17,13 @@ const elements = {
 const mobile = window.matchMedia("(max-width: 820px)");
 const state = {ready: false, busy: false, instruments: [], memory: {enabled: false, summary: ""}, retry: null, sidebarReturnFocus: null};
 const DISCLAIMER = "No es asesoría financiera.";
+const STARTERS = {
+  news: {prompt: "¿Cuáles son las últimas noticias del mercado hoy?"},
+  recommendations: {action: "recommendations"},
+  nasdaq: {prompt: "¿Qué sectores lideran hoy en NASDAQ?"},
+  sp500: {prompt: "¿Cómo van los sectores de las empresas del S&P 500 en la última sesión disponible?"},
+  metrics: {prefill: "Dame las métricas de la acción o ETF: "},
+};
 
 function icon(name) {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -231,9 +238,8 @@ function renderMessage(message) {
   } else {
     article.setAttribute("aria-label", "Respuesta de InvestiQ");
     const label = document.createElement("p"); label.className = "assistant-label";
-    const mark = document.createElementNS("http://www.w3.org/2000/svg", "svg"); mark.setAttribute("viewBox", "0 0 32 32"); mark.setAttribute("aria-hidden", "true");
-    const path = document.createElementNS("http://www.w3.org/2000/svg", "path"); path.setAttribute("d", "M7 25V16M16 25V7M25 25V11"); mark.append(path);
-    label.append(mark, document.createTextNode("InvestiQ")); article.append(label);
+    const avatar = document.createElement("span"); avatar.className = "mentor-avatar"; avatar.append(icon("mentor"));
+    label.append(avatar, document.createTextNode("InvestiQ · tu profesor")); article.append(label);
     const content = document.createElement("div"); content.className = "answer-content";
     const body = String(message.content || message.answer || "").replace(/\*{0,2}No es asesoría financiera\.\*{0,2}/gi, "").trim();
     renderMarkdown(content, body); article.append(content); appendSources(article, message.sources);
@@ -303,14 +309,18 @@ async function startRecommendations() {
   }
 }
 
-async function resetConversation() {
+async function resetConversation(starter = null) {
   if (!state.ready || state.busy) return;
   hideError(); state.busy = true; syncControls();
   try {
     const data = await request("/api/session/reset", {});
-    clearMessages(); updateMemory(data.memory); elements.input.value = ""; resizeInput(); closeSidebar(false); elements.input.focus();
-  } catch (error) { showError(error.message, resetConversation); }
+    clearMessages(); updateMemory(data.memory); elements.input.value = ""; resizeInput(); closeSidebar(false);
+  } catch (error) { showError(error.message, () => resetConversation(starter)); return; }
   finally { state.busy = false; syncControls(); }
+  if (starter?.prefill) prefillMessage(starter.prefill);
+  else if (starter?.action === "recommendations") startRecommendations();
+  else if (starter?.prompt) sendMessage(starter.prompt);
+  else elements.input.focus();
 }
 
 async function updateMemorySetting(body) {
@@ -360,7 +370,9 @@ async function bootstrap() {
     for (const message of data.messages || []) renderMessage(message);
     elements.modeText.textContent = data.mode === "configured" ? "Modelo configurado" : "Respuestas locales";
     elements.modeText.parentElement.title = data.mode === "configured" ? "Hay un modelo configurado. Su disponibilidad se comprueba al responder." : "Puedes aprender y explorar el catálogo sin conectar un modelo. Los datos de mercado requieren sus fuentes.";
-    state.ready = true; renderCatalogue(); syncControls(); scrollToEnd();
+    state.ready = true; renderCatalogue(); syncControls();
+    if (data.messages?.length) scrollToEnd();
+    else elements.scroll.scrollTop = 0;
   } catch (error) {
     elements.modeText.textContent = "App sin conexión";
     showError(error.message, bootstrap, "Reconectar");
@@ -373,8 +385,8 @@ elements.input.addEventListener("keydown", (event) => {
   if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); sendMessage(elements.input.value); }
 });
 elements.search.addEventListener("input", renderCatalogue);
-elements.newChat.addEventListener("click", resetConversation);
-elements.mobileNewChat.addEventListener("click", resetConversation);
+elements.newChat.addEventListener("click", () => resetConversation());
+elements.mobileNewChat.addEventListener("click", () => resetConversation());
 elements.openSidebar.addEventListener("click", openSidebar);
 elements.closeSidebar.addEventListener("click", () => closeSidebar());
 elements.backdrop.addEventListener("click", () => closeSidebar());
@@ -382,15 +394,9 @@ elements.memoryEnabled.addEventListener("change", () => updateMemorySetting({ena
 elements.forgetMemory.addEventListener("click", () => updateMemorySetting({forget: true}));
 elements.retry.addEventListener("click", () => { const action = state.retry; if (action) action(); });
 elements.dismissError.addEventListener("click", hideError);
-for (const button of document.querySelectorAll(".suggestion")) button.addEventListener("click", () => {
-  if (button.dataset.prefill) prefillMessage(button.dataset.prefill);
-  else if (button.dataset.action === "start-recommendations") startRecommendations();
-  else sendMessage(button.dataset.prompt);
-});
-for (const button of document.querySelectorAll('.branch-action')) button.addEventListener('click', () => {
-  if (button.dataset.action === "start-recommendations") startRecommendations();
-  else sendMessage(button.dataset.prompt);
-});
+for (const button of document.querySelectorAll(".suggestion, .branch-action")) {
+  button.addEventListener("click", () => resetConversation(STARTERS[button.dataset.starter]));
+}
 mobile.addEventListener("change", () => { closeSidebar(false); });
 document.addEventListener("keydown", (event) => {
   if (!mobile.matches || !elements.sidebar.classList.contains("open")) return;

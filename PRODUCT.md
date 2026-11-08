@@ -22,13 +22,13 @@ Los conceptos educativos pueden incluir índices fuera del catálogo negociable:
 
 El profesor consulta una biblioteca local de 119 documentos sobre fundamentos, fondos, índices, bolsas, intermediarios, criptoactivos, indicadores, riesgos, operativa, costes, análisis, planificación y protección. La generación RAG utiliza pasajes recuperados con fuentes; existe respaldo local sin modelo. La biblioteca se amplía mediante documentos revisados y es independiente de la memoria personal. Los ejemplos de brókers no son recomendaciones ni confirman condiciones actuales por país.
 
-La comparación ETF/acciones a largo plazo explica las condiciones sin garantizar rentabilidad. Los indicadores se enseñan con sus límites, sin convertirlos en órdenes de trading. Las consultas de líderes sectoriales actuales piden mercado cuando falta y reconocen que aún no existe una fuente de ranking actual verificada; no se generan clasificaciones desde definiciones estáticas.
+La comparación ETF/acciones a largo plazo explica las condiciones sin garantizar rentabilidad. Los indicadores se enseñan con sus límites, sin convertirlos en órdenes de trading. La web ofrece accesos distintos para sectores NASDAQ y S&P 500. El primero usa el snapshot FMP de la última sesión disponible cuando hay cobertura completa; el segundo agrupa componentes actuales y sus cambios de cierre a cierre por sector. Ambos declaran fuente, fecha y límites, o explican por qué no hay datos verificables.
 
 Se mantienen Python plano, SQLModel y los proveedores existentes. La nueva interfaz local no decide todavía un destino de despliegue. No se deben inventar cifras, fuentes ni afirmar que un proveedor está conectado por tener una clave configurada.
 
 ## Voz y compromisos
 
-Nombre InvestiQ. Español cercano, preguntas breves y pertinentes; explicar desde lo que pregunta la persona. La ayuda y los símbolos consultables deben ser fáciles de encontrar. Las preferencias no deben convertirse en un formulario lateral. Toda respuesta conserva «No es asesoría financiera».
+Nombre InvestiQ. Español cercano, preguntas breves y pertinentes; explicar desde lo que pregunta la persona. La ayuda y los símbolos consultables deben ser fáciles de encontrar. Los accesos iniciales crean una conversación nueva; el botón «Nueva conversación» permanece disponible. Las preferencias no deben convertirse en un formulario lateral. Toda respuesta conserva «No es asesoría financiera».
 
 ## Evidencia disponible
 

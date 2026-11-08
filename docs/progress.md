@@ -11,6 +11,10 @@
 - La suite offline pasó **696 pruebas**; el verificador web pasó **96 comprobaciones** en Chrome con fixtures sintéticos; **17 specs** validaron. Los servicios financieros externos no se consultaron en esas verificaciones.
 - Integraciones reales de proveedores/modelo y despliegue cloud siguen pendientes. La fase 5 no ha iniciado.
 
+## Actualización — rediseño web y accesos independientes (2026-11-07)
+
+La web local adopta un tema verde noche con paneles translúcidos, un profesor robot SVG local, accesos destacados y un catálogo horizontal en escritorio; en móvil conserva el explorador accesible. Noticias, recomendaciones, NASDAQ y S&P 500 tienen tarjetas propias. Cada acceso y pregunta inicial reinicia la sesión antes de consultar; métricas abre un chat nuevo con el mensaje preparado para que la persona lo complete. El botón «Nueva conversación» permanece. Las acciones dentro de respuestas continúan el hilo vigente. Las tres guías de diseño solicitadas se instalaron localmente y se leyeron; el cargador auxiliar de Impeccable no pudo iniciar por su caché global, así que se aplicó su documentación directamente. Verificación enfocada: **36 checks Chrome** y nueve capturas a cuatro anchuras, `node --check`, spec y `git diff --check`; las credenciales de proveedores estaban vacías. No se probaron FMP, Twelve Data ni el modelo en vivo.
+
 ## Actualización — limpieza local y documentación
 
 Se actualizaron `PLAN.md` y `README.md` para describir la web local y las tools locales como arquitectura vigente. El plan mantiene alcance y decisiones; este archivo concentra estado e historial. Se retiraron la interfaz heredada de Streamlit, su launcher, entry point, extra de instalación y pruebas asociadas. Los planes antiguos se conservan únicamente como registro histórico donde aplica. La verificación registrada para esta limpieza fue: 696 pruebas offline, 96 comprobaciones Chrome con fixtures sintéticos, 17 specs válidas y `git diff --check`; no se hicieron llamadas a proveedores financieros reales.

@@ -17,6 +17,11 @@ investiq.db-*
 /.agents/skills/investiq-agent-review/
 /.local/agentskills-reference/
 /.local/design-skills/
+/.codex/skills/design-taste-frontend/
+/.codex/skills/impeccable/
+/.codex/skills/emil-design-eng/
+/.codex/skills/animate/
+/.codex/skills/mobile-native/
 /.local/browser-review/
 /.impeccable/review/
 

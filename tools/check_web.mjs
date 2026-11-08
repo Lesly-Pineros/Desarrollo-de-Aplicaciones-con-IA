@@ -12,6 +12,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const frontOnly = process.argv.includes("--front-only");
 const out = path.join(root, ".impeccable", "review");
 const scratch = await fs.mkdtemp(path.join(os.tmpdir(), "investiq-web-"));
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -154,9 +155,9 @@ try {
   await cdp("Page.navigate", {url: base});
   await waitFor("!document.querySelector('#message-input').disabled && document.querySelectorAll('.instrument-button').length===20", "catalogue and chat ready");
   await expect("!document.querySelector('#welcome').hidden", "Welcome visible before first message");
-  await expect("document.querySelectorAll('.branch-action').length===3 && document.querySelectorAll('.suggestion').length===4", "Quick access and starter questions expose the available modes");
+  await expect("document.querySelectorAll('.branch-action').length===4 && document.querySelectorAll('.suggestion').length===5", "Quick access and starter questions expose the available modes");
   await expect("document.querySelector('#mode-text').textContent==='Respuestas locales'", "Local mode accurately labelled");
-  await readable(["#message-input::placeholder", ".composer-help", ".composer-invitation", ".catalogue-hint", ".sidebar-note"]);
+  await readable(["#message-input::placeholder", ".composer-help", ".composer-invitation", ".branch-intro p", ".branch-copy small"]);
   await noOverflow("1440x900"); await screenshot("desktop");
   await type("#symbol-search", "apple");
   await expect("document.querySelectorAll('.instrument-button').length===1 && document.querySelector('.instrument-button').dataset.symbol==='AAPL'", "Catalogue search resolves company name");
@@ -200,15 +201,34 @@ try {
   await click("#new-conversation");
   await waitFor("!document.querySelector('#welcome').hidden", "new conversation reset");
   await expect("document.querySelectorAll('.message').length===0", "New conversation clears visible history");
+  await send("volatilidad");
+  await click('#open-sectors');
+  await waitFor("document.querySelectorAll('.message.assistant').length===1 && document.querySelector('#loading-message').hidden && document.querySelector('.message.user')?.textContent.includes('NASDAQ')", "NASDAQ shortcut starts a new conversation");
+  await expect("document.querySelectorAll('.message.user').length===1 && document.querySelector('.message.user').textContent.includes('NASDAQ')", "NASDAQ shortcut clears previous conversation");
+  await click('#new-conversation');
+  await waitFor("!document.querySelector('#welcome').hidden", "welcome returns before metrics shortcut");
+  await click('.suggestion[data-starter="metrics"]');
+  await waitFor("!document.querySelector('#welcome').hidden && document.querySelector('#message-input').value.startsWith('Dame las métricas')", "Metrics starter resets to a new draft");
+  await expect("document.querySelectorAll('.message').length===0 && document.querySelector('#message-input').value.startsWith('Dame las métricas')", "Metrics starter creates a new draft without sending it");
+  await click('#open-sp500-sectors');
+  await waitFor("document.querySelectorAll('.message.assistant').length===1 && document.querySelector('#loading-message').hidden && document.querySelector('.message.user')?.textContent.includes('S&P 500')", "S&P 500 shortcut opens its own conversation");
+  await expect("document.querySelectorAll('.message.user').length===1", "S&P 500 shortcut clears the metrics draft and history");
+  await click('#open-recommendations');
+  await waitFor("document.querySelectorAll('.message.assistant').length===1 && document.querySelector('#loading-message').hidden && document.querySelectorAll('.message.user').length===0", "Guided recommendations start a separate conversation");
+  await click('#new-conversation');
+  await waitFor("!document.querySelector('#welcome').hidden", "welcome restored after guided recommendation");
   await viewport(1024, 768); await noOverflow("1024x768"); await screenshot("small-desktop");
   await viewport(768, 1024); await noOverflow("768x1024"); await screenshot("tablet");
   await viewport(390, 844); await noOverflow("390x844"); await screenshot("mobile");
   await click("#open-sidebar");
+  await sleep(240);
   await expect("document.querySelector('#main').inert && document.querySelector('#sidebar').getAttribute('aria-modal')==='true'", "Mobile explorer protects keyboard focus");
   await screenshot("mobile-menu");
   await key("Escape", "Escape");
   await expect("!document.querySelector('#sidebar').classList.contains('open') && document.activeElement.id==='open-sidebar'", "Escape closes explorer and returns focus");
+  await sleep(240);
   await click("#open-sidebar");
+  await sleep(240);
   await type("#symbol-search", "AAPL");
   await click('.instrument-button[data-symbol="AAPL"]');
   await waitFor("document.querySelectorAll('.message.assistant').length===1", "catalogue chat response");
@@ -216,6 +236,7 @@ try {
   await noOverflow("mobile conversation"); await screenshot("mobile-chat");
   await cdp("Emulation.setEmulatedMedia", {features: [{name: "prefers-reduced-motion", value: "reduce"}]});
   await expect("matchMedia('(prefers-reduced-motion: reduce)').matches", "Reduced motion preference supported");
+  if (!frontOnly) {
   await type("#message-input", '<img src=x onerror="alert(1)">'); await key("Enter", "Enter");
   await waitFor("document.querySelectorAll('.message.assistant').length===2", "untrusted text handled");
   await expect("document.querySelectorAll('.message.user img').length===0", "User HTML remains literal text");
@@ -418,6 +439,7 @@ engine.dispose()
   await expect("document.querySelector('.message.assistant:last-child').textContent.includes('hora exacta')", 'Snapshot date is not invented as a provider timestamp');
   await noOverflow('mobile sector snapshot');
   await screenshot('mobile-sectors-offline-fixture');
+  }
   assert.deepEqual(errors, [], "No uncaught browser exceptions");
   checks.push("No uncaught browser exceptions");
   await fs.writeFile(path.join(out, "browser-report.json"), JSON.stringify({checks, snapshots, providerCalls: false, database: "temporary", browser: "Chrome headless"}, null, 2));

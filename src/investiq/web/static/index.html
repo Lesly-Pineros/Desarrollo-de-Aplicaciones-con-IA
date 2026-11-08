@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f9f8f4">
+  <meta name="theme-color" content="#081f1a">
   <meta name="description" content="Un espacio para entender acciones, ETF y conceptos financieros conversando. InvestiQ es educativo. No es asesoría financiera.">
-  <title>InvestiQ — Entender, paso a paso</title>
+  <title>InvestiQ — Tu profesor de mercado</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231d453b'/%3E%3Cpath d='M9 22V15M16 22V9M23 22V12' stroke='%23f9f8f4' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="/app.css">
   <script src="/app.js" defer></script>
@@ -23,6 +23,10 @@
     <symbol id="icon-memory" viewBox="0 0 24 24"><path d="M8 4H5a1 1 0 0 0-1 1v3m12-4h3a1 1 0 0 1 1 1v3M4 16v3a1 1 0 0 0 1 1h3m8 0h3a1 1 0 0 0 1-1v-3"/><path d="M9 9h6v6H9z"/></symbol>
     <symbol id="icon-book" viewBox="0 0 24 24"><path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1Zm0 0v14"/></symbol>
     <symbol id="icon-external" viewBox="0 0 24 24"><path d="M14 4h6v6m0-6L10 14M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5"/></symbol>
+    <symbol id="icon-news" viewBox="0 0 24 24"><rect x="4" y="4" width="15" height="16" rx="2"/><path d="M8 8h7M8 12h7M8 16h4M19 8h2v9a3 3 0 0 1-3 3"/></symbol>
+    <symbol id="icon-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2.1 4.9-4.9 2.1 2.1-4.9 4.9-2.1Z"/></symbol>
+    <symbol id="icon-market" viewBox="0 0 24 24"><path d="M4 19h16M7 15V9m5 6V5m5 10v-4"/><circle cx="7" cy="7" r="2"/><circle cx="17" cy="9" r="2"/></symbol>
+    <symbol id="icon-mentor" viewBox="0 0 48 48"><path d="M24 8V4m-4 0h8"/><rect x="7" y="10" width="34" height="29" rx="10"/><path d="M13 18h22M17 30c4 3 10 3 14 0"/><circle cx="18" cy="24" r="2"/><circle cx="30" cy="24" r="2"/></symbol>
   </svg>
 
   <button id="sidebar-backdrop" class="sidebar-backdrop" tabindex="-1" aria-label="Cerrar explorador" hidden></button>
@@ -35,7 +39,7 @@
       <button id="close-sidebar" class="icon-button sidebar-close" aria-label="Cerrar explorador"><svg class="icon"><use href="#icon-close"/></svg></button>
     </div>
 
-    <p class="sidebar-intro">Un espacio para entender<br>el mundo de las inversiones.</p>
+    <p class="sidebar-intro">Tu espacio para entender los mercados.</p>
     <button id="new-conversation" class="button new-conversation" type="button"><svg class="icon"><use href="#icon-plus"/></svg>Nueva conversación</button>
 
     <details class="about-details">
@@ -68,30 +72,63 @@
 
   <main id="main" class="main">
     <header class="topbar">
-      <div class="topbar-title"><button id="open-sidebar" class="icon-button mobile-menu" aria-label="Abrir explorador" aria-controls="sidebar" aria-expanded="false"><svg class="icon"><use href="#icon-menu"/></svg></button><span class="desktop-title">Tu conversación</span><span class="mobile-brand">InvestiQ.</span></div>
+      <div class="topbar-title"><button id="open-sidebar" class="icon-button mobile-menu" aria-label="Abrir explorador" aria-controls="sidebar" aria-expanded="false"><svg class="icon"><use href="#icon-menu"/></svg></button><span class="desktop-title">Tu mesa de aprendizaje</span><span class="mobile-brand">InvestiQ.</span></div>
       <span id="mode-label" class="mode-label" title="La configuración del modelo no demuestra una conexión verificada."><span class="mode-dot" aria-hidden="true"></span><span id="mode-text">Conectando con la app…</span></span>
       <button id="mobile-new-conversation" class="icon-button mobile-new" aria-label="Nueva conversación"><svg class="icon"><use href="#icon-plus"/></svg></button>
     </header>
 
     <nav class="branch-navigation" aria-label="Modos de exploración">
-      <button id="open-news" class="branch-action" type="button" data-prompt="¿Cuáles son las últimas noticias del mercado hoy?">Noticias de hoy</button>
-      <button id="open-recommendations" class="branch-action" type="button" data-action="start-recommendations">Recomendaciones guiadas</button>
-      <button id="open-sectors" class="branch-action" type="button" data-prompt="¿Qué sectores lideran hoy en NASDAQ?">Sectores de hoy · NASDAQ</button>
-      <button id="open-sp500-sectors" class="branch-action" type="button" data-prompt="¿Cómo se mueven hoy los sectores de las empresas del S&amp;P 500?">Sectores · S&amp;P 500</button>
+      <div class="branch-intro"><h2>Elige por dónde empezar</h2><p>Cada acceso abre una conversación nueva.</p></div>
+      <div class="branch-grid">
+        <button id="open-news" class="branch-action" type="button" data-starter="news"><span class="branch-symbol"><svg class="icon"><use href="#icon-news"/></svg></span><span class="branch-copy"><strong>Noticias de hoy</strong><small>Lo que sucede ahora</small></span><svg class="icon branch-arrow"><use href="#icon-arrow"/></svg></button>
+        <button id="open-recommendations" class="branch-action branch-featured" type="button" data-starter="recommendations"><span class="branch-symbol"><svg class="icon"><use href="#icon-compass"/></svg></span><span class="branch-copy"><strong>Recomendaciones guiadas</strong><small>Explorar con criterio</small></span><svg class="icon branch-arrow"><use href="#icon-arrow"/></svg></button>
+        <button id="open-sectors" class="branch-action" type="button" data-starter="nasdaq"><span class="branch-symbol"><svg class="icon"><use href="#icon-market"/></svg></span><span class="branch-copy"><strong>Sectores · NASDAQ</strong><small>Última sesión disponible</small></span><svg class="icon branch-arrow"><use href="#icon-arrow"/></svg></button>
+        <button id="open-sp500-sectors" class="branch-action" type="button" data-starter="sp500"><span class="branch-symbol"><svg class="icon"><use href="#icon-market"/></svg></span><span class="branch-copy"><strong>Sectores · S&amp;P 500</strong><small>Última sesión disponible</small></span><svg class="icon branch-arrow"><use href="#icon-arrow"/></svg></button>
+      </div>
     </nav>
 
     <div id="conversation-scroll" class="conversation-scroll">
       <section id="welcome" class="welcome" aria-labelledby="welcome-title">
-        <div class="welcome-symbol" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M32 9v46M9 32h46M16 16l32 32M16 48l32-32"/></svg></div>
-        <h1 id="welcome-title">Entender es un<br><em>buen comienzo.</em></h1>
-        <p class="welcome-copy">Hablemos de acciones, ETF y sus métricas.<br class="desktop-break"> Para consultar, puedes escribir el nombre de la empresa o su símbolo.</p>
+        <div class="welcome-lead">
+          <h1 id="welcome-title">El mercado se entiende mejor <em>acompañado.</em></h1>
+          <p class="welcome-copy">Soy tu profesor de mercado. Pregúntame por una empresa, un ETF o algo que viste en las noticias. Revisamos los datos y sus fuentes paso a paso.</p>
+        </div>
+        <div class="mentor-visual" aria-hidden="true">
+          <div class="mentor-orbit"></div>
+          <svg class="mentor-portrait" viewBox="0 0 360 330" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="robot-shell" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f2fff0"/><stop offset=".52" stop-color="#bfdac7"/><stop offset="1" stop-color="#70a992"/></linearGradient>
+              <linearGradient id="robot-visor" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#193a32"/><stop offset="1" stop-color="#0b211d"/></linearGradient>
+              <linearGradient id="robot-body" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d8f4db"/><stop offset="1" stop-color="#6fa78d"/></linearGradient>
+            </defs>
+            <ellipse cx="183" cy="303" rx="112" ry="15" fill="#03130f" opacity=".35"/>
+            <path d="M108 297c3-67 22-93 72-93s72 26 75 93" fill="url(#robot-body)" stroke="#d7f8d8" stroke-width="5"/>
+            <path d="M143 215c10 19 24 29 37 29s27-10 37-29" fill="#1e4b3c"/>
+            <path d="m159 238 21 31 21-31" fill="#f7fff0"/><path d="m180 269-12 28h24z" fill="#bfe978"/>
+            <rect x="163" y="34" width="34" height="35" rx="14" fill="#7cae98" stroke="#e4ffdf" stroke-width="4"/>
+            <circle cx="180" cy="31" r="13" fill="#c6f083" stroke="#eaffbc" stroke-width="4"/>
+            <rect x="70" y="111" width="25" height="60" rx="12" fill="#81b69d"/><rect x="265" y="111" width="25" height="60" rx="12" fill="#81b69d"/>
+            <rect x="84" y="61" width="192" height="163" rx="54" fill="url(#robot-shell)" stroke="#e5ffe5" stroke-width="5"/>
+            <rect x="101" y="91" width="158" height="102" rx="34" fill="url(#robot-visor)" stroke="#5f9c7d" stroke-width="3"/>
+            <path d="M123 120c20-14 40-17 58-15" stroke="#f0fff0" stroke-width="4" opacity=".28" stroke-linecap="round"/>
+            <rect x="117" y="120" width="61" height="46" rx="19" fill="none" stroke="#d5f3d4" stroke-width="5"/>
+            <rect x="182" y="120" width="61" height="46" rx="19" fill="none" stroke="#d5f3d4" stroke-width="5"/>
+            <path d="M178 142h4" stroke="#d5f3d4" stroke-width="5" stroke-linecap="round"/>
+            <ellipse cx="146" cy="143" rx="8" ry="11" fill="#c9f17f"/><ellipse cx="213" cy="143" rx="8" ry="11" fill="#c9f17f"/>
+            <path d="M163 177c10 7 24 7 34 0" fill="none" stroke="#b7e4b5" stroke-width="4" stroke-linecap="round"/>
+            <rect x="150" y="206" width="60" height="11" rx="5" fill="#89b79d"/>
+            <path d="M64 239c27-10 54-10 79 0v54c-25-10-52-10-79 0zm79 0c27-10 54-10 79 0v54c-25-10-52-10-79 0z" fill="#eefee9" stroke="#b9e0b9" stroke-width="4"/>
+            <path d="M143 239v54M82 255h40M164 255h40" stroke="#78a88b" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <div class="mentor-tag"><span class="mentor-tag-dot"></span>Tu profesor InvestiQ</div>
+        </div>
         <div class="starting-points" aria-label="Ideas para empezar">
-          <p>Elige por dónde empezar</p>
-          <button class="suggestion" data-action="start-recommendations" type="button"><span>Guiarme para explorar acciones y ETF</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
-          <button class="suggestion" data-prefill="Dame las métricas de la acción o ETF: " type="button"><span>¿Quieres conocer las métricas de una acción o ETF? Puedes escribir su nombre o símbolo.</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
-          <button class="suggestion" data-prompt="¿Qué sectores lideran hoy en NASDAQ?" type="button"><span>Ver sectores de hoy en NASDAQ</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
-          <button class="suggestion" data-prompt="¿Cómo se mueven hoy los sectores de las empresas del S&amp;P 500?" type="button"><span>Ver variación por sectores del S&amp;P 500</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
-          <button class="suggestion" data-prompt="¿Cuáles son las últimas noticias del mercado hoy?" type="button"><span>Consultar noticias de hoy</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
+          <h2>Una pregunta para comenzar</h2>
+          <button class="suggestion" data-starter="recommendations" type="button"><span>Quiero explorar acciones y ETF</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
+          <button class="suggestion" data-starter="metrics" type="button"><span>Quiero conocer las métricas de una acción o ETF</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
+          <button class="suggestion" data-starter="nasdaq" type="button"><span>¿Qué sectores lideran en NASDAQ?</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
+          <button class="suggestion" data-starter="sp500" type="button"><span>¿Cómo van los sectores del S&amp;P 500?</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
+          <button class="suggestion" data-starter="news" type="button"><span>¿Qué pasó hoy en el mercado?</span><svg class="icon"><use href="#icon-arrow"/></svg></button>
         </div>
       </section>
       <section id="messages" class="messages" aria-label="Mensajes de la conversación" aria-live="polite" aria-relevant="additions" hidden></section>

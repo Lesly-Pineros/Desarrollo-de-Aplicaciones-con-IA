@@ -6,6 +6,8 @@
 | TASK-002 | Interfaz web adaptable con catálogo, chat y memoria | REQ-001 | 38 checks Chrome y nueve capturas, con teclado, errores, fuentes y contraste | Completa |
 | TASK-003 | Corregir definición de símbolos y aclaraciones conversacionales | REQ-003 | test_conversational_web_dialogue.py y regresión offline completa | Completa offline |
 | TASK-004 | Lanzador, empaquetado, ADR, documentación y validación final | REQ-001, REQ-002, REQ-003, REQ-004 | 338 tests, nueve specs, shell/JS/Git, wheel y revisión independiente; NIM pendiente | Completa local |
+| TASK-005 | Aplicar la nueva identidad visual, profesor robot y catálogo horizontal adaptable | REQ-001, REQ-005 | Nueve capturas Chrome y checks de desborde, contraste, foco y movimiento a 1440/1024/768/390 px; sin datos financieros ficticios | Completa local |
+| TASK-006 | Unificar accesos iniciales y reiniciar antes de abrir cada consulta | REQ-002, REQ-005 | Chrome local con sesión temporal: NASDAQ, S&P 500 y recomendaciones abren hilos separados; métricas solo prellena; reinicio bloquea envío ante error | Completa local |
 
 ## Trazabilidad
 
@@ -15,6 +17,12 @@
 | REQ-002 | TASK-001, TASK-004 | API con SQLite temporal y sin red externa |
 | REQ-003 | TASK-003, TASK-004 | Conversaciones completas con datos locales y fuentes |
 | REQ-004 | TASK-004 | Comandos documentados y resultados reales, sin declarar NIM verificado |
+| REQ-005 | TASK-005, TASK-006 | Nuevo diseño adaptable y transición de sesión por acceso |
+
+## Evidencia ejecutada — 2026-11-07 (TASK-005 y TASK-006)
+
+- `node tools/check_web.mjs --front-only` → **36 comprobaciones** en Chrome headless a 1440×900, 1024×768, 768×1024 y 390×844. Nueve capturas en `.impeccable/review/`; base y perfil temporales, claves de proveedores vacías. Incluye accesos NASDAQ y S&P 500, recomendaciones en sesión nueva, borrador de métricas, navegación móvil, contraste de ayudas y ausencia de errores JavaScript.
+- `node --check` del frontend y verificador, `tools/validate_spec.py specs/web-conversacional` y `git diff --check` completados. No se llamaron proveedores ni modelo reales.
 
 ## Evidencia ejecutada — 2026-11-04
 

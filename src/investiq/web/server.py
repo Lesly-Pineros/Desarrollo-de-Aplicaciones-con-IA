@@ -29,6 +29,7 @@ STATIC_FILES = {
     "/robot-theme.css": ("robot-theme.css", "text/css; charset=utf-8"),
     "/app.js": ("app.js", "text/javascript; charset=utf-8"),
     "/media/profesor-investiq.mp4": ("media/profesor-investiq.mp4", "video/mp4"),
+    "/media/profesor-investiq.webm": ("media/profesor-investiq.webm", "video/webm"),
     "/media/profesor-investiq.png": ("media/profesor-investiq.png", "image/png"),
     "/fonts/fraunces.ttf": ("fonts/fraunces.ttf", "font/ttf"),
     "/fonts/manrope.ttf": ("fonts/manrope.ttf", "font/ttf"),

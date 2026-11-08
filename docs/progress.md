@@ -11,6 +11,10 @@
 - La suite offline pasó **696 pruebas**; el verificador web pasó **96 comprobaciones** en Chrome con fixtures sintéticos; **17 specs** validaron. Los servicios financieros externos no se consultaron en esas verificaciones.
 - Integraciones reales de proveedores/modelo y despliegue cloud siguen pendientes. La fase 5 no ha iniciado.
 
+## Actualización — animación del profesor en bucle (2026-11-07)
+
+El nuevo video aportado sustituye al anterior en la bienvenida. Como el MP4 venía con fondo oscuro opaco, se preparó una versión WebM con transparencia para que el robot y sus paneles se integren en la página. Se reproduce silenciado en bucle, sin botón ni controles visibles, a tamaño adaptable; la imagen estática aparece si falla el video o si se prefiere movimiento reducido. El MP4 nuevo queda como alternativa de formato. Verificación local: **40 comprobaciones Chrome**, incluida la repetición al final del clip; **15 pruebas de servidor** y wheel con los tres recursos multimedia. Las capturas de escritorio y móvil se revisaron. No hubo consultas financieras ni llamadas al modelo.
+
 ## Actualización — identidad del robot y video de bienvenida (2026-11-07)
 
 Se sustituyó la paleta verde anterior por una derivada del robot aportado: marino `#011637`, azul `#0E64A4`, cian `#0AD6C8`, blanco frío `#EDF3F7` y naranja `#F07000` como origen de las acciones. La bienvenida reproduce localmente uno de los videos de 10 segundos, silenciado y con control de pausa; la imagen original queda de respaldo. El video se detiene al iniciar el chat y no se reproduce automáticamente con movimiento reducido. Una leyenda identifica sus gráficas como ilustrativas. Verificación: **40 checks Chrome**, **15 pruebas de servidor**, cuatro anchuras y wheel inspeccionado con los tres recursos nuevos. No se hicieron llamadas a proveedores financieros ni al modelo.

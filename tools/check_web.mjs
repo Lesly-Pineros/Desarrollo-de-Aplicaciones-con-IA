@@ -158,11 +158,10 @@ try {
   await expect("document.querySelectorAll('.branch-action').length===4 && document.querySelectorAll('.suggestion').length===5", "Quick access and starter questions expose the available modes");
   await expect("document.querySelector('#mode-text').textContent==='Respuestas locales'", "Local mode accurately labelled");
   await waitFor("!document.querySelector('#mentor-video').paused && document.querySelector('#mentor-media').classList.contains('is-playing')", "local professor video starts in the welcome");
-  await expect("document.querySelector('#mentor-video').currentSrc.endsWith('/media/profesor-investiq.mp4') && document.querySelector('.mentor-visual figcaption').textContent.includes('ilustrativas')", "Video is local and its graphics are labelled illustrative");
-  await click('#mentor-playback');
-  await expect("document.querySelector('#mentor-video').paused && document.querySelector('#mentor-playback').textContent==='Reproducir'", "Professor video can be paused");
-  await click('#mentor-playback');
-  await waitFor("!document.querySelector('#mentor-video').paused", "professor video resumes");
+  await expect("document.querySelector('#mentor-video').currentSrc.endsWith('/media/profesor-investiq.webm') && document.querySelector('.mentor-visual figcaption').textContent.includes('ilustrativas')", "Transparent local video and illustrative graphics label");
+  await expect("document.querySelector('#mentor-video').loop && document.querySelector('#mentor-video').muted && !document.querySelector('#mentor-video').controls && !document.querySelector('#mentor-playback')", "Professor animation loops silently without playback controls");
+  await evaluate("document.querySelector('#mentor-video').currentTime = Math.max(0, document.querySelector('#mentor-video').duration - 0.2)");
+  await waitFor("document.querySelector('#mentor-video').currentTime < 2 && !document.querySelector('#mentor-video').paused", "professor animation starts again at the end");
   await readable(["#message-input::placeholder", ".composer-help", ".composer-invitation", ".branch-intro p", ".branch-copy small"]);
   await noOverflow("1440x900"); await screenshot("desktop");
   await type("#symbol-search", "apple");
@@ -246,7 +245,7 @@ try {
   if (frontOnly) {
     await click('#mobile-new-conversation');
     await waitFor("!document.querySelector('#welcome').hidden", "welcome returns with reduced motion");
-    await expect("document.querySelector('#mentor-video').paused && !document.querySelector('#mentor-media').classList.contains('is-playing') && document.querySelector('.mentor-still').naturalWidth===1312", "Reduced motion keeps the supplied robot image visible until requested");
+    await expect("document.querySelector('#mentor-video').paused && !document.querySelector('#mentor-media').classList.contains('is-playing') && document.querySelector('.mentor-still').naturalWidth===1312", "Reduced motion keeps the supplied robot image visible");
   }
   if (!frontOnly) {
   await type("#message-input", '<img src=x onerror="alert(1)">'); await key("Enter", "Enter");

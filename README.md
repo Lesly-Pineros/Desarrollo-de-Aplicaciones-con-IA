@@ -1,6 +1,6 @@
 # InvestiQ
 
-InvestiQ es un profesor de educación financiera en una web en español: explica acciones, fondos, ETF, bolsas, brókers, criptoactivos e indicadores consultando una biblioteca local con fuentes. También permite consultar noticias del día, pedir resúmenes y explorar candidatos entre 20 acciones y ETF mediante criterios conversados y el modelo de clustering local. Abre directamente, sin registro ni contraseña. Las preferencias se conversan en el chat; el catálogo y la ayuda están a mano.
+InvestiQ es un profesor de educación financiera en una web en español: explica acciones, fondos, ETF, bolsas, brókers, criptoactivos e indicadores consultando una biblioteca local con fuentes. También permite consultar noticias del día, pedir resúmenes y explorar candidatos entre 20 acciones y ETF mediante criterios conversados y el modelo de clustering local. En local abre directamente, sin registro; el POC publicado en Render requiere la contraseña compartida que configures. Las preferencias se conversan en el chat; el catálogo y la ayuda están a mano.
 
 **No es asesoría financiera.** Los precios y las métricas provienen de herramientas y datos verificables; el modelo redacta sobre esos resultados.
 
@@ -37,6 +37,7 @@ Edita `.env` en tu equipo:
 | `CONVERSATION_MEMORY_DAYS` | Retención del contexto resumido, por defecto 90 días. |
 | `INVESTIQ_SHOW_DIAGNOSTICS` | `true` muestra categorías de diagnóstico para desarrollo. Por defecto `false`. |
 | `INVESTIQ_LOG_LEVEL` | Nivel de logs en terminal: `DEBUG`, `INFO` (predeterminado), `WARNING`, `ERROR` o `CRITICAL`. |
+| `INVESTIQ_ACCESS_PASSWORD` | Contraseña de acceso HTTP Basic requerida en Render. No hace falta para el uso local. |
 
 Las variables exportadas en la consola tienen prioridad sobre `.env`. Conserva `.env` en cada equipo; no se sube a Git.
 
@@ -70,7 +71,20 @@ NVIDIA_API_KEY= TWELVE_DATA_API_KEY= MARKETAUX_API_KEY= FMP_API_KEY= SEC_USER_AG
 
 Sin Internet puedes aprender conceptos y definir símbolos del catálogo. Las consultas de mercado necesitan datos locales o acceso a sus fuentes; la app informa cuando no están disponibles. La web escucha únicamente en `127.0.0.1` o `localhost`: es un piloto local, no un servidor público.
 
-La aplicación local usa la web HTML/CSS/JS servida por Python; no mantiene una segunda interfaz frontend. Usar esta web local no tiene una tarifa de framework; publicarla en Internet y el consumo de proveedores son cuestiones separadas. No se ha iniciado el despliegue cloud.
+La aplicación local usa la web HTML/CSS/JS servida por Python; no mantiene una segunda interfaz frontend. La publicación del POC se prepara para Render Free; consulta la sección siguiente para límites, protección y datos temporales.
+
+## Despliegue del POC en Render Free
+
+El manifiesto [render.yaml](render.yaml) define un único servicio Python en el plan Free. Desde Render, crea un **Blueprint** conectado a este repositorio y selecciona `render.yaml`. Durante la creación, Render pedirá las variables marcadas `sync: false`:
+
+- `INVESTIQ_ACCESS_PASSWORD`: **obligatoria**. Crea una contraseña larga y única para restringir el POC. El navegador mostrará un diálogo de autenticación; el usuario es `investiq`. No compartas esta contraseña ampliamente: las personas autorizadas comparten la memoria de esta instalación.
+- `NVIDIA_API_KEY`: opcional. Déjala vacía si solo quieres comprobar el modo local; sin ella no se generará texto con NVIDIA. Configúrala solo si aceptas las condiciones de uso/costo de tu cuenta.
+
+Si dejas `NVIDIA_API_KEY` vacía, el servicio puede responder con las capacidades locales disponibles. Las claves Twelve Data, Marketaux, FMP y SEC User-Agent no forman parte del primer alta del Blueprint; se pueden agregar luego en **Dashboard → servicio `investiq-poc` → Environment** si decides habilitar esas consultas.
+
+Render termina HTTPS y remite las solicitudes al proceso Python. El servicio falla al arrancar si falta la contraseña. La ruta `/api/health` queda abierta solo para el monitor técnico de Render; la web, sus recursos y la API requieren autenticación. `render.yaml` no guarda valores de secretos.
+
+**Límites:** el nivel Free puede suspender el servicio tras 15 minutos sin tráfico y su reactivación puede tardar cerca de un minuto. El filesystem es efímero: SQLite, preferencias, cachés y datos agregados pueden perderse cuando Render reinicie, suspenda o despliegue el servicio. Este despliegue no garantiza persistencia ni disponibilidad. Render ofrece cuotas gratuitas pero puede suspender servicios al agotarlas; no selecciones planes/recursos pagos si el objetivo es mantener el costo en cero.
 
 ## Biblioteca educativa y RAG
 

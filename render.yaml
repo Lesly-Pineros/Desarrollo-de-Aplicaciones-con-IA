@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: investiq-poc
+    runtime: python
+    plan: free
+    buildCommand: pip install .
+    startCommand: investiq-app
+    healthCheckPath: /api/health
+    envVars:
+      - key: INVESTIQ_ACCESS_PASSWORD
+        sync: false
+      - key: NVIDIA_API_KEY
+        sync: false

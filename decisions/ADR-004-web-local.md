@@ -16,7 +16,7 @@ Revisión 2026-11-07: por solicitud del usuario se retiraron la app, launcher, e
 
 Un solo comando y proceso; assets locales, sin CDN ni login. El servidor escucha por defecto solo en loopback y está diseñado para el piloto local single-user. Las fuentes, cuotas, validación factual, clustering y umbrales conservan sus contratos.
 
-Esta decisión sustituye D1 para uso local. ADR-002 conserva el destino previsto para la alternativa Streamlit; la publicación del nuevo frontend requiere revisar hosting en fase 5. Esta tarea no inicia esa fase ni promete compatibilidad de la web con Streamlit Community Cloud.
+Esta decisión define la interfaz local. ADR-002 registra Render Free como destino elegido para el POC; publicar la web requiere adaptar el servidor y resolver el aislamiento de usuarios en fase 5. La selección del proveedor no acredita compatibilidad ya implementada ni inicia el despliegue.
 
 ## Alternativas
 

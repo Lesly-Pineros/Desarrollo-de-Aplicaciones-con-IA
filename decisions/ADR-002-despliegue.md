@@ -1,29 +1,30 @@
-# ADR-002 — Despliegue en nube: Streamlit Community Cloud + Neon (gratis), no Vercel en v0.1
+# ADR-002 — Despliegue del POC en Render Free
 
-- **Estado:** Aceptado
-- **Fecha:** 2026-10-31
-- **Revisión local (2026-11-04):** [ADR-004](ADR-004-web-local.md) sustituye la interfaz principal local por una web servida desde Python. Esta ADR conserva el destino previsto para la alternativa Streamlit; el hosting de la nueva web requiere revisión en fase 5, que no se ha iniciado.
-- **Contexto:** La petición inicial sugería Vercel como nube de despliegue. El frontend elegido es Streamlit (ADR implícito D1). Vercel **no es un target nativo de Streamlit** (está orientado a Next.js/funciones serverless), por lo que desplegar Streamlit en Vercel exige separar la app de la API y añadir piezas. El usuario priorizó: "lo que sea, pero que me sirva para desplegar y gratis".
+- **Estado:** Aceptado para el POC; despliegue aún no iniciado.
+- **Fecha:** 2026-11-08.
+- **Historial:** La decisión original de Streamlit Community Cloud + Neon quedó obsoleta al retirarse Streamlit como interfaz. [ADR-004](ADR-004-web-local.md) define la web vigente servida desde Python.
+- **Contexto:** El usuario confirma Render Free como destino del POC y solicita evitar costos. La app actual combina HTML/CSS/JS y API en un proceso Python. Render Free admite servicios web Python, pero su filesystem es efímero y el servicio puede suspenderse por inactividad.
 
 ## Decisión
 
-Para **v0.1** desplegar en **Streamlit Community Cloud** (app, gratis, target nativo) + **Neon Postgres (free tier)** para persistencia. **Vercel queda descartado para v0.1** y se documenta como alternativa para v0.2 si se extrae una API FastAPI.
+Usar **un servicio web Render Free** para el POC. Mantener SQLite con datos temporales y no agregar una base gestionada mientras no se requiera persistencia, para evitar costos adicionales. La fase 5 permanece pendiente hasta completar los requisitos de acceso y adaptación del servidor.
 
 ## Justificación
 
-- **Encaje nativo:** Streamlit Community Cloud despliega apps Streamlit con un push a GitHub; cero fricción.
-- **Gratis y de una sola pieza:** no requiere separar frontend/backend ni gestionar contenedores en v0.1.
-- **Persistencia real:** el filesystem de Streamlit Cloud no es apto como BD → Neon aporta Postgres gestionado gratis con el mismo `DATABASE_URL` que ya usa SQLModel.
-- **Una sola key:** los *secrets* de Streamlit Cloud guardan `NVIDIA_API_KEY`.
+- **Encaje:** Render ejecuta servicios web Python y puede servir el frontend y la API en el mismo proceso.
+- **Costo del POC:** el plan Free permite probar el servicio sin suscripción mensual, dentro de sus cuotas y límites.
+- **Simplicidad:** no requiere separar frontend/backend ni agregar una base de datos administrada para un POC con datos desechables.
 
 ## Consecuencias
 
-- (+) Despliegue gratuito, coherente con el stack, sin doble proceso.
-- (+) Capa de datos portable (SQLite local → Neon) desde el día 1.
-- (−) No se usa Vercel en v0.1 (diverge de la sugerencia inicial, aceptado por el usuario).
-- (−) Streamlit Community Cloud tiene límites de recursos (suficientes para piloto single-user).
+- (+) Un solo servicio compatible con la app Python existente y sin costo recurrente dentro del nivel Free.
+- (−) El filesystem es efímero: SQLite y los datos creados en ejecución pueden perderse al reiniciar, suspender o desplegar.
+- (−) El servicio Free se suspende tras inactividad y puede tener arranque en frío; no es un compromiso de disponibilidad.
+- (−) El servicio actual solo enlaza loopback y asume una identidad local compartida; no es publicable hasta adaptar el servidor y resolver aislamiento/autenticación.
+- (−) Las cuotas gratuitas pueden cambiar; se deben revisar antes de desplegar y no habilitar recursos pagos.
 
 ## Alternativas
 
-- **Contenedor único en Render/Railway (free):** viable si se quiere empaquetar app + dependencias en un contenedor; más control, algo más de configuración. Documentada como plan B.
-- **Vercel + FastAPI:** solo tiene sentido si en v0.2 se extrae una API (ADR-001); Streamlit iría igualmente en servicio aparte.
+- **Vercel:** posible para frontend estático, pero requiere alojar el backend Python en otro servicio o rediseñarlo; agrega piezas para este POC.
+- **Firebase Hosting + Cloud Run:** posible con frontend estático y backend en Cloud Run; requiere asociar facturación y revisar las cuotas/cargos de Google Cloud, por lo que no se elige para este objetivo de costo cero.
+- **Railway:** alternativa técnica para servicio Python, pero sus recursos y volúmenes dependen del plan/cuotas vigentes; no se elige para evitar incertidumbre de costos.

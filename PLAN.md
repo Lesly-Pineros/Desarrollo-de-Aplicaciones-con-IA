@@ -4,7 +4,7 @@
 >
 > **No es asesoría financiera.** Todo output lleva disclaimer y trazabilidad de fuente.
 
-**Alcance vigente:** InvestiQ es una app educativa financiera en español. Su interfaz principal es una web local HTML/CSS/JS servida por Python; el motor conserva tools locales para educación, cotizaciones/métricas de símbolos, noticias, filings y exploración guiada. No se incluye Streamlit como código o dependencia activa. Twelve Data y otras fuentes externas son opcionales y su disponibilidad depende de claves, cuota y cobertura. El estado de implementación, cambios recientes y verificaciones se mantiene por separado en [docs/progress.md](docs/progress.md). Consulta también [README](README.md), [arquitectura](docs/architecture.md) y las specs enlazadas por cada feature. Fase 5 sin iniciar.
+**Alcance vigente:** InvestiQ es una app educativa financiera en español. Su interfaz principal es una web local HTML/CSS/JS servida por Python; el motor conserva tools locales para educación, cotizaciones/métricas de símbolos, noticias, filings y exploración guiada. No se incluye Streamlit como código o dependencia activa. Twelve Data y otras fuentes externas son opcionales y su disponibilidad depende de claves, cuota y cobertura. El estado de implementación, cambios recientes y verificaciones se mantiene por separado en [docs/progress.md](docs/progress.md). Consulta también [README](README.md), [arquitectura](docs/architecture.md) y las specs enlazadas por cada feature. Fase 5 en ejecución; la URL y el smoke test live esperan configuración manual de secretos en Render.
 
 ---
 
@@ -12,13 +12,13 @@
 
 | # | Decisión | Justificación | Revisión |
 |---|----------|---------------|----------|
-| D1 | **Web local HTML/CSS/JS + API mínima en el mismo proceso Python**, sobre la orquestación existente. Streamlit fue retirado como interfaz instalable; su antiguo plan cloud queda solo como registro histórico. Ver [ADR-004](decisions/ADR-004-web-local.md) | Rediseño solicitado; control de conversación y accesibilidad sin Node ni nuevo framework | Hosting de la web se revisa en fase 5 |
+| D1 | **Web HTML/CSS/JS + API mínima en el mismo proceso Python**. Streamlit fue retirado como interfaz instalable; ver [ADR-004](decisions/ADR-004-web-local.md) | Rediseño solicitado; control de conversación y accesibilidad sin Node ni nuevo framework | Render Free seleccionado para el POC; fase 5 pendiente |
 | D2 | **Single-user local sin login**; la app abre directamente y guarda preferencias/trazas bajo una identidad local fija | Acceso simple para el piloto educativo local | Auth y multiusuario diferidos |
 | D3 | **Noticias del día con caché, fecha y aviso de desactualización** | Marketaux free documentado: 100 req/día, tres artículos/petición y acceso inmediato. ADR-006 corrige el supuesto de 24 h | Condiciones de cuenta y validación live pendientes |
-| D4 | **SQLite (local) → Postgres gestionado (Neon free) en nube** vía SQLAlchemy/SQLModel | SQLite no persiste en hosting efímero; capa portable desde el día 1 | — |
+| D4 | **SQLite para el POC en Render Free; datos de aplicación temporales**. No se añade Postgres gestionado mientras no se requiera conservar datos | Render Free no ofrece disco persistente; evita agregar servicios y costos al POC | Revisar persistencia si el POC debe conservar datos tras reinicios |
 | D5 | **yfinance solo ingesta batch para ML** (offline), nunca como fuente "oficial" en vivo | yfinance es "research/educational", no respaldado por Yahoo | — |
 | D6 | **LLM: ChatNVIDIA (NVIDIA NIM / API Catalog)**, modelo **configurable**. **Único proveedor LLM; claves de datos opcionales y propias** | Free tier amplio, tool-calling y structured output | Fallback / 2º proveedor en v0.2 |
-| D7 | **Nube pendiente**: ADR-002 conserva Streamlit Community Cloud + Neon como plan histórico. La web implementada requiere revisar hosting según ADR-004 | El rediseño local no equivale a desplegar ni validar compatibilidad cloud | Fase 5 sin iniciar; no se selecciona otro proveedor aquí |
+| D7 | **Render Free** para publicar la web Python actual como un único servicio; ver [ADR-002](decisions/ADR-002-despliegue.md) | Despliega Python y sirve el frontend existente en el mismo proceso, adecuado para el POC sin costo recurrente | Fase 5 sin iniciar; completar requisitos previos y confirmar límites antes de publicar |
 | D8 | Límites de free tier = **requisitos no funcionales** (caché, cuotas, degradación). **Clave LLM para generación**; Twelve Data/Marketaux/FMP son fuentes **opcionales** y degradables según acceso de cuenta | Twelve Data 8/min·800/día; Marketaux 100/día; SEC ≤10 req/s + User-Agent | — |
 | D9 | **v0.1: orquestación en Python plano** (router + tools como funciones puras + cliente ChatNVIDIA, **sin LangGraph/LangChain**). **LangGraph en v0.2** si el flujo lo justifica | Complejidad proporcional. Ver [ADR-001](decisions/ADR-001-orquestacion.md) | LangGraph en v0.2 |
 | D10 | **Columna vertebral sin key**: yfinance (histórico/ML) + filings de la SEC. Twelve Data/Marketaux **enriquecen** y degradan si no hay key/cuota | Garantiza app funcional con una sola key (LLM) | — |
@@ -235,15 +235,16 @@ Capa SQLModel (SQLite), ingesta **yfinance** batch (20 instrumentos), features (
 ### Fase 4 — Hardening → v0.2 (evolución)
 Debugging guiado por eval, ampliar cobertura de tests, caso **MCP de filings SEC**, (opcional) **extraer FastAPI** como capa API, **commits trazables** por `TASK`. **Hito v0.2:** eval en verde + MCP operativo.
 
-### Fase 5 — Despliegue en nube GRATIS (Resultado 9)
+### Fase 5 — Despliegue en nube gratis para el POC (Resultado 9)
 
-**Sin iniciar.** ADR-004 cambia la entrada local; antes de publicar la nueva web se revisará un hosting compatible. Las opciones siguientes conservan el plan histórico para Streamlit y no constituyen un despliegue de la web nueva.
-- **App Streamlit** → **Streamlit Community Cloud** (gratis, target nativo de Streamlit).
-- **Datos** → **Neon Postgres (free)**; migración SQLite→Postgres vía SQLModel; `DATABASE_URL` por entorno.
-- **ML** → entrenamiento **offline**; se despliegan solo **artefactos** + inferencia ligera.
-- **Secretos** → gestionados en los *secrets* de Streamlit Cloud (solo `NVIDIA_API_KEY` obligatoria).
-- **Hito nube:** app pública, gratis, con datos persistentes y clave segura.
-- **Alternativa documentada** ([ADR-002](decisions/ADR-002-despliegue.md)): contenedor único en Render/Railway (free), o Vercel con API FastAPI separada si en v0.2 se extrae la API.
+**Proveedor elegido: Render Free; fase 5 en ejecución.** Se prepararon el servidor, la protección y el Blueprint. Falta crear el servicio en Render, configurar secretos manualmente y verificar la URL publicada. La ADR-004 cambió la interfaz a web HTML/CSS/JS servida por el proceso Python, por lo que se descarta el plan histórico de Streamlit Community Cloud.
+- **App:** un servicio web Python en Render Free; adaptar el servidor a `0.0.0.0` y al puerto `PORT` suministrado por Render.
+- **Datos:** SQLite para el POC; en Render Free el sistema de archivos es efímero y los datos locales pueden perderse al reiniciar, suspender o desplegar. No se promete persistencia. No agregar Neon ni otro servicio gestionado en esta fase mientras el requisito sea costo cero.
+- **ML:** entrenamiento **offline**; desplegar solo artefactos necesarios e inferencia ligera.
+- **Secretos:** configurar `NVIDIA_API_KEY` y las claves opcionales desde variables/secretos del servicio; no versionarlas.
+- **Acceso:** antes de habilitar una URL pública, resolver el perfil compartido single-user y el aislamiento/autenticación; no exponer memoria ni preferencias entre visitantes.
+- **Límites del plan:** servicio puede suspenderse tras inactividad, presentar arranque en frío y reiniciarse; revisar cuotas y evitar activar recursos de pago.
+- **Hito nube:** POC accesible en URL pública sin recursos de pago, con pérdida de datos declarada, secretos configurados y controles de acceso adecuados.
 
 ### Hitos posteriores (orientativos, menor detalle)
 Escalar de 20 → 150+50 instrumentos; multiusuario + roles (RBAC); mayor capacidad de noticias si la demanda lo justifica; más proveedores LLM con fallback; ampliación de la suite de eval.

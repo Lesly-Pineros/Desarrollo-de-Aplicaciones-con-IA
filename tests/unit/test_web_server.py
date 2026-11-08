@@ -1,3 +1,4 @@
+import base64
 from http.client import HTTPConnection
 import json
 import threading
@@ -114,6 +115,35 @@ def test_provider_error_is_safe_and_bootstrap_has_no_secret_config(web, monkeypa
     assert "nvidia_api_key" not in json.loads(body)
 
 
+def test_protected_routes_require_valid_basic_auth(web):
+    web.public = True
+    web.access_password = "correct-horse-battery"
+    web.public_hostname = "investiq-test.onrender.com"
+    base_headers = {"Host": "investiq-test.onrender.com", "Origin": "https://investiq-test.onrender.com",
+                    "X-Forwarded-Proto": "https"}
+    status, headers, body = request(web, headers=base_headers)
+    assert status == 401
+    assert 'Basic realm="InvestiQ POC"' in headers["WWW-Authenticate"]
+    assert b"correct-horse" not in body
+
+    good = base64.b64encode(b"investiq:correct-horse-battery").decode("ascii")
+    status, headers, body = request(web, headers={**base_headers, "Authorization": f"Basic {good}"})
+    assert status == 200
+    assert "Secure" in headers["Set-Cookie"]
+    assert len(json.loads(body)["instruments"]) == 20
+
+    bad = base64.b64encode(b"investiq:incorrect").decode("ascii")
+    status, _, _ = request(web, headers={**base_headers, "Authorization": f"Basic {bad}"})
+    assert status == 401
+    status, _, body = request(web, path="/api/health", headers={"Host": "investiq-test.onrender.com"})
+    assert status == 200
+
+
 def test_pilot_server_refuses_network_binding():
     with pytest.raises(ValueError, match="loopback"):
         LocalWebServer(("0.0.0.0", 8000), None)
+
+
+def test_render_public_server_requires_access_password():
+    with pytest.raises(ValueError, match="INVESTIQ_ACCESS_PASSWORD"):
+        LocalWebServer(("0.0.0.0", 8000), None, public=True)

@@ -1,13 +1,16 @@
-"""Single-process, loopback-only web server for the local InvestiQ pilot."""
+"""Single-process web server for the local pilot and protected Render POC."""
 
 from __future__ import annotations
 
 import argparse
+import base64
 from http.cookies import CookieError, SimpleCookie
+import hmac
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from importlib.resources import files
 import json
 import logging
+import os
 from time import perf_counter
 from urllib.parse import urlsplit
 
@@ -41,11 +44,18 @@ class LocalWebServer(ThreadingHTTPServer):
     daemon_threads = True
     allow_reuse_address = True
 
-    def __init__(self, address, service: WebService, store: SessionStore | None = None):
-        if address[0] not in {"127.0.0.1", "localhost"}:
+    def __init__(self, address, service: WebService, store: SessionStore | None = None,
+                 *, public: bool = False, access_password: str | None = None,
+                 public_hostname: str | None = None):
+        if address[0] not in {"127.0.0.1", "localhost"} and not public:
             raise ValueError("The local pilot only binds to loopback")
+        if public and not (access_password and access_password.strip()):
+            raise ValueError("Public hosting requires INVESTIQ_ACCESS_PASSWORD")
         self.service = service
         self.sessions = store or SessionStore()
+        self.public = public
+        self.access_password = access_password
+        self.public_hostname = public_hostname.lower() if public_hostname else None
         super().__init__(address, WebHandler)
 
 
@@ -62,7 +72,8 @@ class WebHandler(BaseHTTPRequestHandler):
         super().setup()
         self.connection.settimeout(15)
 
-    def _headers(self, status: int, mime: str, length: int, cookie: str | None = None) -> None:
+    def _headers(self, status: int, mime: str, length: int, cookie: str | None = None,
+                 extra_headers: dict[str, str] | None = None) -> None:
         self.send_response(status)
         self.send_header("Content-Type", mime)
         self.send_header("Content-Length", str(length))
@@ -74,6 +85,8 @@ class WebHandler(BaseHTTPRequestHandler):
                          "connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
         if cookie:
             self.send_header("Set-Cookie", cookie)
+        for name, value in (extra_headers or {}).items():
+            self.send_header(name, value)
         self.end_headers()
 
     def _json(self, status: int, value: dict, cookie: str | None = None) -> None:
@@ -84,24 +97,58 @@ class WebHandler(BaseHTTPRequestHandler):
     def _authority(self, value: str):
         try:
             parsed = urlsplit("//" + value)
-            if (parsed.hostname not in {"localhost", "127.0.0.1"}
-                    or parsed.port != self.server.server_port
+            hostname = parsed.hostname.lower() if parsed.hostname else None
+            if (not hostname
                     or parsed.username or parsed.password or parsed.path or parsed.query or parsed.fragment):
                 return None
-            return parsed.hostname, parsed.port
+            port = parsed.port
+            if self.server.public:
+                if hostname != self.server.public_hostname or port not in {None, 443}:
+                    return None
+            elif hostname not in {"localhost", "127.0.0.1"} or port != self.server.server_port:
+                return None
+            return hostname, port
         except ValueError:
             return None
+
+    def _authorized(self) -> bool:
+        if not self.server.access_password:
+            return True
+        header = self.headers.get("Authorization", "")
+        try:
+            scheme, encoded = header.split(None, 1)
+            if scheme.lower() != "basic" or len(encoded) > 4096:
+                return False
+            credentials = base64.b64decode(encoded, validate=True).decode("utf-8")
+            username, password = credentials.split(":", 1)
+        except (ValueError, UnicodeDecodeError):
+            return False
+        return (hmac.compare_digest(username, "investiq")
+                and hmac.compare_digest(password, self.server.access_password))
+
+    def _unauthorized(self) -> None:
+        body = json.dumps({"error": "Ingresa la contraseña de acceso al POC."}, ensure_ascii=False).encode("utf-8")
+        self._headers(401, "application/json; charset=utf-8", len(body), extra_headers={
+            "WWW-Authenticate": 'Basic realm="InvestiQ POC", charset="UTF-8"',
+        })
+        self.wfile.write(body)
 
     def _local_request(self, *, post: bool = False) -> bool:
         hosts = self.headers.get_all("Host", [])
         authority = self._authority(hosts[0]) if len(hosts) == 1 else None
         if authority is None:
-            self._json(403, {"error": "Abre la aplicación desde su dirección local."})
+            self._json(403, {"error": "No se reconoce el host de esta solicitud."})
             return False
+        if self.server.access_password:
+            path = urlsplit(self.path).path
+            if path != "/api/health" and not self._authorized():
+                self._unauthorized()
+                return False
         if post:
             try:
                 origin = urlsplit(self.headers.get("Origin", ""))
-                valid = origin.scheme == "http" and self._authority(origin.netloc) == authority
+                expected_scheme = "https" if self.server.public else "http"
+                valid = origin.scheme == expected_scheme and self._authority(origin.netloc) == authority
                 valid = valid and not (origin.path or origin.query or origin.fragment)
             except ValueError:
                 valid = False
@@ -138,7 +185,9 @@ class WebHandler(BaseHTTPRequestHandler):
                             result = self.server.service.reset(browser, payload)
                         else:
                             result = self.server.service.memory(browser, payload)
-                    cookie = (f"{COOKIE_NAME}={browser.token}; Path=/; HttpOnly; SameSite=Strict"
+                    secure = self.server.public or self.headers.get("X-Forwarded-Proto", "").lower() == "https"
+                    secure_attribute = "; Secure" if secure else ""
+                    cookie = (f"{COOKIE_NAME}={browser.token}; Path=/; HttpOnly; SameSite=Strict{secure_attribute}"
                               if created else None)
                     self._json(200, result, cookie)
             except InvalidRequest as error:
@@ -213,16 +262,30 @@ class WebHandler(BaseHTTPRequestHandler):
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="InvestiQ: web educativa local")
-    parser.add_argument("--host", choices=("127.0.0.1", "localhost"), default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument("--host", choices=("127.0.0.1", "localhost", "0.0.0.0"), default=None)
+    parser.add_argument("--port", type=int, default=None)
     args = parser.parse_args(argv)
-    if not 0 <= args.port <= 65535:
+    if args.port is not None and not 0 <= args.port <= 65535:
         parser.error("--port debe estar entre 0 y 65535")
+    public = os.environ.get("RENDER", "").lower() == "true"
+    host = args.host or ("0.0.0.0" if public else "127.0.0.1")
+    port_value = args.port if args.port is not None else os.environ.get("PORT", "8000")
+    try:
+        port = int(port_value)
+    except (TypeError, ValueError):
+        parser.error("PORT debe ser un número entero")
+    if not 0 <= port <= 65535:
+        parser.error("PORT debe estar entre 0 y 65535")
     engine = None
     configure_logging()
     logger.info("startup.begin component=web")
     try:
         settings = get_settings()
+        if public and not (settings.investiq_access_password and settings.investiq_access_password.strip()):
+            raise ValueError("Configura INVESTIQ_ACCESS_PASSWORD en el entorno de Render antes de iniciar")
+        public_hostname = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+        if public and not public_hostname:
+            raise ValueError("Render no proporcionó RENDER_EXTERNAL_HOSTNAME")
         configure_logging(settings.log_level)
         logger.info("startup.configuration mode=%s log_level=%s",
                     "configured" if settings.has_nvidia_key else "local", settings.log_level)
@@ -238,14 +301,18 @@ def main(argv: list[str] | None = None) -> int:
             engine.dispose()
         return 1
     try:
-        server = LocalWebServer((args.host, args.port), WebService(engine, settings))
+        server = LocalWebServer((host, port), WebService(engine, settings), public=public,
+                                access_password=settings.investiq_access_password,
+                                public_hostname=public_hostname)
     except OSError as error:
         log_unexpected(logger, "startup.bind", error)
         print("No pude abrir el puerto local. Prueba otro con --port 8001.")
         engine.dispose()
         return 1
-    logger.info("startup.ready host=%s port=%d", args.host, server.server_port)
-    print(f"InvestiQ listo en http://{args.host}:{server.server_port} (Ctrl+C para salir).", flush=True)
+    logger.info("startup.ready host=%s port=%d", host, server.server_port)
+    public_url = os.environ.get("RENDER_EXTERNAL_URL") if public else None
+    address = public_url or f"http://{host}:{server.server_port}"
+    print(f"InvestiQ listo en {address} (Ctrl+C para salir).", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

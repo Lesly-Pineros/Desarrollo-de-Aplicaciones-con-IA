@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: **2026-11-07**. Este documento concentra el estado vigente y el historial de cambios del proyecto; `PLAN.md` conserva alcance, decisiones y fases.
+Última actualización: **2026-11-08**. Este documento concentra el estado vigente y el historial de cambios del proyecto; `PLAN.md` conserva alcance, decisiones y fases.
 
 ## Estado vigente
 
@@ -9,7 +9,11 @@
 - La entrada inicial permite iniciar recomendaciones guiadas, consultar métricas de un símbolo/ETF, explorar sectores de NASDAQ y consultar actualidad. Los flujos de símbolos usan Twelve Data cuando está configurado y disponible; no se declara la integración en vivo verificada por las pruebas offline.
 - Módulos de diálogo, routing, handlers, respuestas y registro mantienen responsabilidades separadas; las consultas externas se degradan cuando faltan credenciales o datos.
 - La suite offline pasó **696 pruebas**; el verificador web pasó **96 comprobaciones** en Chrome con fixtures sintéticos; **17 specs** validaron. Los servicios financieros externos no se consultaron en esas verificaciones.
-- Integraciones reales de proveedores/modelo y despliegue cloud siguen pendientes. La fase 5 no ha iniciado.
+- Integraciones reales de proveedores/modelo siguen pendientes. La fase 5 inició su preparación para Render Free; crear el servicio y hacer el smoke test en la URL están pendientes de configurar los secretos en Render.
+
+## Actualización — destino del POC en la nube (2026-11-08)
+
+Por decisión del usuario, Render Free queda como proveedor elegido para el POC. Se implementaron bind por `PORT`, autenticación Basic obligatoria en Render, cookies Secure bajo HTTPS, health check, Blueprint Free y guía de secretos. El deployment live espera que la usuaria cree el Blueprint y configure `INVESTIQ_ACCESS_PASSWORD` (obligatoria) y decida si agrega `NVIDIA_API_KEY` (opcional). Se conserva SQLite solo con expectativa de datos temporales, porque el filesystem gratis es efímero; no se añade una base administrada. El nivel Free puede suspenderse por inactividad y sus límites pueden cambiar. Ver [ADR-002](../decisions/ADR-002-despliegue.md), [spec de fase 5](../specs/fase5-render/tasks.md) y [PLAN.md](../PLAN.md).
 
 ## Actualización — video original sin botón de pausa (2026-11-07)
 
